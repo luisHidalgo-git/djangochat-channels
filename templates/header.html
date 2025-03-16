@@ -1,0 +1,22 @@
+{% load static %}
+<nav>
+    <div class="header-content">
+        <a href="{% url 'index' %}"><h1>Módulo Escolar</h1></a>
+        <div class="breadcrumbs">
+            <a href="{% url 'index' %}">Inicio</a>
+            {% if request.path != '/' %}
+                {% if 'login' in request.path %}
+                    <span class="separator">/</span>
+                    <a href="{% url 'login' %}">Login</a>
+                {% elif 'signup' in request.path %}
+                    <span class="separator">/</span>
+                    <a href="{% url 'signup' %}">Signup</a>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+    <ul>
+        <li><a href="{% url 'login' %}">Login</a></li>
+        <li><a href="{% url 'signup' %}">Signup</a></li>
+    </ul>
+</nav>

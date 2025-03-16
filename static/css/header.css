@@ -1,0 +1,110 @@
+nav {
+    width: 100%;
+    display: flex;
+    justify-content: space-between; /* Distribuye el contenido horizontalmente */
+    align-items: center; /* Alinea verticalmente todo el contenido */
+    height: auto;
+    min-height: 70px; /* Reducir la altura del header */
+    background-color: rgb(23, 104, 136);
+    padding: 10px 20px; /* Reducir el padding */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.header-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: auto; /* Ajustar ancho automático */
+}
+
+nav ul {
+    list-style-type: none;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center; /* Alinear los elementos verticalmente */
+    margin: 0;
+    padding: 0;
+}
+
+nav ul li {
+    padding: 0 15px; /* Reducir el padding vertical */
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+nav ul li a:hover {
+    color: orange;
+    text-decoration: none;
+}
+
+h1 {
+    color: white;
+    margin: 0;
+    padding: 0; /* Eliminar el padding superior para subir el título */
+}
+
+h1 a:hover{
+    text-decoration: none;
+}
+
+.breadcrumbs {
+    color: white;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    padding: 0; /* Reducir el padding superior */
+}
+
+.breadcrumbs a {
+    color: white;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.breadcrumbs a:hover {
+    color: orange;
+}
+
+.separator {
+    color: white;
+    margin: 0 10px;
+}
+
+footer {
+    width: 100%;
+    height: auto; /* Altura automática para contenido flexible */
+    background-color: rgb(23, 104, 136);
+    padding: 20px; /* Espaciado interno en el footer */
+}
+
+footer ul {
+    list-style-type: none;
+    display: flex;
+    justify-content: center;
+    padding: 0; /* Elimina el padding por defecto */
+    margin: 0; /* Elimina el margen por defecto */
+}
+
+footer ul li {
+    margin-right: 15px; /* Espacio entre los elementos del footer */
+}
+
+footer ul li a {
+    color: white;
+    text-decoration: none;
+}
+
+footer ul li a:hover {
+    text-decoration: none;
+    color: orange;
+}
+
+p {
+    color: rgb(255, 255, 255);
+}
