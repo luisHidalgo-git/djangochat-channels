@@ -27,5 +27,5 @@ python3 manage.py makemigrations && python3 manage.py migrate
 ```
 ### Ejecución del proyecto
 ```
-python3 manage.py run_socket_server && python3 manage.py runserver
+python3 manage.py runserver
 ```
