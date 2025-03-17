@@ -10,7 +10,7 @@
 - Visualización de mensajes
 - Soporte de mensajes urgentes
 - Soporte de mensajes por materia
-- Desplegado en Railway.app
+- Desplegado en AWS
 
 ## Configuraciones de archivos local
 ### Crear y configurar venv
