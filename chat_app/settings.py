@@ -161,8 +161,8 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-RECAPTCHA_PUBLIC_KEY = "6LdXrvYqAAAAAOKvW9TI5tvouR2d1XNaGkLHnIck"
-RECAPTCHA_SECRET_KEY = "6LdXrvYqAAAAAHUME1rF4Qt6qyisPUiIDpdPWeoD"
+RECAPTCHA_PUBLIC_KEY = "6Lf5t_YqAAAAANu39Mqhj5Um-xJ-2_talSnjmBeE"
+RECAPTCHA_SECRET_KEY = "6Lf5t_YqAAAAAHgiZgDiq2Do_lMXxicx48Gc7v-5"
 RECAPTCHA_REQUIRED_SCORE = 0.85  # Puedes ajustar este valor según tus necesidades
 
 
