@@ -3,6 +3,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+from django.conf import settings
+import requests
 
 def index(request):
     return render(request, "index.html", {'breadcrumb': 'Inicio'})
@@ -11,18 +13,30 @@ def login_page(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
-        print(username)
-        print(password)
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            messages.success(request, 'Login successful!')
-            return redirect('/chat/Sala/')
+        recaptcha_response = request.POST.get('g-recaptcha-response')
+
+        # Verificar el captcha
+        data = {
+            'secret': settings.RECAPTCHA_SECRET_KEY,
+            'response': recaptcha_response
+        }
+        response = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
+        result = response.json()
+
+        if result['success']:
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                messages.success(request, 'Login successful!')
+                return redirect('/chat/Sala/')
+            else:
+                messages.error(request, 'Invalid email or password. Please try again.')
         else:
-            messages.error(request, 'Invalid email or password. Please try again.')
+            messages.error(request, 'Please verify that you are not a robot.')
+
     if request.user.is_authenticated:
         return redirect('/chat/Sala/')
-    return render(request,'login.html', {'breadcrumb': 'Login'})
+    return render(request, 'login.html', {'breadcrumb': 'Login'})
 
 @login_required
 def logout_page(request):

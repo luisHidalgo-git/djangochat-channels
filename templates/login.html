@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Page</title>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <link rel="stylesheet" href="{% static 'css/style_login.css' %}">
     <link rel="stylesheet" href="{% static 'css/footer.css' %}">
     <link rel="stylesheet" href="{% static 'css/header.css' %}">
@@ -40,6 +41,7 @@
                     <label for="password">Password</label>
                     <input type="password" class="form-control" id="password" name="password" required>
                 </div>
+                <div class="g-recaptcha" data-sitekey="6LdXrvYqAAAAAOKvW9TI5tvouR2d1XNaGkLHnIck"></div>
                 <button type="submit" class="btn btn-primary btn-block">Login</button>
             </form>
             <div class="text-center link mt-3">

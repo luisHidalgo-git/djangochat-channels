@@ -40,7 +40,8 @@ SECRET_KEY = 'django-insecure-fv@!-bs_yfk2!)c!8%$=qvhyxd)yfbo4z6cz&(eo@v6p2es7@6
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['18.119.36.224', 'localhost']
+# ALLOWED_HOSTS = ['18.119.36.224', 'localhost']
+ALLOWED_HOSTS = []
 CSRF_TRUSTED_ORIGINS = []
 
 # Application definition
@@ -54,6 +55,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'captcha',
     'users',
     'chat',
 ]
@@ -158,6 +160,11 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+RECAPTCHA_PUBLIC_KEY = "6LdXrvYqAAAAAOKvW9TI5tvouR2d1XNaGkLHnIck"
+RECAPTCHA_SECRET_KEY = "6LdXrvYqAAAAAHUME1rF4Qt6qyisPUiIDpdPWeoD"
+RECAPTCHA_REQUIRED_SCORE = 0.85  # Puedes ajustar este valor según tus necesidades
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
