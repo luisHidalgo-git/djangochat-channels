@@ -1,7 +1,7 @@
 # Django Chat de mensajes en tiempo real
 
 ## Características
-- Socket.io y Bootstrap
+- Websocket y Bootstrap
 - Autenticación con JWT
 - Verificación de usuarios con captcha
 - Mensajes en tiempo real
