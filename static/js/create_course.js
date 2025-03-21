@@ -4,6 +4,7 @@ function createCourse() {
   const subject = document.getElementById('courseSubject').value;
   const description = document.getElementById('courseDescription').value;
   const room = document.getElementById('courseRoom').value;
+  const currentUser = document.getElementById('user_username').textContent.replace(/"/g, '');
 
   const course = {
       id: Date.now(),
@@ -12,8 +13,8 @@ function createCourse() {
       description: description,
       room: room,
       creator: {
-          name: document.getElementById('user_username').textContent.replace(/"/g, ''),
-          avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(document.getElementById('user_username').textContent.replace(/"/g, ''))}&size=64&background=random`
+          name: currentUser,
+          avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser)}&size=64&background=random`
       },
       created_at: new Date().toLocaleDateString(),
       assignments: []
@@ -63,6 +64,7 @@ function createAssignment(courseId) {
 function displayCourses() {
   const courses = JSON.parse(localStorage.getItem('courses') || '[]');
   const coursesList = document.getElementById('coursesList');
+  const currentUser = document.getElementById('user_username').textContent.replace(/"/g, '');
 
   if (courses.length === 0) {
       coursesList.innerHTML = '<p class="text-center">No hay cursos disponibles.</p>';
@@ -104,6 +106,8 @@ function displayCourseDetails(courseId) {
   const courses = JSON.parse(localStorage.getItem('courses') || '[]');
   const course = courses.find(c => c.id === courseId);
   const coursesList = document.getElementById('coursesList');
+  const currentUser = document.getElementById('user_username').textContent.replace(/"/g, '');
+  const isCreator = course.creator.name === currentUser;
 
   if (!course) return;
 
@@ -116,10 +120,12 @@ function displayCourseDetails(courseId) {
                   </button>
                   <h2>${course.name}</h2>
               </div>
-              <button class="btn btn-primary" data-toggle="modal" data-target="#createAssignmentModal" 
-                      onclick="setCurrentCourse(${courseId})">
-                  <i class="fas fa-plus mr-2"></i>Crear Tarea
-              </button>
+              ${isCreator ? `
+                <button class="btn btn-primary" data-toggle="modal" data-target="#createAssignmentModal" 
+                        onclick="setCurrentCourse(${courseId})">
+                    <i class="fas fa-plus mr-2"></i>Crear Tarea
+                </button>
+              ` : ''}
           </div>
 
           <div class="assignments-list">
@@ -160,6 +166,15 @@ function displayCourseDetails(courseId) {
 }
 
 function setCurrentCourse(courseId) {
+  const courses = JSON.parse(localStorage.getItem('courses') || '[]');
+  const course = courses.find(c => c.id === courseId);
+  const currentUser = document.getElementById('user_username').textContent.replace(/"/g, '');
+
+  if (course.creator.name !== currentUser) {
+    alert('Solo el creador del curso puede añadir tareas.');
+    return;
+  }
+
   document.getElementById('createAssignmentForm').dataset.courseId = courseId;
 }
 
@@ -193,7 +208,17 @@ document.addEventListener('DOMContentLoaded', function() {
       assignmentForm.addEventListener('submit', function(e) {
           e.preventDefault();
           const courseId = parseInt(this.dataset.courseId);
-          createAssignment(courseId);
+          
+          // Check if user is the course creator
+          const courses = JSON.parse(localStorage.getItem('courses') || '[]');
+          const course = courses.find(c => c.id === courseId);
+          const currentUser = document.getElementById('user_username').textContent.replace(/"/g, '');
+          
+          if (course && course.creator.name === currentUser) {
+              createAssignment(courseId);
+          } else {
+              alert('Solo el creador del curso puede añadir tareas.');
+          }
       });
   }
 });

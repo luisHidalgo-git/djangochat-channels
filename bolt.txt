@@ -1,1 +1,1 @@
-Ahora quiero poder entrar a los cursos, pero todo sigue estando dentro de chat.html. Quiero que dentro se muestre igual a classroom, con un boton "crear tarea" tal cual como lo hace classroom, con detalles de la entrega y que se muestren como entregables
+ahora quiero que todos los usuarios puedan ver todos los cursos y tareas creados por otros usuarios y los que el mismo usuarios cree
