@@ -5,9 +5,39 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.conf import settings
 import requests
+from django.core.cache import cache
+from django.http import JsonResponse
+import json
 
 def index(request):
     return render(request, "index.html", {'breadcrumb': 'Inicio'})
+
+def check_existing_session(request):
+    username = request.POST.get('username')
+    session_key = cache.get(f'user_session_{username}')
+    if session_key:
+        return JsonResponse({'has_session': True})
+    return JsonResponse({'has_session': False})
+
+def force_login(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        username = data.get('username')
+        password = data.get('password')
+        
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            # Eliminar la sesión anterior
+            old_session_key = cache.get(f'user_session_{username}')
+            if old_session_key:
+                cache.delete(f'user_session_{username}')
+            
+            # Crear nueva sesión
+            login(request, user)
+            cache.set(f'user_session_{username}', request.session.session_key, timeout=None)
+            return JsonResponse({'success': True, 'redirect_url': '/chat/Sala/'})
+        
+    return JsonResponse({'success': False})
 
 def login_page(request):
     if request.method == 'POST':
@@ -26,7 +56,18 @@ def login_page(request):
         if result['success']:
             user = authenticate(request, username=username, password=password)
             if user is not None:
+                # Verificar si existe una sesión activa
+                existing_session = cache.get(f'user_session_{username}')
+                if existing_session:
+                    return render(request, 'login.html', {
+                        'show_session_modal': True,
+                        'username': username,
+                        'password': password
+                    })
+                
+                # Si no hay sesión activa, proceder con el login normal
                 login(request, user)
+                cache.set(f'user_session_{username}', request.session.session_key, timeout=None)
                 messages.success(request, 'Login successful!')
                 return redirect('/chat/Sala/')
             else:
@@ -40,6 +81,8 @@ def login_page(request):
 
 @login_required
 def logout_page(request):
+    if request.user.is_authenticated:
+        cache.delete(f'user_session_{request.user.username}')
     logout(request)  
     messages.success(request, 'You have been logged out successfully.') 
     return redirect('/')
