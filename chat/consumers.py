@@ -6,6 +6,68 @@ from asgiref.sync import sync_to_async
 from channels.layers import get_channel_layer
 from django.core.cache import cache
 
+class CourseConsumer(AsyncWebsocketConsumer):
+    shared_courses = []
+
+    async def connect(self):
+        await self.channel_layer.group_add('courses', self.channel_name)
+        await self.accept()
+
+    async def disconnect(self, close_code):
+        await self.channel_layer.group_discard('courses', self.channel_name)
+
+    async def receive(self, text_data):
+        data = json.loads(text_data)
+        action = data.get('action')
+
+        if action == 'request_courses':
+            await self.send(json.dumps({
+                'action': 'courses_update',
+                'courses': self.shared_courses
+            }))
+        elif action == 'new_course':
+            course = data.get('course')
+            self.shared_courses.append(course)
+            await self.channel_layer.group_send(
+                'courses',
+                {
+                    'type': 'broadcast_new_course',
+                    'course': course
+                }
+            )
+        elif action == 'new_assignment':
+            courseId = data.get('courseId')
+            assignment = data.get('assignment')
+            
+            course_index = next((i for i, course in enumerate(self.shared_courses) 
+                               if course['id'] == courseId), -1)
+            if course_index != -1:
+                if 'assignments' not in self.shared_courses[course_index]:
+                    self.shared_courses[course_index]['assignments'] = []
+                self.shared_courses[course_index]['assignments'].append(assignment)
+                
+                await self.channel_layer.group_send(
+                    'courses',
+                    {
+                        'type': 'broadcast_new_assignment',
+                        'courseId': courseId,
+                        'assignment': assignment
+                    }
+                )
+
+    async def broadcast_new_course(self, event):
+        await self.send(json.dumps({
+            'action': 'new_course',
+            'course': event['course']
+        }))
+
+    async def broadcast_new_assignment(self, event):
+        await self.send(json.dumps({
+            'action': 'new_assignment',
+            'courseId': event['courseId'],
+            'assignment': event['assignment']
+        }))
+
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['room_name']
