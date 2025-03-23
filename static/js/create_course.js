@@ -4,22 +4,22 @@ function createCourse() {
   const subject = document.getElementById('courseSubject').value;
   const description = document.getElementById('courseDescription').value;
   const room = document.getElementById('courseRoom').value;
+  const currentUser = document.getElementById('user_username').textContent.replace(/"/g, '');
 
   const course = {
-      id: Date.now(), // Temporary ID
+      id: Date.now(),
       name: name,
       subject: subject,
       description: description,
       room: room,
       creator: {
-          name: document.getElementById('user_username').textContent.replace(/"/g, ''),
-          avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(document.getElementById('user_username').textContent.replace(/"/g, ''))}&size=64&background=random`
+          name: currentUser,
+          avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser)}&size=64&background=random`
       },
       created_at: new Date().toLocaleDateString(),
-      assignments: [] // Array to store assignments
+      assignments: []
   };
 
-  // Store in localStorage
   const courses = JSON.parse(localStorage.getItem('courses') || '[]');
   courses.push(course);
   localStorage.setItem('courses', JSON.stringify(courses));
@@ -34,6 +34,7 @@ function createAssignment(courseId) {
   const description = document.getElementById('assignmentDescription').value;
   const dueDate = document.getElementById('assignmentDueDate').value;
   const points = document.getElementById('assignmentPoints').value;
+  const currentUser = document.getElementById('user_username').textContent.replace(/"/g, '');
 
   const assignment = {
       id: Date.now(),
@@ -44,12 +45,11 @@ function createAssignment(courseId) {
       status: 'active',
       created_at: new Date().toLocaleDateString(),
       creator: {
-          name: document.getElementById('user_username').textContent.replace(/"/g, ''),
-          avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(document.getElementById('user_username').textContent.replace(/"/g, ''))}&size=64&background=random`
+          name: currentUser,
+          avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser)}&size=64&background=random`
       }
   };
 
-  // Add assignment to course
   const courses = JSON.parse(localStorage.getItem('courses') || '[]');
   const courseIndex = courses.findIndex(course => course.id === courseId);
   
@@ -116,6 +116,8 @@ function displayCourseDetails(courseId) {
   const course = courses.find(c => c.id === courseId);
   const coursesList = document.getElementById('coursesList');
   const currentView = document.getElementById('currentView');
+  const currentUser = document.getElementById('user_username').textContent.replace(/"/g, '');
+  const isCreator = course.creator.name === currentUser;
 
   if (!course) return;
 
@@ -129,10 +131,12 @@ function displayCourseDetails(courseId) {
               <button class="btn btn-secondary mb-3" onclick="displayCourses()">
                   <i class="fas fa-arrow-left"></i> Volver a Cursos
               </button>
-              <button class="btn btn-primary mb-3 ml-2" data-toggle="modal" data-target="#createAssignmentModal" 
-                      onclick="prepareAssignmentModal(${courseId})">
-                  <i class="fas fa-plus"></i> Crear Tarea
-              </button>
+              ${isCreator ? `
+                <button class="btn btn-primary mb-3 ml-2" data-toggle="modal" data-target="#createAssignmentModal" 
+                        onclick="prepareAssignmentModal(${courseId})">
+                    <i class="fas fa-plus"></i> Crear Tarea
+                </button>
+              ` : ''}
           </div>
           
           <div class="course-info mb-4">
@@ -141,6 +145,7 @@ function displayCourseDetails(courseId) {
                                     course.subject === 'math' ? 'Matemáticas' : 'Inglés'}</p>
               <p>${course.description}</p>
               <p><small class="text-muted">Sala: ${course.room}</small></p>
+              <p><small class="text-muted">Creador: ${course.creator.name}</small></p>
           </div>
 
           <div class="assignments-section">
@@ -181,13 +186,19 @@ function displayCourseDetails(courseId) {
 }
 
 function prepareAssignmentModal(courseId) {
+  const courses = JSON.parse(localStorage.getItem('courses') || '[]');
+  const course = courses.find(c => c.id === courseId);
+  const currentUser = document.getElementById('user_username').textContent.replace(/"/g, '');
+  
+  if (course.creator.name !== currentUser) {
+    alert('Solo el creador del curso puede añadir tareas.');
+    return;
+  }
+  
   const modal = document.getElementById('createAssignmentModal');
   const form = document.getElementById('createAssignmentForm');
   
-  // Set the courseId as a data attribute
   modal.setAttribute('data-course-id', courseId);
-  
-  // Reset the form
   if (form) form.reset();
 }
 
