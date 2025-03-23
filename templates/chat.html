@@ -32,6 +32,14 @@
     .english-header {
       background-color: #db4437;
     }
+    .course-detail {
+      padding: 20px;
+    }
+    .assignment-details {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #eee;
+    }
   </style>
 </head>
 <body style="height: 100vh; display: flex; flex-direction: column">
@@ -92,6 +100,46 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
           <button type="button" class="btn btn-primary" onclick="createCourse()">Crear Curso</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Assignment Modal -->
+  <div class="modal fade" id="createAssignmentModal" tabindex="-1" role="dialog" aria-labelledby="createAssignmentModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="createAssignmentModalLabel">Crear Nueva Tarea</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form id="createAssignmentForm">
+            <div class="form-group">
+              <label for="assignmentTitle">Título de la Tarea</label>
+              <input type="text" class="form-control" id="assignmentTitle" required>
+            </div>
+            <div class="form-group">
+              <label for="assignmentDescription">Descripción</label>
+              <textarea class="form-control" id="assignmentDescription" rows="3" required></textarea>
+            </div>
+            <div class="form-group">
+              <label for="assignmentDueDate">Fecha de Entrega</label>
+              <input type="datetime-local" class="form-control" id="assignmentDueDate" required>
+            </div>
+            <div class="form-group">
+              <label for="assignmentPoints">Puntos</label>
+              <input type="number" class="form-control" id="assignmentPoints" min="0" required>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-primary" onclick="createAssignment(parseInt(this.closest('.modal').getAttribute('data-course-id')))">
+            Crear Tarea
+          </button>
         </div>
       </div>
     </div>
@@ -174,7 +222,7 @@
           <!-- Courses View -->
           <div class="h-100 d-flex flex-column">
             <div class="d-flex justify-content-between align-items-center p-3">
-              <h3>Cursos Disponibles</h3>
+              <h3 id="currentView">Cursos Disponibles</h3>
               <button class="btn btn-primary" data-toggle="modal" data-target="#createCourseModal">
                 <i class="fas fa-plus mr-2"></i>Crear Curso
               </button>
