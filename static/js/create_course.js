@@ -1,4 +1,19 @@
 // Course management functions
+let sharedCourses = [];
+
+// Function to load courses from server (simulated with localStorage for now)
+function loadSharedCourses() {
+  const courses = JSON.parse(localStorage.getItem('sharedCourses') || '[]');
+  sharedCourses = courses;
+  return courses;
+}
+
+// Function to save courses to server (simulated with localStorage for now)
+function saveSharedCourses(courses) {
+  localStorage.setItem('sharedCourses', JSON.stringify(courses));
+  sharedCourses = courses;
+}
+
 function createCourse() {
   const name = document.getElementById('courseName').value;
   const subject = document.getElementById('courseSubject').value;
@@ -20,9 +35,9 @@ function createCourse() {
       assignments: []
   };
 
-  const courses = JSON.parse(localStorage.getItem('courses') || '[]');
+  const courses = loadSharedCourses();
   courses.push(course);
-  localStorage.setItem('courses', JSON.stringify(courses));
+  saveSharedCourses(courses);
 
   displayCourses();
   $('#createCourseModal').modal('hide');
@@ -50,7 +65,7 @@ function createAssignment(courseId) {
       }
   };
 
-  const courses = JSON.parse(localStorage.getItem('courses') || '[]');
+  const courses = loadSharedCourses();
   const courseIndex = courses.findIndex(course => course.id === courseId);
   
   if (courseIndex !== -1) {
@@ -58,7 +73,7 @@ function createAssignment(courseId) {
           courses[courseIndex].assignments = [];
       }
       courses[courseIndex].assignments.push(assignment);
-      localStorage.setItem('courses', JSON.stringify(courses));
+      saveSharedCourses(courses);
   }
 
   displayCourseDetails(courseId);
@@ -67,12 +82,13 @@ function createAssignment(courseId) {
 }
 
 function displayCourses() {
-  const courses = JSON.parse(localStorage.getItem('courses') || '[]');
+  const courses = loadSharedCourses();
   const coursesList = document.getElementById('coursesList');
   const currentView = document.getElementById('currentView');
+  const currentUser = document.getElementById('user_username').textContent.replace(/"/g, '');
 
   if (currentView) {
-      currentView.textContent = 'Cursos Disponibles';
+      currentView.textContent = 'Todos los Cursos';
   }
 
   if (courses.length === 0) {
@@ -80,28 +96,49 @@ function displayCourses() {
       return;
   }
 
+  // Sort courses by creation date (newest first)
+  const sortedCourses = [...courses].sort((a, b) => {
+      return new Date(b.created_at) - new Date(a.created_at);
+  });
+
   coursesList.innerHTML = `
     <div class="row">
-      ${courses.map(course => `
+      ${sortedCourses.map(course => `
         <div class="col-md-4 mb-4">
           <div class="card course-card h-100" onclick="displayCourseDetails(${course.id})">
             <div class="course-header ${course.subject}-header"></div>
             <div class="card-body">
-              <h5 class="card-title">${course.name}</h5>
-              <h6 class="card-subtitle mb-2 text-muted">
-                ${course.subject === 'programming' ? 'Programación' :
-                  course.subject === 'math' ? 'Matemáticas' : 'Inglés'}
-              </h6>
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <h5 class="card-title">${course.name}</h5>
+                  <h6 class="card-subtitle mb-2 text-muted">
+                    ${course.subject === 'programming' ? 'Programación' :
+                      course.subject === 'math' ? 'Matemáticas' : 'Inglés'}
+                  </h6>
+                </div>
+                ${course.creator.name === currentUser ? 
+                  '<span class="badge badge-primary">Creador</span>' : ''}
+              </div>
               <p class="card-text">${course.description}</p>
-              <p class="card-text"><small class="text-muted">Sala: ${course.room}</small></p>
+              <p class="card-text">
+                <small class="text-muted">Sala: ${course.room}</small>
+              </p>
+              <p class="card-text">
+                <small class="text-muted">
+                  Tareas: ${course.assignments ? course.assignments.length : 0}
+                </small>
+              </p>
             </div>
             <div class="card-footer bg-transparent">
-              <div class="d-flex align-items-center">
-                <img src="${course.creator.avatar}" alt="${course.creator.name}" 
-                     class="rounded-circle mr-2" style="width: 24px; height: 24px;">
-                <small class="text-muted">
-                  ${course.creator.name} • ${course.created_at}
-                </small>
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                  <img src="${course.creator.avatar}" alt="${course.creator.name}" 
+                       class="rounded-circle mr-2" style="width: 24px; height: 24px;">
+                  <small class="text-muted">
+                    ${course.creator.name}
+                  </small>
+                </div>
+                <small class="text-muted">${course.created_at}</small>
               </div>
             </div>
           </div>
@@ -112,7 +149,7 @@ function displayCourses() {
 }
 
 function displayCourseDetails(courseId) {
-  const courses = JSON.parse(localStorage.getItem('courses') || '[]');
+  const courses = loadSharedCourses();
   const course = courses.find(c => c.id === courseId);
   const coursesList = document.getElementById('coursesList');
   const currentView = document.getElementById('currentView');
@@ -124,6 +161,11 @@ function displayCourseDetails(courseId) {
   if (currentView) {
       currentView.textContent = course.name;
   }
+
+  // Sort assignments by due date (closest first)
+  const sortedAssignments = [...(course.assignments || [])].sort((a, b) => {
+      return new Date(a.dueDate) - new Date(b.dueDate);
+  });
 
   coursesList.innerHTML = `
       <div class="course-detail">
@@ -140,23 +182,43 @@ function displayCourseDetails(courseId) {
           </div>
           
           <div class="course-info mb-4">
-              <h3>${course.name}</h3>
-              <p class="text-muted">${course.subject === 'programming' ? 'Programación' :
-                                    course.subject === 'math' ? 'Matemáticas' : 'Inglés'}</p>
+              <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                      <h3>${course.name}</h3>
+                      <p class="text-muted">
+                          ${course.subject === 'programming' ? 'Programación' :
+                            course.subject === 'math' ? 'Matemáticas' : 'Inglés'}
+                      </p>
+                  </div>
+                  ${isCreator ? '<span class="badge badge-primary">Creador del Curso</span>' : ''}
+              </div>
               <p>${course.description}</p>
               <p><small class="text-muted">Sala: ${course.room}</small></p>
-              <p><small class="text-muted">Creador: ${course.creator.name}</small></p>
+              <div class="creator-info mt-3">
+                  <div class="d-flex align-items-center">
+                      <img src="${course.creator.avatar}" alt="${course.creator.name}" 
+                           class="rounded-circle mr-2" style="width: 32px; height: 32px;">
+                      <div>
+                          <p class="mb-0"><strong>Creador:</strong> ${course.creator.name}</p>
+                          <small class="text-muted">Creado el ${course.created_at}</small>
+                      </div>
+                  </div>
+              </div>
           </div>
 
           <div class="assignments-section">
-              <h4>Tareas</h4>
-              ${course.assignments && course.assignments.length > 0 ? `
+              <h4>Tareas (${sortedAssignments.length})</h4>
+              ${sortedAssignments.length > 0 ? `
                   <div class="row">
-                      ${course.assignments.map(assignment => `
+                      ${sortedAssignments.map(assignment => `
                           <div class="col-md-6 mb-3">
                               <div class="card">
                                   <div class="card-body">
-                                      <h5 class="card-title">${assignment.title}</h5>
+                                      <div class="d-flex justify-content-between align-items-start">
+                                          <h5 class="card-title">${assignment.title}</h5>
+                                          ${assignment.creator.name === currentUser ? 
+                                            '<span class="badge badge-info">Creador</span>' : ''}
+                                      </div>
                                       <p class="card-text">${assignment.description}</p>
                                       <div class="assignment-details">
                                           <p><strong>Puntos:</strong> ${assignment.points}</p>
@@ -171,9 +233,16 @@ function displayCourseDetails(courseId) {
                                       </div>
                                   </div>
                                   <div class="card-footer">
-                                      <small class="text-muted">
-                                          Creado por ${assignment.creator.name} • ${assignment.created_at}
-                                      </small>
+                                      <div class="d-flex justify-content-between align-items-center">
+                                          <div class="d-flex align-items-center">
+                                              <img src="${assignment.creator.avatar}" alt="${assignment.creator.name}" 
+                                                   class="rounded-circle mr-2" style="width: 24px; height: 24px;">
+                                              <small class="text-muted">
+                                                  ${assignment.creator.name}
+                                              </small>
+                                          </div>
+                                          <small class="text-muted">${assignment.created_at}</small>
+                                      </div>
                                   </div>
                               </div>
                           </div>
@@ -186,7 +255,7 @@ function displayCourseDetails(courseId) {
 }
 
 function prepareAssignmentModal(courseId) {
-  const courses = JSON.parse(localStorage.getItem('courses') || '[]');
+  const courses = loadSharedCourses();
   const course = courses.find(c => c.id === courseId);
   const currentUser = document.getElementById('user_username').textContent.replace(/"/g, '');
   
@@ -202,7 +271,17 @@ function prepareAssignmentModal(courseId) {
   if (form) form.reset();
 }
 
-// Display courses when the page loads
+// Initialize shared storage and display courses when the page loads
 if (window.location.pathname === '/chat/Sala/') {
+  if (!localStorage.getItem('sharedCourses')) {
+    saveSharedCourses([]);
+  }
   displayCourses();
 }
+
+// Add event listener for storage changes
+window.addEventListener('storage', (e) => {
+  if (e.key === 'sharedCourses') {
+    displayCourses();
+  }
+});
