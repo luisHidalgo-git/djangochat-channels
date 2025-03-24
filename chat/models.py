@@ -2,9 +2,9 @@ from django.db import models
 from django.conf import settings
 
 class Message(models.Model):
-    SENT = 'sent'  # Una palomita gris
-    DELIVERED = 'delivered'  # Dos palomitas grises
-    READ = 'read'  # Dos palomitas azules
+    SENT = 'sent'  
+    DELIVERED = 'delivered'  
+    READ = 'read'  
     
     STATUS_CHOICES = [
         (SENT, 'Sent'),
@@ -31,3 +31,33 @@ class Message(models.Model):
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=SENT)
     message_type = models.CharField(max_length=10, choices=MESSAGE_TYPES, default='normal')
     subject = models.CharField(max_length=20, choices=SUBJECTS, default='none')
+
+class Course(models.Model):
+    SUBJECT_CHOICES = [
+        ('programming', 'Programación'),
+        ('math', 'Matemáticas'),
+        ('english', 'Inglés'),
+    ]
+
+    name = models.CharField(max_length=200)
+    subject = models.CharField(max_length=20, choices=SUBJECT_CHOICES)
+    description = models.TextField()
+    room = models.CharField(max_length=50)
+    creator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+class Assignment(models.Model):
+    STATUS_CHOICES = [
+        ('active', 'Active'),
+        ('submitted', 'Submitted'),
+        ('late', 'Late'),
+    ]
+
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='assignments')
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    due_date = models.DateTimeField()
+    points = models.IntegerField()
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='active')
+    creator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)

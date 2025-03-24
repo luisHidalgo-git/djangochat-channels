@@ -60,7 +60,6 @@ function createCourse() {
   const currentUser = document.getElementById('user_username').textContent.replace(/"/g, '');
 
   const course = {
-    id: Date.now(),
     name: name,
     subject: subject,
     description: description,
@@ -68,9 +67,7 @@ function createCourse() {
     creator: {
       name: currentUser,
       avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser)}&size=64&background=random`
-    },
-    created_at: new Date().toLocaleDateString(),
-    assignments: []
+    }
   };
 
   courseSocket.send(JSON.stringify({
@@ -90,13 +87,10 @@ function createAssignment(courseId) {
   const currentUser = document.getElementById('user_username').textContent.replace(/"/g, '');
 
   const assignment = {
-    id: Date.now(),
     title: title,
     description: description,
     dueDate: dueDate,
     points: points,
-    status: 'active',
-    created_at: new Date().toLocaleDateString(),
     creator: {
       name: currentUser,
       avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser)}&size=64&background=random`
