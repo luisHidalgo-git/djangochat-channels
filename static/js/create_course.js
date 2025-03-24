@@ -341,7 +341,7 @@ function displayCourseDetails(courseId) {
                             <div class="mt-2">
                               <p class="mb-1">
                                 <i class="fas fa-file"></i> ${submission.file_name}
-                                <a href="/media/assignment_submissions/${submission.file_name}" 
+                                <a href="/download/${submission.id}/" 
                                    class="btn btn-sm btn-outline-primary ml-2" download>
                                   Descargar
                                 </a>
