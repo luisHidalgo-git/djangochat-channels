@@ -19,9 +19,21 @@ class CourseConsumer(AsyncWebsocketConsumer):
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard('courses', self.channel_name)
 
+    async def send_all_courses(self):
+        try:
+            courses = await self.get_all_courses()
+            await self.send(json.dumps({
+                'action': 'courses_update',
+                'courses': courses
+            }))
+        except Exception as e:
+            print(f"Error sending courses: {str(e)}")
+
     @sync_to_async
     def get_all_courses(self):
         courses = []
+        current_user = User.objects.get(username=self.scope['user'].username)
+        
         for course in Course.objects.all().select_related('creator'):
             assignments = course.assignments.all().select_related('creator')
             assignments_data = []
@@ -43,13 +55,16 @@ class CourseConsumer(AsyncWebsocketConsumer):
                     'is_passing': submission.is_passing_grade()
                 } for submission in submissions]
 
+                # Obtener el estado específico para el usuario actual
+                status = assignment.get_status_for_student(current_user)
+
                 assignments_data.append({
                     'id': assignment.id,
                     'title': assignment.title,
                     'description': assignment.description,
                     'dueDate': assignment.due_date.strftime('%Y-%m-%d %H:%M'),
                     'points': assignment.points,
-                    'status': assignment.status,
+                    'status': status,
                     'creator': {
                         'name': assignment.creator.username,
                         'avatar': f'https://ui-avatars.com/api/?name={assignment.creator.username}&size=64&background=random'
@@ -72,13 +87,6 @@ class CourseConsumer(AsyncWebsocketConsumer):
                 'assignments': assignments_data
             })
         return courses
-
-    async def send_all_courses(self):
-        courses = await self.get_all_courses()
-        await self.send(json.dumps({
-            'action': 'courses_update',
-            'courses': courses
-        }))
 
     @sync_to_async
     def create_course(self, data):
@@ -156,17 +164,29 @@ class CourseConsumer(AsyncWebsocketConsumer):
             file_content = base64.b64decode(file_content)
             
             # Create or update submission
-            submission, created = AssignmentSubmission.objects.update_or_create(
+            submission, created = AssignmentSubmission.objects.get_or_create(
                 assignment=assignment,
                 student=student,
                 defaults={
                     'file_name': file_name,
                     'file_type': file_type,
-                    'status': 'late' if timezone.now() > assignment.due_date else 'submitted'
+                    'submitted_at': timezone.now()
                 }
             )
-            
-            # Save the file
+
+            # Si la submission ya existía, actualizar los campos
+            if not created:
+                submission.file_name = file_name
+                submission.file_type = file_type
+                submission.submitted_at = timezone.now()
+                # Eliminar el archivo anterior si existe
+                if submission.file:
+                    try:
+                        submission.file.delete(save=False)
+                    except Exception as e:
+                        print(f"Error deleting old file: {str(e)}")
+
+            # Guardar el nuevo archivo
             submission.file.save(file_name, ContentFile(file_content), save=True)
             
             return {

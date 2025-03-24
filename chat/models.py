@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.utils import timezone
 
 class Message(models.Model):
     SENT = 'sent'  
@@ -62,6 +63,12 @@ class Assignment(models.Model):
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def get_status_for_student(self, student):
+        submission = self.submissions.filter(student=student).first()
+        if submission:
+            return submission.status
+        return 'active'
+
 class AssignmentSubmission(models.Model):
     assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE, related_name='submissions')
     student = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -75,6 +82,14 @@ class AssignmentSubmission(models.Model):
 
     class Meta:
         unique_together = ['assignment', 'student']
+
+    def save(self, *args, **kwargs):
+        # Determinar el estado basado en la fecha de entrega
+        if self.submitted_at > self.assignment.due_date:
+            self.status = 'late'
+        else:
+            self.status = 'submitted'
+        super().save(*args, **kwargs)
 
     def is_passing_grade(self):
         return self.grade >= 80 if self.grade is not None else False
