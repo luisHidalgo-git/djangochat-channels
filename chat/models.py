@@ -61,3 +61,20 @@ class Assignment(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='active')
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
+
+class AssignmentSubmission(models.Model):
+    assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE, related_name='submissions')
+    student = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    file = models.FileField(upload_to='assignment_submissions/')
+    file_name = models.CharField(max_length=255)
+    file_type = models.CharField(max_length=50)
+    submitted_at = models.DateTimeField(auto_now_add=True)
+    grade = models.IntegerField(null=True, blank=True)
+    feedback = models.TextField(blank=True)
+    status = models.CharField(max_length=20, choices=Assignment.STATUS_CHOICES, default='submitted')
+
+    class Meta:
+        unique_together = ['assignment', 'student']
+
+    def is_passing_grade(self):
+        return self.grade >= 80 if self.grade is not None else False

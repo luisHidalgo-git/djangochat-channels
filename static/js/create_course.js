@@ -10,7 +10,6 @@ function initializeCourseSocket() {
 
   courseSocket.onopen = function(e) {
     console.log("Course WebSocket connection established");
-    // Request current courses when connection opens
     courseSocket.send(JSON.stringify({
       action: 'request_courses'
     }));
@@ -18,7 +17,6 @@ function initializeCourseSocket() {
 
   courseSocket.onclose = function(e) {
     console.log("Course WebSocket connection closed");
-    // Attempt to reconnect after a delay
     setTimeout(initializeCourseSocket, 3000);
   };
 
@@ -46,10 +44,64 @@ function initializeCourseSocket() {
           }
         }
         break;
+      case 'new_submission':
+        updateSubmissionInUI(data.assignmentId, data.submission);
+        break;
+      case 'submission_graded':
+        updateGradingInUI(data.submissionId, data.grading);
+        break;
     }
   };
 
   return courseSocket;
+}
+
+function updateSubmissionInUI(assignmentId, submission) {
+  const assignmentElement = document.querySelector(`[data-assignment-id="${assignmentId}"]`);
+  if (assignmentElement) {
+    const submissionsContainer = assignmentElement.querySelector('.submissions-list');
+    if (submissionsContainer) {
+      const submissionElement = createSubmissionElement(submission);
+      submissionsContainer.appendChild(submissionElement);
+    }
+  }
+}
+
+function updateGradingInUI(submissionId, grading) {
+  const submissionElement = document.querySelector(`[data-submission-id="${submissionId}"]`);
+  if (submissionElement) {
+    const gradeElement = submissionElement.querySelector('.grade');
+    const feedbackElement = submissionElement.querySelector('.feedback');
+    if (gradeElement) gradeElement.textContent = `Grade: ${grading.grade}`;
+    if (feedbackElement) feedbackElement.textContent = `Feedback: ${grading.feedback}`;
+    
+    // Update passing status
+    submissionElement.classList.toggle('passing', grading.is_passing);
+    submissionElement.classList.toggle('not-passing', !grading.is_passing);
+  }
+}
+
+function submitAssignment(assignmentId, file) {
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const fileData = e.target.result;
+    courseSocket.send(JSON.stringify({
+      action: 'submit_assignment',
+      assignmentId: assignmentId,
+      student: document.getElementById('user_username').textContent.replace(/"/g, ''),
+      file: fileData
+    }));
+  };
+  reader.readAsDataURL(file);
+}
+
+function gradeSubmission(submissionId, grade, feedback) {
+  courseSocket.send(JSON.stringify({
+    action: 'grade_submission',
+    submissionId: submissionId,
+    grade: grade,
+    feedback: feedback
+  }));
 }
 
 function createCourse() {
@@ -186,7 +238,6 @@ function displayCourseDetails(courseId) {
     currentView.textContent = course.name;
   }
 
-  // Sort assignments by due date (closest first)
   const sortedAssignments = [...(course.assignments || [])].sort((a, b) => {
     return new Date(a.dueDate) - new Date(b.dueDate);
   });
@@ -236,7 +287,7 @@ function displayCourseDetails(courseId) {
           <div class="row">
             ${sortedAssignments.map(assignment => `
               <div class="col-md-6 mb-3">
-                <div class="card">
+                <div class="card" data-assignment-id="${assignment.id}">
                   <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start">
                       <h5 class="card-title">${assignment.title}</h5>
@@ -255,6 +306,74 @@ function displayCourseDetails(courseId) {
                         </span>
                       </p>
                     </div>
+
+                    ${!isCreator ? `
+                      <div class="submission-section mt-3">
+                        <h6>Enviar Tarea</h6>
+                        <div class="custom-file">
+                          <input type="file" class="custom-file-input" id="submission-${assignment.id}"
+                                 accept=".doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf,.jpg,.jpeg,.png"
+                                 onchange="submitAssignment(${assignment.id}, this.files[0])">
+                          <label class="custom-file-label" for="submission-${assignment.id}">Elegir archivo</label>
+                        </div>
+                        <small class="form-text text-muted">
+                          Formatos aceptados: Word, Excel, PowerPoint, PDF e imágenes
+                        </small>
+                      </div>
+                    ` : ''}
+
+                    ${assignment.submissions && assignment.submissions.length > 0 ? `
+                      <div class="submissions-list mt-3">
+                        <h6>Entregas (${assignment.submissions.length})</h6>
+                        ${assignment.submissions.map(submission => `
+                          <div class="submission-item p-2 border rounded mb-2 ${submission.is_passing ? 'passing' : 'not-passing'}"
+                               data-submission-id="${submission.id}">
+                            <div class="d-flex align-items-center">
+                              <img src="${submission.student.avatar}" alt="${submission.student.name}"
+                                   class="rounded-circle mr-2" style="width: 24px; height: 24px;">
+                              <div>
+                                <strong>${submission.student.name}</strong>
+                                <small class="text-muted d-block">
+                                  Enviado: ${submission.submitted_at}
+                                </small>
+                              </div>
+                            </div>
+                            <div class="mt-2">
+                              <p class="mb-1">
+                                <i class="fas fa-file"></i> ${submission.file_name}
+                                <a href="/media/assignment_submissions/${submission.file_name}" 
+                                   class="btn btn-sm btn-outline-primary ml-2" download>
+                                  Descargar
+                                </a>
+                              </p>
+                              ${submission.grade !== null ? `
+                                <p class="mb-1 grade">Calificación: ${submission.grade}/100 
+                                  <span class="badge badge-${submission.is_passing ? 'success' : 'danger'}">
+                                    ${submission.is_passing ? 'Aprobado' : 'No Aprobado'}
+                                  </span>
+                                </p>
+                                <p class="mb-1 feedback">Retroalimentación: ${submission.feedback || 'Sin comentarios'}</p>
+                              ` : ''}
+                              ${isCreator && submission.grade === null ? `
+                                <div class="grading-section mt-2">
+                                  <div class="form-group">
+                                    <input type="number" class="form-control form-control-sm grade-input"
+                                           placeholder="Calificación (0-100)" min="0" max="100">
+                                  </div>
+                                  <div class="form-group">
+                                    <textarea class="form-control form-control-sm feedback-input"
+                                              placeholder="Retroalimentación"></textarea>
+                                  </div>
+                                  <button class="btn btn-sm btn-primary" onclick="submitGrade(${submission.id}, this)">
+                                    Calificar
+                                  </button>
+                                </div>
+                              ` : ''}
+                            </div>
+                          </div>
+                        `).join('')}
+                      </div>
+                    ` : ''}
                   </div>
                   <div class="card-footer">
                     <div class="d-flex justify-content-between align-items-center">
@@ -276,6 +395,28 @@ function displayCourseDetails(courseId) {
       </div>
     </div>
   `;
+
+  // Initialize file input labels
+  document.querySelectorAll('.custom-file-input').forEach(input => {
+    input.addEventListener('change', function(e) {
+      const fileName = e.target.files[0].name;
+      const label = e.target.nextElementSibling;
+      label.textContent = fileName;
+    });
+  });
+}
+
+function submitGrade(submissionId, button) {
+  const container = button.closest('.grading-section');
+  const grade = parseInt(container.querySelector('.grade-input').value);
+  const feedback = container.querySelector('.feedback-input').value;
+
+  if (isNaN(grade) || grade < 0 || grade > 100) {
+    alert('Por favor ingrese una calificación válida entre 0 y 100');
+    return;
+  }
+
+  gradeSubmission(submissionId, grade, feedback);
 }
 
 function prepareAssignmentModal(courseId) {

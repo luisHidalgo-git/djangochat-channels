@@ -1,11 +1,14 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.contrib.auth.models import User
-from .models import Message, Course, Assignment
+from .models import Message, Course, Assignment, AssignmentSubmission
 from asgiref.sync import sync_to_async
 from channels.layers import get_channel_layer
 from django.core.cache import cache
 from django.utils import timezone
+import os
+from django.core.files.base import ContentFile
+import base64
 
 class CourseConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -21,6 +24,40 @@ class CourseConsumer(AsyncWebsocketConsumer):
         courses = []
         for course in Course.objects.all().select_related('creator'):
             assignments = course.assignments.all().select_related('creator')
+            assignments_data = []
+            
+            for assignment in assignments:
+                submissions = assignment.submissions.all().select_related('student')
+                submissions_data = [{
+                    'id': submission.id,
+                    'student': {
+                        'name': submission.student.username,
+                        'avatar': f'https://ui-avatars.com/api/?name={submission.student.username}&size=64&background=random'
+                    },
+                    'file_name': submission.file_name,
+                    'file_type': submission.file_type,
+                    'submitted_at': submission.submitted_at.strftime('%Y-%m-%d %H:%M'),
+                    'grade': submission.grade,
+                    'feedback': submission.feedback,
+                    'status': submission.status,
+                    'is_passing': submission.is_passing_grade()
+                } for submission in submissions]
+
+                assignments_data.append({
+                    'id': assignment.id,
+                    'title': assignment.title,
+                    'description': assignment.description,
+                    'dueDate': assignment.due_date.strftime('%Y-%m-%d %H:%M'),
+                    'points': assignment.points,
+                    'status': assignment.status,
+                    'creator': {
+                        'name': assignment.creator.username,
+                        'avatar': f'https://ui-avatars.com/api/?name={assignment.creator.username}&size=64&background=random'
+                    },
+                    'created_at': assignment.created_at.strftime('%Y-%m-%d'),
+                    'submissions': submissions_data
+                })
+
             courses.append({
                 'id': course.id,
                 'name': course.name,
@@ -32,19 +69,7 @@ class CourseConsumer(AsyncWebsocketConsumer):
                     'avatar': f'https://ui-avatars.com/api/?name={course.creator.username}&size=64&background=random'
                 },
                 'created_at': course.created_at.strftime('%Y-%m-%d'),
-                'assignments': [{
-                    'id': assignment.id,
-                    'title': assignment.title,
-                    'description': assignment.description,
-                    'dueDate': assignment.due_date.strftime('%Y-%m-%d %H:%M'),
-                    'points': assignment.points,
-                    'status': assignment.status,
-                    'creator': {
-                        'name': assignment.creator.username,
-                        'avatar': f'https://ui-avatars.com/api/?name={assignment.creator.username}&size=64&background=random'
-                    },
-                    'created_at': assignment.created_at.strftime('%Y-%m-%d')
-                } for assignment in assignments]
+                'assignments': assignments_data
             })
         return courses
 
@@ -115,6 +140,71 @@ class CourseConsumer(AsyncWebsocketConsumer):
             print(f"Error creating assignment: {str(e)}")
             return None
 
+    @sync_to_async
+    def submit_assignment(self, assignment_id, student_username, file_data):
+        try:
+            assignment = Assignment.objects.get(id=assignment_id)
+            student = User.objects.get(username=student_username)
+            
+            # Extract file information from base64 data
+            file_info, file_content = file_data.split(',', 1)
+            file_type = file_info.split(';')[0].split(':')[1]
+            file_ext = file_type.split('/')[-1]
+            file_name = f"{student.username}_{assignment.title}.{file_ext}"
+            
+            # Convert base64 to file
+            file_content = base64.b64decode(file_content)
+            
+            # Create or update submission
+            submission, created = AssignmentSubmission.objects.update_or_create(
+                assignment=assignment,
+                student=student,
+                defaults={
+                    'file_name': file_name,
+                    'file_type': file_type,
+                    'status': 'late' if timezone.now() > assignment.due_date else 'submitted'
+                }
+            )
+            
+            # Save the file
+            submission.file.save(file_name, ContentFile(file_content), save=True)
+            
+            return {
+                'id': submission.id,
+                'student': {
+                    'name': student.username,
+                    'avatar': f'https://ui-avatars.com/api/?name={student.username}&size=64&background=random'
+                },
+                'file_name': submission.file_name,
+                'file_type': submission.file_type,
+                'submitted_at': submission.submitted_at.strftime('%Y-%m-%d %H:%M'),
+                'grade': submission.grade,
+                'feedback': submission.feedback,
+                'status': submission.status,
+                'is_passing': submission.is_passing_grade()
+            }
+        except Exception as e:
+            print(f"Error submitting assignment: {str(e)}")
+            return None
+
+    @sync_to_async
+    def grade_submission(self, submission_id, grade, feedback):
+        try:
+            submission = AssignmentSubmission.objects.get(id=submission_id)
+            submission.grade = grade
+            submission.feedback = feedback
+            submission.save()
+            
+            return {
+                'id': submission.id,
+                'grade': submission.grade,
+                'feedback': submission.feedback,
+                'is_passing': submission.is_passing_grade()
+            }
+        except Exception as e:
+            print(f"Error grading submission: {str(e)}")
+            return None
+
     async def receive(self, text_data):
         data = json.loads(text_data)
         action = data.get('action')
@@ -143,7 +233,40 @@ class CourseConsumer(AsyncWebsocketConsumer):
                         'assignment': assignment
                     }
                 )
-                # Send updated course list after creating assignment
+                await self.send_all_courses()
+
+        elif action == 'submit_assignment':
+            submission = await self.submit_assignment(
+                data['assignmentId'],
+                data['student'],
+                data['file']
+            )
+            if submission:
+                await self.channel_layer.group_send(
+                    'courses',
+                    {
+                        'type': 'broadcast_submission',
+                        'assignmentId': data['assignmentId'],
+                        'submission': submission
+                    }
+                )
+                await self.send_all_courses()
+
+        elif action == 'grade_submission':
+            grading = await self.grade_submission(
+                data['submissionId'],
+                data['grade'],
+                data['feedback']
+            )
+            if grading:
+                await self.channel_layer.group_send(
+                    'courses',
+                    {
+                        'type': 'broadcast_grading',
+                        'submissionId': data['submissionId'],
+                        'grading': grading
+                    }
+                )
                 await self.send_all_courses()
 
     async def broadcast_new_course(self, event):
@@ -157,6 +280,20 @@ class CourseConsumer(AsyncWebsocketConsumer):
             'action': 'new_assignment',
             'courseId': event['courseId'],
             'assignment': event['assignment']
+        }))
+
+    async def broadcast_submission(self, event):
+        await self.send(json.dumps({
+            'action': 'new_submission',
+            'assignmentId': event['assignmentId'],
+            'submission': event['submission']
+        }))
+
+    async def broadcast_grading(self, event):
+        await self.send(json.dumps({
+            'action': 'submission_graded',
+            'submissionId': event['submissionId'],
+            'grading': event['grading']
         }))
 
 class ChatConsumer(AsyncWebsocketConsumer):
