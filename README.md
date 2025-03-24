@@ -10,6 +10,8 @@
 - Visualización de mensajes
 - Soporte de mensajes urgentes
 - Soporte de mensajes por materia
+- Sistema de cursos academicos con tareas
+- Implementacion de cargar y descargar archivos academicos
 - Desplegado en AWS
 
 ## Configuraciones de archivos local

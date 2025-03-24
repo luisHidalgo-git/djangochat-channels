@@ -12,5 +12,5 @@ staticfiles/
 db.sqlite3
 tex.txt
 bolt.txt
-assignment_submission/*
-media/*
+assignment_submission/
+media/assignment_submission/
