@@ -9,6 +9,7 @@ from django.utils import timezone
 import os
 from django.core.files.base import ContentFile
 import base64
+import mimetypes
 
 class CourseConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -39,21 +40,29 @@ class CourseConsumer(AsyncWebsocketConsumer):
             assignments_data = []
             
             for assignment in assignments:
+                # Filtrar las entregas según el usuario
                 submissions = assignment.submissions.all().select_related('student')
-                submissions_data = [{
-                    'id': submission.id,
-                    'student': {
-                        'name': submission.student.username,
-                        'avatar': f'https://ui-avatars.com/api/?name={submission.student.username}&size=64&background=random'
-                    },
-                    'file_name': submission.file_name,
-                    'file_type': submission.file_type,
-                    'submitted_at': submission.submitted_at.strftime('%Y-%m-%d %H:%M'),
-                    'grade': submission.grade,
-                    'feedback': submission.feedback,
-                    'status': submission.status,
-                    'is_passing': submission.is_passing_grade()
-                } for submission in submissions]
+                submissions_data = []
+                
+                for submission in submissions:
+                    # Solo incluir la entrega si:
+                    # 1. El usuario actual es el creador de la tarea
+                    # 2. O el usuario actual es el estudiante que hizo la entrega
+                    if assignment.creator == current_user or submission.student == current_user:
+                        submissions_data.append({
+                            'id': submission.id,
+                            'student': {
+                                'name': submission.student.username,
+                                'avatar': f'https://ui-avatars.com/api/?name={submission.student.username}&size=64&background=random'
+                            },
+                            'file_name': submission.file_name,
+                            'file_type': submission.file_type,
+                            'submitted_at': submission.submitted_at.strftime('%Y-%m-%d %H:%M'),
+                            'grade': submission.grade,
+                            'feedback': submission.feedback,
+                            'status': submission.status,
+                            'is_passing': submission.is_passing_grade()
+                        })
 
                 # Obtener el estado específico para el usuario actual
                 status = assignment.get_status_for_student(current_user)
@@ -156,9 +165,26 @@ class CourseConsumer(AsyncWebsocketConsumer):
             
             # Extract file information from base64 data
             file_info, file_content = file_data.split(',', 1)
-            file_type = file_info.split(';')[0].split(':')[1]
-            file_ext = file_type.split('/')[-1]
-            file_name = f"{student.username}_{assignment.title}.{file_ext}"
+            content_type = file_info.split(';')[0].split(':')[1]
+            
+            # Get file extension from content type
+            extension = mimetypes.guess_extension(content_type)
+            if not extension:
+                # Fallback extensions based on content type
+                extension_map = {
+                    'application/msword': '.doc',
+                    'application/vnd.openxmlformats-officedocument.wordprocessingml.document': '.docx',
+                    'application/vnd.ms-excel': '.xls',
+                    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': '.xlsx',
+                    'application/vnd.ms-powerpoint': '.ppt',
+                    'application/vnd.openxmlformats-officedocument.presentationml.presentation': '.pptx',
+                    'application/pdf': '.pdf',
+                    'image/jpeg': '.jpg',
+                    'image/png': '.png'
+                }
+                extension = extension_map.get(content_type, '')
+            
+            file_name = f"{student.username}_{assignment.title}{extension}"
             
             # Convert base64 to file
             file_content = base64.b64decode(file_content)
@@ -169,7 +195,7 @@ class CourseConsumer(AsyncWebsocketConsumer):
                 student=student,
                 defaults={
                     'file_name': file_name,
-                    'file_type': file_type,
+                    'file_type': content_type,
                     'submitted_at': timezone.now()
                 }
             )
@@ -177,7 +203,7 @@ class CourseConsumer(AsyncWebsocketConsumer):
             # Si la submission ya existía, actualizar los campos
             if not created:
                 submission.file_name = file_name
-                submission.file_type = file_type
+                submission.file_type = content_type
                 submission.submitted_at = timezone.now()
                 # Eliminar el archivo anterior si existe
                 if submission.file:

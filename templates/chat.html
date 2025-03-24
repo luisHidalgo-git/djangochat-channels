@@ -149,7 +149,6 @@
     <div class="row h-100">
       <!-- User List Sidebar -->
       <div class="col-3 sidebar p-3 chats">
-        <h5 class="mb-3 text-white">Chats</h5>
         
         <!-- Cursos Section -->
         <div class="courses-section mb-4">
@@ -162,7 +161,7 @@
           </a>
         </div>
 
-        <h5 class="text-white">Usuarios</h5>
+        <h5 class="text-white">Chats</h5>
         <div class="contacts">
           {% for item in user_last_messages %}
           <a href="{% url 'chat' item.user.username %}"
