@@ -31,3 +31,6 @@ class Message(models.Model):
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=SENT)
     message_type = models.CharField(max_length=10, choices=MESSAGE_TYPES, default='normal')
     subject = models.CharField(max_length=20, choices=SUBJECTS, default='none')
+
+    def __str__(self):
+        return self.content

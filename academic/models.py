@@ -16,6 +16,9 @@ class Course(models.Model):
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return self.name
+
 class Assignment(models.Model):
     STATUS_CHOICES = [
         ('active', 'Active'),
@@ -37,6 +40,9 @@ class Assignment(models.Model):
         if submission:
             return submission.status
         return 'active'
+    
+    def __str__(self):
+        return self.title
 
 class AssignmentSubmission(models.Model):
     assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE, related_name='submissions')
@@ -61,3 +67,6 @@ class AssignmentSubmission(models.Model):
 
     def is_passing_grade(self):
         return self.grade >= 80 if self.grade is not None else False
+    
+    def __str__(self):
+        return self.assignment
