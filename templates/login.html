@@ -46,6 +46,8 @@
             </form>
             <div class="text-center link mt-3">
                 <a href="/signup">Don't have an account? Register</a>
+                <br>
+                <a href="#" data-toggle="modal" data-target="#forgotPasswordModal">Forgot Password?</a>
             </div>
         </div>
     </div>
@@ -66,6 +68,34 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel Login</button>
                     <button type="button" class="btn btn-primary" id="forceLogin">Close Other Session and Login Here</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Forgot Password -->
+    <div class="modal fade" id="forgotPasswordModal" tabindex="-1" role="dialog" aria-labelledby="forgotPasswordModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="forgotPasswordModalLabel">Reset Password</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="forgotPasswordForm" action="{% url 'check_user' %}" method="POST">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="resetEmail">Email</label>
+                            <input type="email" class="form-control" id="resetEmail" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="resetUsername">Username</label>
+                            <input type="text" class="form-control" id="resetUsername" name="username" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">Verify Account</button>
+                    </form>
                 </div>
             </div>
         </div>

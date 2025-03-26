@@ -46,6 +46,50 @@ def force_login(request):
         
     return JsonResponse({'success': False})
 
+def check_user(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        username = request.POST.get('username')
+        
+        try:
+            user = User.objects.get(email=email, username=username)
+            return render(request, 'signup.html', {
+                'email': email,
+                'username': username,
+                'is_password_reset': True
+            })
+        except User.DoesNotExist:
+            messages.error(request, 'No account found with these credentials.')
+            return redirect('login')
+    return redirect('login')
+
+def update_password(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        confirm_password = request.POST.get('confirm_password')
+
+        if password != confirm_password:
+            messages.error(request, 'Passwords do not match.')
+            return render(request, 'signup.html', {
+                'email': email,
+                'username': username,
+                'is_password_reset': True
+            })
+
+        try:
+            user = User.objects.get(email=email, username=username)
+            user.set_password(password)
+            user.save()
+            messages.success(request, 'Password updated successfully. Please login with your new password.')
+            return redirect('login')
+        except User.DoesNotExist:
+            messages.error(request, 'Error updating password. Please try again.')
+            return redirect('login')
+
+    return redirect('login')
+
 def login_page(request):
     if request.method == 'POST':
         email = request.POST.get('email')
