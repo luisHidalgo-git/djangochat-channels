@@ -79,6 +79,15 @@ function updateGradingInUI(submissionId, grading) {
     // Update passing status
     submissionElement.classList.toggle('passing', grading.is_passing);
     submissionElement.classList.toggle('not-passing', !grading.is_passing);
+
+    // Hide file upload section for this assignment
+    const assignmentCard = submissionElement.closest('.card');
+    if (assignmentCard) {
+      const fileUploadSection = assignmentCard.querySelector('.submission-section');
+      if (fileUploadSection) {
+        fileUploadSection.style.display = 'none';
+      }
+    }
   }
 }
 
@@ -336,7 +345,13 @@ function displayCourseDetails(courseId) {
         <h4>Tareas (${sortedAssignments.length})</h4>
         ${sortedAssignments.length > 0 ? `
           <div class="row">
-            ${sortedAssignments.map(assignment => `
+            ${sortedAssignments.map(assignment => {
+              // Buscar si el usuario actual tiene una entrega calificada
+              const userSubmission = assignment.submissions?.find(sub => 
+                sub.student.name === currentUser && sub.grade !== null
+              );
+              
+              return `
               <div class="col-md-6 mb-3">
                 <div class="card" data-assignment-id="${assignment.id}">
                   <div class="card-body">
@@ -358,7 +373,7 @@ function displayCourseDetails(courseId) {
                       </p>
                     </div>
 
-                    ${!isCreator ? `
+                    ${!isCreator && !userSubmission ? `
                       <div class="submission-section mt-3">
                         <h6>Enviar Tarea</h6>
                         <div class="custom-file mb-2">
@@ -446,7 +461,7 @@ function displayCourseDetails(courseId) {
                   </div>
                 </div>
               </div>
-            `).join('')}
+            `}).join('')}
           </div>
         ` : '<p>No hay tareas asignadas.</p>'}
       </div>
