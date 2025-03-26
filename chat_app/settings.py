@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'captcha',
     'users',
     'chat',
+    'academic',
 ]
 
 MIDDLEWARE = [

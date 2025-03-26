@@ -1,13 +1,11 @@
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from .models import Message, AssignmentSubmission
+from .models import Message
 from django.db.models import Q
 from datetime import datetime
 from django.utils import timezone
 from django.core.cache import cache
-from django.http import FileResponse, Http404
-import os
 
 @login_required
 def chat_room(request, room_name):
@@ -74,18 +72,3 @@ def chat_room(request, room_name):
         'status': status,
         'direction': direction
     })
-
-@login_required
-def download_submission(request, submission_id):
-    submission = get_object_or_404(AssignmentSubmission, id=submission_id)
-    
-    # Check if user has permission to download
-    if request.user != submission.student and request.user != submission.assignment.creator:
-        raise Http404("No permission to access this file")
-    
-    try:
-        response = FileResponse(submission.file)
-        response['Content-Disposition'] = f'attachment; filename="{submission.file_name}"'
-        return response
-    except Exception as e:
-        raise Http404("File not found")

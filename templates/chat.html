@@ -8,39 +8,7 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" />
   <link rel="stylesheet" href="{% static 'css/style_chat.css' %}">
-  <style>
-    .course-card {
-      transition: transform 0.2s;
-      cursor: pointer;
-    }
-    .course-card:hover {
-      transform: translateY(-5px);
-    }
-    .course-header {
-      height: 100px;
-      background-size: cover;
-      background-position: center;
-      border-top-left-radius: .25rem;
-      border-top-right-radius: .25rem;
-    }
-    .programming-header {
-      background-color: #4285f4;
-    }
-    .math-header {
-      background-color: #0f9d58;
-    }
-    .english-header {
-      background-color: #db4437;
-    }
-    .course-detail {
-      padding: 20px;
-    }
-    .assignment-details {
-      margin-top: 10px;
-      padding-top: 10px;
-      border-top: 1px solid #eee;
-    }
-  </style>
+  <link rel="stylesheet" href="{% static 'css/cursos.css' %}">
 </head>
 <body style="height: 100vh; display: flex; flex-direction: column">
   <!-- Message Details Modal -->
@@ -174,7 +142,7 @@
                   style="width: 1.8rem; height: 1.8rem; object-fit: cover" />
                 <span class="status-indicator {{ item.status }}" 
                       style="position: absolute; bottom: 0; right: 0; width: 10px; height: 10px; border-radius: 50%; 
-                             background-color: {% if item.status == 'online' %}#28a745{% else %}#dc3545{% endif %};">
+                            background-color: {% if item.status == 'online' %}#28a745{% else %}#dc3545{% endif %};">
                 </span>
               </div>
 
@@ -240,7 +208,7 @@
                 {% if item.user.username == room_name %}
                   <span class="status-indicator {{ item.status }}"
                         style="position: absolute; bottom: 0; right: 0; width: 12px; height: 12px; border-radius: 50%;
-                               background-color: {% if item.status == 'online' %}#28a745{% else %}#dc3545{% endif %};">
+                              background-color: {% if item.status == 'online' %}#28a745{% else %}#dc3545{% endif %};">
                   </span>
                 {% endif %}
               {% endfor %}
@@ -301,11 +269,11 @@
             {% if chats %}
               {% for message in chats %}
                 <div class="chat-message {% if message.sender == request.user %} sender {% else %} receiver {% endif %}"
-                     data-timestamp="{{ message.timestamp|date:'Y-m-d H:i:s' }}"
-                     data-status="{{ message.status }}"
-                     data-type="{{ message.message_type }}"
-                     data-subject="{{ message.subject }}"
-                     data-message-id="{{ message.id }}">
+                    data-timestamp="{{ message.timestamp|date:'Y-m-d H:i:s' }}"
+                    data-status="{{ message.status }}"
+                    data-type="{{ message.message_type }}"
+                    data-subject="{{ message.subject }}"
+                    data-message-id="{{ message.id }}">
                   <div class="d-flex align-items-center position-relative">
                     {% if message.sender == request.user %}
                       <div class="dropdown message-options">
