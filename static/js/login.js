@@ -4,7 +4,7 @@ $(document).ready(function () {
 
     // Store credentials for potential force login
     window.loginCredentials = {
-        username: "{{ username }}",
+        email: "{{ email }}",
         password: "{{ password }}"
     };
 });

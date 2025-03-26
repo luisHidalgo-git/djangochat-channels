@@ -13,35 +13,42 @@ def index(request):
     return render(request, "index.html", {'breadcrumb': 'Inicio'})
 
 def check_existing_session(request):
-    username = request.POST.get('username')
-    session_key = cache.get(f'user_session_{username}')
-    if session_key:
-        return JsonResponse({'has_session': True})
+    email = request.POST.get('email')
+    try:
+        user = User.objects.get(email=email)
+        session_key = cache.get(f'user_session_{user.username}')
+        if session_key:
+            return JsonResponse({'has_session': True})
+    except User.DoesNotExist:
+        pass
     return JsonResponse({'has_session': False})
 
 def force_login(request):
     if request.method == 'POST':
         data = json.loads(request.body)
-        username = data.get('username')
+        email = data.get('email')
         password = data.get('password')
         
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            # Eliminar la sesión anterior
-            old_session_key = cache.get(f'user_session_{username}')
-            if old_session_key:
-                cache.delete(f'user_session_{username}')
-            
-            # Crear nueva sesión
-            login(request, user)
-            cache.set(f'user_session_{username}', request.session.session_key, timeout=None)
-            return JsonResponse({'success': True, 'redirect_url': '/chat/Sala/'})
+        try:
+            user = User.objects.get(email=email)
+            if user.check_password(password):
+                # Eliminar la sesión anterior
+                old_session_key = cache.get(f'user_session_{user.username}')
+                if old_session_key:
+                    cache.delete(f'user_session_{user.username}')
+                
+                # Crear nueva sesión
+                login(request, user)
+                cache.set(f'user_session_{user.username}', request.session.session_key, timeout=None)
+                return JsonResponse({'success': True, 'redirect_url': '/chat/Sala/'})
+        except User.DoesNotExist:
+            pass
         
     return JsonResponse({'success': False})
 
 def login_page(request):
     if request.method == 'POST':
-        username = request.POST.get('username')
+        email = request.POST.get('email')
         password = request.POST.get('password')
         recaptcha_response = request.POST.get('g-recaptcha-response')
 
@@ -54,23 +61,26 @@ def login_page(request):
         result = response.json()
 
         if result['success']:
-            user = authenticate(request, username=username, password=password)
-            if user is not None:
-                # Verificar si existe una sesión activa
-                existing_session = cache.get(f'user_session_{username}')
-                if existing_session:
-                    return render(request, 'login.html', {
-                        'show_session_modal': True,
-                        'username': username,
-                        'password': password
-                    })
-                
-                # Si no hay sesión activa, proceder con el login normal
-                login(request, user)
-                cache.set(f'user_session_{username}', request.session.session_key, timeout=None)
-                messages.success(request, 'Login successful!')
-                return redirect('/chat/Sala/')
-            else:
+            try:
+                user = User.objects.get(email=email)
+                if user.check_password(password):
+                    # Verificar si existe una sesión activa
+                    existing_session = cache.get(f'user_session_{user.username}')
+                    if existing_session:
+                        return render(request, 'login.html', {
+                            'show_session_modal': True,
+                            'email': email,
+                            'password': password
+                        })
+                    
+                    # Si no hay sesión activa, proceder con el login normal
+                    login(request, user)
+                    cache.set(f'user_session_{user.username}', request.session.session_key, timeout=None)
+                    messages.success(request, 'Login successful!')
+                    return redirect('/chat/Sala/')
+                else:
+                    messages.error(request, 'Invalid email or password. Please try again.')
+            except User.DoesNotExist:
                 messages.error(request, 'Invalid email or password. Please try again.')
         else:
             messages.error(request, 'Please verify that you are not a robot.')
