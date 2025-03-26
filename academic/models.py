@@ -43,7 +43,7 @@ class AssignmentSubmission(models.Model):
     student = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     file = models.FileField(upload_to='assignment_submissions/')
     file_name = models.CharField(max_length=255)
-    file_type = models.CharField(max_length=50)
+    file_type = models.CharField(max_length=255)  # Aumentado de 50 a 255 caracteres
     submitted_at = models.DateTimeField(auto_now_add=True)
     grade = models.IntegerField(null=True, blank=True)
     feedback = models.TextField(blank=True)

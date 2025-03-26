@@ -1,6 +1,7 @@
 // Course management functions with WebSocket support
 let sharedCourses = [];
 let courseSocket;
+let selectedFiles = new Map(); // Para almacenar los archivos seleccionados temporalmente
 
 // Initialize WebSocket connection for courses
 function initializeCourseSocket() {
@@ -81,7 +82,48 @@ function updateGradingInUI(submissionId, grading) {
   }
 }
 
-function submitAssignment(assignmentId, file) {
+function handleFileSelection(assignmentId, fileInput) {
+  const file = fileInput.files[0];
+  if (file) {
+    // Verificar el tipo de archivo
+    const allowedTypes = [
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'application/vnd.ms-excel',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'application/vnd.ms-powerpoint',
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+      'application/pdf',
+      'image/jpeg',
+      'image/png'
+    ];
+
+    if (!allowedTypes.includes(file.type)) {
+      alert('Tipo de archivo no permitido. Por favor, seleccione un archivo válido.');
+      fileInput.value = '';
+      return;
+    }
+
+    // Almacenar el archivo seleccionado
+    selectedFiles.set(assignmentId, file);
+    
+    // Actualizar la etiqueta del archivo
+    const label = fileInput.nextElementSibling;
+    label.textContent = file.name;
+    
+    // Mostrar el botón de envío
+    const submitButton = document.querySelector(`#submit-assignment-${assignmentId}`);
+    submitButton.style.display = 'block';
+  }
+}
+
+function submitAssignment(assignmentId) {
+  const file = selectedFiles.get(assignmentId);
+  if (!file) {
+    alert('Por favor seleccione un archivo primero.');
+    return;
+  }
+
   const reader = new FileReader();
   reader.onload = function(e) {
     const fileData = e.target.result;
@@ -93,6 +135,15 @@ function submitAssignment(assignmentId, file) {
     }));
   };
   reader.readAsDataURL(file);
+  
+  // Limpiar el archivo seleccionado después del envío
+  selectedFiles.delete(assignmentId);
+  
+  // Resetear el input de archivo y ocultar el botón de envío
+  const fileInput = document.querySelector(`#submission-${assignmentId}`);
+  fileInput.value = '';
+  fileInput.nextElementSibling.textContent = 'Elegir archivo';
+  document.querySelector(`#submit-assignment-${assignmentId}`).style.display = 'none';
 }
 
 function gradeSubmission(submissionId, grade, feedback) {
@@ -310,12 +361,18 @@ function displayCourseDetails(courseId) {
                     ${!isCreator ? `
                       <div class="submission-section mt-3">
                         <h6>Enviar Tarea</h6>
-                        <div class="custom-file">
+                        <div class="custom-file mb-2">
                           <input type="file" class="custom-file-input" id="submission-${assignment.id}"
                                  accept=".doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf,.jpg,.jpeg,.png"
-                                 onchange="submitAssignment(${assignment.id}, this.files[0])">
+                                 onchange="handleFileSelection(${assignment.id}, this)">
                           <label class="custom-file-label" for="submission-${assignment.id}">Elegir archivo</label>
                         </div>
+                        <button id="submit-assignment-${assignment.id}" 
+                                class="btn btn-primary btn-sm" 
+                                style="display: none;"
+                                onclick="submitAssignment(${assignment.id})">
+                          Enviar Tarea
+                        </button>
                         <small class="form-text text-muted">
                           Formatos aceptados: Word, Excel, PowerPoint, PDF e imágenes
                         </small>

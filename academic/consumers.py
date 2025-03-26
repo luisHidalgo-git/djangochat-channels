@@ -8,6 +8,14 @@ from django.core.files.base import ContentFile
 import base64
 import mimetypes
 
+# Configurar tipos MIME adicionales
+mimetypes.add_type('application/vnd.openxmlformats-officedocument.wordprocessingml.document', '.docx')
+mimetypes.add_type('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', '.xlsx')
+mimetypes.add_type('application/vnd.openxmlformats-officedocument.presentationml.presentation', '.pptx')
+mimetypes.add_type('application/msword', '.doc')
+mimetypes.add_type('application/vnd.ms-excel', '.xls')
+mimetypes.add_type('application/vnd.ms-powerpoint', '.ppt')
+
 class CourseConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         await self.channel_layer.group_add('courses', self.channel_name)
@@ -164,22 +172,23 @@ class CourseConsumer(AsyncWebsocketConsumer):
             file_info, file_content = file_data.split(',', 1)
             content_type = file_info.split(';')[0].split(':')[1]
             
+            # Mapping de tipos MIME a extensiones
+            extension_map = {
+                'application/msword': '.doc',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document': '.docx',
+                'application/vnd.ms-excel': '.xls',
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': '.xlsx',
+                'application/vnd.ms-powerpoint': '.ppt',
+                'application/vnd.openxmlformats-officedocument.presentationml.presentation': '.pptx',
+                'application/pdf': '.pdf',
+                'image/jpeg': '.jpg',
+                'image/png': '.png'
+            }
+            
             # Get file extension from content type
-            extension = mimetypes.guess_extension(content_type)
+            extension = extension_map.get(content_type)
             if not extension:
-                # Fallback extensions based on content type
-                extension_map = {
-                    'application/msword': '.doc',
-                    'application/vnd.openxmlformats-officedocument.wordprocessingml.document': '.docx',
-                    'application/vnd.ms-excel': '.xls',
-                    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': '.xlsx',
-                    'application/vnd.ms-powerpoint': '.ppt',
-                    'application/vnd.openxmlformats-officedocument.presentationml.presentation': '.pptx',
-                    'application/pdf': '.pdf',
-                    'image/jpeg': '.jpg',
-                    'image/png': '.png'
-                }
-                extension = extension_map.get(content_type, '')
+                extension = mimetypes.guess_extension(content_type) or ''
             
             file_name = f"{student.username}_{assignment.title}{extension}"
             
