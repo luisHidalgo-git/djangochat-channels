@@ -36,6 +36,17 @@ class Assignment(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def get_status_for_student(self, student):
+        # Si el usuario es el creador, buscar todas las entregas
+        if student == self.creator:
+            submissions = self.submissions.all()
+            if submissions.exists():
+                late_submissions = submissions.filter(status='late')
+                if late_submissions.exists():
+                    return 'late'
+                return 'submitted'
+            return 'active'
+        
+        # Si es un estudiante, buscar su entrega específica
         submission = self.submissions.filter(student=student).first()
         if submission:
             return submission.status
@@ -69,4 +80,4 @@ class AssignmentSubmission(models.Model):
         return self.grade >= 80 if self.grade is not None else False
     
     def __str__(self):
-        return self.assignment
+        return f"{self.student.username}'s submission for {self.assignment.title}"
