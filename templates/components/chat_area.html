@@ -116,35 +116,35 @@
                         <div class="col-auto">
                             <select name="message_type" class="form-control">
                                 <option value="">Tipo de Mensaje</option>
-                                <option value="normal" {% if message_type=='normal' %}selected{% endif %}>Normal
+                                <option value="normal" {% if message_type == 'normal' %}selected{% endif %}>Normal
                                 </option>
-                                <option value="urgent" {% if message_type=='urgent' %}selected{% endif %}>Urgente
+                                <option value="urgent" {% if message_type == 'urgent' %}selected{% endif %}>Urgente
                                 </option>
                             </select>
                         </div>
                         <div class="col-auto">
                             <select name="subject" class="form-control">
                                 <option value="all">Todas las Materias</option>
-                                <option value="programming" {% if subject=='programming' %}selected{% endif %}>
+                                <option value="programming" {% if subject == 'programming' %}selected{% endif %}>
                                     Programación</option>
-                                <option value="math" {% if subject=='math' %}selected{% endif %}>Matemáticas</option>
-                                <option value="english" {% if subject=='english' %}selected{% endif %}>Inglés</option>
+                                <option value="math" {% if subject == 'math' %}selected{% endif %}>Matemáticas</option>
+                                <option value="english" {% if subject == 'english' %}selected{% endif %}>Inglés</option>
                             </select>
                         </div>
                         <div class="col-auto">
                             <select name="status" class="form-control">
                                 <option value="all">Todos los Estados</option>
-                                <option value="sent" {% if status=='sent' %}selected{% endif %}>Enviado</option>
-                                <option value="delivered" {% if status=='delivered' %}selected{% endif %}>Entregado
+                                <option value="sent" {% if status == 'sent' %}selected{% endif %}>Enviado</option>
+                                <option value="delivered" {% if status == 'delivered' %}selected{% endif %}>Entregado
                                 </option>
-                                <option value="read" {% if status=='read' %}selected{% endif %}>Leído</option>
+                                <option value="read" {% if status == 'read' %}selected{% endif %}>Leído</option>
                             </select>
                         </div>
                         <div class="col-auto">
                             <select name="direction" class="form-control">
                                 <option value="">Dirección</option>
-                                <option value="sent" {% if direction=='sent' %}selected{% endif %}>Enviados</option>
-                                <option value="received" {% if direction=='received' %}selected{% endif %}>Recibidos
+                                <option value="sent" {% if direction == 'sent' %}selected{% endif %}>Enviados</option>
+                                <option value="received" {% if direction == 'received' %}selected{% endif %}>Recibidos
                                 </option>
                             </select>
                         </div>
