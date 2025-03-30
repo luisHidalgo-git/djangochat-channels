@@ -17,6 +17,13 @@
     --footer-bg: rgb(23, 104, 136);
     --footer-text: #ffffff;
     --label-color: #000000;
+    --input-bg: #ffffff;
+    --input-text: #000000;
+    --chat-area-bg: #f8f9fa;
+    --modal-bg: #ffffff;
+    --dropdown-bg: #ffffff;
+    --dropdown-text: #000000;
+    --dropdown-hover: #f8f9fa;
 }
 
 /* Tema Oscuro */
@@ -38,6 +45,13 @@
     --footer-bg: #1a1a1a;
     --footer-text: #ffffff;
     --label-color: #ffffff;
+    --input-bg: #2d2d2d;
+    --input-text: #ffffff;
+    --chat-area-bg: #1a1a1a;
+    --modal-bg: #2d2d2d;
+    --dropdown-bg: #2d2d2d;
+    --dropdown-text: #ffffff;
+    --dropdown-hover: #3d3d3d;
 }
 
 /* Aplicar variables */
@@ -83,22 +97,23 @@ footer a {
 .card {
     background-color: var(--bg-secondary);
     border-color: var(--border-color);
+    color: var(--text-primary);
 }
 
 .modal-content {
-    background-color: var(--bg-primary);
+    background-color: var(--modal-bg);
     color: var(--text-primary);
 }
 
 .form-control {
-    background-color: var(--bg-secondary);
-    color: var(--text-primary);
+    background-color: var(--input-bg);
+    color: var(--input-text);
     border-color: var(--border-color);
 }
 
 .form-control:focus {
-    background-color: var(--bg-secondary);
-    color: var(--text-primary);
+    background-color: var(--input-bg);
+    color: var(--input-text);
 }
 
 /* Estilos para labels en formularios */
@@ -108,6 +123,43 @@ label {
 
 .form-group label {
     color: var(--label-color) !important;
+}
+
+/* Chat específico */
+#chatbox {
+    background-color: var(--chat-area-bg);
+}
+
+.chat-input {
+    background-color: var(--bg-secondary);
+}
+
+.list-group-item {
+    background-color: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    border-color: var(--border-color);
+}
+
+.list-group-item:hover {
+    background-color: var(--dropdown-hover);
+}
+
+.list-group-item.active {
+    background-color: var(--dropdown-hover) !important;
+}
+
+/* Dropdown menus */
+.dropdown-menu {
+    background-color: var(--dropdown-bg);
+}
+
+.dropdown-item {
+    color: var(--dropdown-text);
+}
+
+.dropdown-item:hover {
+    background-color: var(--dropdown-hover);
+    color: var(--dropdown-text);
 }
 
 .theme-toggle {
@@ -144,5 +196,24 @@ label {
 .theme-dark .alert {
     background-color: var(--bg-secondary);
     border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+/* Estilos para el texto pequeño y secundario */
+.text-muted {
+    color: var(--text-secondary) !important;
+}
+
+/* Estilos para los botones en modo oscuro */
+.theme-dark .btn {
+    border-color: var(--border-color);
+}
+
+.theme-dark .btn-primary {
+    background-color: var(--link-color);
+    border-color: var(--link-color);
+}
+
+.theme-dark .close {
     color: var(--text-primary);
 }
