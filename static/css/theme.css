@@ -1,0 +1,148 @@
+/* Tema Claro (default) */
+:root {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f9fa;
+    --text-primary: #000000;
+    --text-secondary: #6c757d;
+    --border-color: #dee2e6;
+    --link-color: #007bff;
+    --header-bg: rgb(23, 104, 136);
+    --header-text: #ffffff;
+    --chat-sender-bg: #ffffff;
+    --chat-receiver-bg: #435f7a;
+    --chat-sender-text: #435f7a;
+    --chat-receiver-text: #ffffff;
+    --sidebar-bg: #2c3e50;
+    --sidebar-text: #ffffff;
+    --footer-bg: rgb(23, 104, 136);
+    --footer-text: #ffffff;
+    --label-color: #000000;
+}
+
+/* Tema Oscuro */
+.theme-dark {
+    --bg-primary: #1a1a1a;
+    --bg-secondary: #2d2d2d;
+    --text-primary: #ffffff;
+    --text-secondary: #cccccc;
+    --border-color: #404040;
+    --link-color: #66b3ff;
+    --header-bg: #1a1a1a;
+    --header-text: #ffffff;
+    --chat-sender-bg: #2d2d2d;
+    --chat-receiver-bg: #435f7a;
+    --chat-sender-text: #ffffff;
+    --chat-receiver-text: #ffffff;
+    --sidebar-bg: #1a1a1a;
+    --sidebar-text: #ffffff;
+    --footer-bg: #1a1a1a;
+    --footer-text: #ffffff;
+    --label-color: #ffffff;
+}
+
+/* Aplicar variables */
+body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+nav {
+    background-color: var(--header-bg);
+    color: var(--header-text);
+}
+
+nav a {
+    color: var(--header-text) !important;
+}
+
+footer {
+    background-color: var(--footer-bg) !important;
+    color: var(--footer-text) !important;
+}
+
+footer p,
+footer a {
+    color: var(--footer-text) !important;
+}
+
+.sidebar {
+    background-color: var(--sidebar-bg);
+    color: var(--sidebar-text);
+}
+
+.chat-message.sender {
+    background-color: var(--chat-sender-bg);
+    color: var(--chat-sender-text);
+}
+
+.chat-message.receiver {
+    background-color: var(--chat-receiver-bg);
+    color: var(--chat-receiver-text);
+}
+
+.card {
+    background-color: var(--bg-secondary);
+    border-color: var(--border-color);
+}
+
+.modal-content {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+.form-control {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+.form-control:focus {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+/* Estilos para labels en formularios */
+label {
+    color: var(--label-color) !important;
+}
+
+.form-group label {
+    color: var(--label-color) !important;
+}
+
+.theme-toggle {
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    transition: background-color 0.3s;
+}
+
+.theme-toggle:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.theme-toggle i {
+    font-size: 1.2rem;
+    color: var(--header-text);
+}
+
+/* Estilos adicionales para el modo oscuro */
+.theme-dark .login-container,
+.theme-dark .modal {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+.theme-dark .login-title {
+    color: var(--text-primary) !important;
+}
+
+.theme-dark .link a {
+    color: var(--link-color);
+}
+
+.theme-dark .alert {
+    background-color: var(--bg-secondary);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
