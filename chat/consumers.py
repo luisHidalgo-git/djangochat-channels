@@ -29,6 +29,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.mark_messages_as_delivered()
 
     async def disconnect(self, close_code):
+        await self.mark_messages_as_read()
         await self.set_user_offline(self.scope['user'].username)
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
         await self.channel_layer.group_send(
@@ -163,7 +164,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         Message.objects.filter(
             receiver=self.scope['user'],
             sender__username=self.room_name,
-            status=Message.DELIVERED
+            status__in=[Message.SENT, Message.DELIVERED]
         ).update(status=Message.READ)
 
     @sync_to_async
