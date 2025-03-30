@@ -1,31 +1,46 @@
 .course-card {
-transition: transform 0.2s;
-cursor: pointer;
+    transition: transform 0.2s;
+    cursor: pointer;
 }
+
 .course-card:hover {
-transform: translateY(-5px);
+    transform: translateY(-5px);
 }
+
 .course-header {
-height: 100px;
-background-size: cover;
-background-position: center;
-border-top-left-radius: .25rem;
-border-top-right-radius: .25rem;
+    height: 100px;
+    background-size: cover;
+    background-position: center;
+    border-top-left-radius: .25rem;
+    border-top-right-radius: .25rem;
 }
+
 .programming-header {
-background-color: #4285f4;
+    background-color: #4285f4;
 }
+
 .math-header {
-background-color: #0f9d58;
+    background-color: #0f9d58;
 }
+
 .english-header {
-background-color: #db4437;
+    background-color: #db4437;
 }
+
 .course-detail {
-padding: 20px;
+    padding: 20px;
 }
+
 .assignment-details {
-margin-top: 10px;
-padding-top: 10px;
-border-top: 1px solid #eee;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #eee;
+}
+
+.badge-warning {
+    background-color: #ffc107;
+    color: #000;
+    font-weight: 500;
+    padding: 5px 10px;
+    border-radius: 12px;
 }

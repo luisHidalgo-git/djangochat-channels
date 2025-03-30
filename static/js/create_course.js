@@ -83,6 +83,21 @@ function createCourse() {
   document.getElementById('createCourseForm').reset();
 }
 
+function getPendingAssignmentsCount(course, currentUser) {
+  if (!course.assignments) return 0;
+  
+  // Si el usuario es el creador del curso, no hay tareas pendientes
+  if (course.creator.name === currentUser) return 0;
+  
+  return course.assignments.filter(assignment => {
+    // Buscar si el usuario actual tiene una entrega para esta tarea
+    const userSubmission = assignment.submissions?.find(sub => sub.student.name === currentUser);
+    
+    // Es una tarea pendiente si no hay entrega del usuario
+    return !userSubmission;
+  }).length;
+}
+
 function displayCourses() {
   const coursesList = document.getElementById('coursesList');
   const currentView = document.getElementById('currentView');
@@ -104,7 +119,9 @@ function displayCourses() {
 
   coursesList.innerHTML = `
     <div class="row">
-      ${sortedCourses.map(course => `
+      ${sortedCourses.map(course => {
+        const pendingCount = getPendingAssignmentsCount(course, currentUser);
+        return `
         <div class="col-md-4 mb-4">
           <div class="card course-card h-100" onclick="displayCourseDetails(${course.id})">
             <div class="course-header ${course.subject}-header"></div>
@@ -124,11 +141,18 @@ function displayCourses() {
               <p class="card-text">
                 <small class="text-muted">Sala: ${course.room}</small>
               </p>
-              <p class="card-text">
-                <small class="text-muted">
-                  Tareas: ${course.assignments ? course.assignments.length : 0}
-                </small>
-              </p>
+              <div class="d-flex justify-content-between align-items-center">
+                <p class="card-text mb-0">
+                  <small class="text-muted">
+                    Tareas: ${course.assignments ? course.assignments.length : 0}
+                  </small>
+                </p>
+                ${course.creator.name !== currentUser && pendingCount > 0 ? `
+                  <span class="badge badge-warning">
+                    ${pendingCount} tarea${pendingCount !== 1 ? 's' : ''} pendiente${pendingCount !== 1 ? 's' : ''}
+                  </span>
+                ` : ''}
+              </div>
             </div>
             <div class="card-footer bg-transparent">
               <div class="d-flex justify-content-between align-items-center">
@@ -144,7 +168,7 @@ function displayCourses() {
             </div>
           </div>
         </div>
-      `).join('')}
+      `}).join('')}
     </div>
   `;
 }
