@@ -20,6 +20,24 @@ document.addEventListener("DOMContentLoaded", function () {
     return statusDiv;
   }
 
+  function updateUnreadCount(sender, count) {
+    const userItem = document.querySelector(`.list-group-item[href="/chat/${sender}/"]`);
+    if (userItem) {
+      let countBadge = userItem.querySelector('.unread-count');
+      if (count > 0) {
+        if (!countBadge) {
+          countBadge = document.createElement('span');
+          countBadge.className = 'badge badge-success unread-count';
+          const messageContainer = userItem.querySelector('.d-flex.justify-content-between.align-items-center');
+          messageContainer.appendChild(countBadge);
+        }
+        countBadge.textContent = count;
+      } else if (countBadge) {
+        countBadge.remove();
+      }
+    }
+  }
+
   function createMessageElement(data, userUsername) {
     const messageContainer = document.createElement("div");
     messageContainer.className = "chat-message " + (data.sender === userUsername ? "sender" : "receiver");
@@ -237,6 +255,11 @@ document.addEventListener("DOMContentLoaded", function () {
       const messageElement = createMessageElement(data, userUsername);
       chatbox.appendChild(messageElement);
       scrollToBottom();
+
+      // Update unread count if message is received
+      if (data.sender !== userUsername) {
+        updateUnreadCount(data.sender, data.unread_count);
+      }
 
       const lastMessage = document.querySelector(
         ".list-group-item.active #last-message"

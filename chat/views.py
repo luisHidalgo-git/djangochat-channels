@@ -49,11 +49,13 @@ def chat_room(request, room_name):
         ).order_by('-timestamp').first()
 
         status = cache.get(f'user_status_{user.username}', 'offline')
+        unread_count = Message.get_unread_count(request.user, user)
 
         user_last_messages.append({
             'user': user,
             'last_message': last_message,
-            'status': status
+            'status': status,
+            'unread_count': unread_count
         })
 
     user_last_messages.sort(

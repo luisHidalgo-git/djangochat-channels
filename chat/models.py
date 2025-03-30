@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.db.models import Count
 
 class Message(models.Model):
     SENT = 'sent'  
@@ -34,3 +35,11 @@ class Message(models.Model):
 
     def __str__(self):
         return self.content
+
+    @staticmethod
+    def get_unread_count(user, other_user):
+        return Message.objects.filter(
+            sender=other_user,
+            receiver=user,
+            status__in=[Message.SENT, Message.DELIVERED]
+        ).count()

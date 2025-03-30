@@ -53,6 +53,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
             saved_message = await self.save_message(sender, receiver, message, message_type, subject)
             message_status = await self.get_message_status(saved_message)
+            unread_count = await self.get_unread_count(receiver, sender)
 
             await self.channel_layer.group_send(
                 self.room_group_name,
@@ -65,7 +66,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     'message_type': message_type,
                     'subject': subject,
                     'timestamp': saved_message.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
-                    'message_id': str(saved_message.id)
+                    'message_id': str(saved_message.id),
+                    'unread_count': unread_count
                 }
             )
         
@@ -96,7 +98,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'message_type': event['message_type'],
             'subject': event['subject'],
             'timestamp': event['timestamp'],
-            'message_id': event['message_id']
+            'message_id': event['message_id'],
+            'unread_count': event['unread_count']
         }))
 
     async def message_updated(self, event):
@@ -125,6 +128,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
             subject=subject
         )
         return msg
+
+    @sync_to_async
+    def get_unread_count(self, receiver, sender):
+        return Message.get_unread_count(receiver, sender)
 
     @sync_to_async
     def update_message(self, message_id, message_type=None, subject=None):
