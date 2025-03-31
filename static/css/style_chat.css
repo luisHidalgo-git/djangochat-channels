@@ -182,3 +182,28 @@ select.form-control {
     text-align: center;
     margin-left: 8px;
 }
+
+/* Theme toggle button styles */
+.theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 50%;
+    transition: background-color 0.3s;
+}
+
+.theme-toggle:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.theme-toggle i {
+    font-size: 1.2rem;
+    color: var(--header-text);
+}
+
+/* Courses section header */
+.courses-section h5 {
+    margin-bottom: 0;
+}
