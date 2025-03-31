@@ -1,1 +1,1 @@
-quiero que cambies los estilos del index.html, quiero que quites el video y reorganices los elementos para que esten alineados uno del otro de forma horizontal, debe tener diseños minimalistas y otros como carrusel, debe ver bien y organizado en la pagina
+quiero que cambies los estilos del index.html, quiero que quites el video y reorganices los elementos para que esten alineados uno del otro de forma horizontal, debe tener diseños minimalistas y otros como carrusel, debe ver bien y organizado en la pagina, debe estar 3 etiquetas section alineadas horizontal:
