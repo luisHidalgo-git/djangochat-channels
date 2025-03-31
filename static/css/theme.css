@@ -24,6 +24,8 @@
     --dropdown-bg: #ffffff;
     --dropdown-text: #000000;
     --dropdown-hover: #f8f9fa;
+    --active-item-bg: #435f7a;
+    --active-item-text: #ffffff;
 }
 
 /* Tema Oscuro */
@@ -52,6 +54,8 @@
     --dropdown-bg: #2d2d2d;
     --dropdown-text: #ffffff;
     --dropdown-hover: #3d3d3d;
+    --active-item-bg: #3d3d3d;
+    --active-item-text: #ffffff;
 }
 
 /* Aplicar variables */
@@ -134,18 +138,23 @@ label {
     background-color: var(--bg-secondary);
 }
 
+/* Estilos actualizados para elementos activos/seleccionados */
 .list-group-item {
     background-color: var(--sidebar-bg);
     color: var(--sidebar-text);
     border-color: var(--border-color);
+    transition: background-color 0.3s ease;
 }
 
 .list-group-item:hover {
     background-color: var(--dropdown-hover);
+    color: var(--sidebar-text);
 }
 
 .list-group-item.active {
-    background-color: var(--dropdown-hover) !important;
+    background-color: var(--active-item-bg) !important;
+    color: var(--active-item-text) !important;
+    border-color: var(--active-item-bg) !important;
 }
 
 /* Dropdown menus */

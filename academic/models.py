@@ -48,8 +48,16 @@ class Assignment(models.Model):
         
         # Si es un estudiante, buscar su entrega específica
         submission = self.submissions.filter(student=student).first()
+        
+        # Si no hay entrega y la fecha límite ha pasado, mostrar como atrasado
+        if not submission and self.due_date < timezone.now():
+            return 'late'
+        
+        # Si hay entrega, devolver su estado
         if submission:
             return submission.status
+            
+        # Si no hay entrega y la fecha límite no ha pasado, mostrar como activo
         return 'active'
     
     def __str__(self):
