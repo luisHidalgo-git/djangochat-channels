@@ -86,7 +86,15 @@ function createAssignment(courseId) {
   if (supportFile) {
     const reader = new FileReader();
     reader.onload = function(e) {
+      // Obtener la extensión del archivo original
+      const extension = supportFile.name.split('.').pop();
+      // Crear el nuevo nombre del archivo usando el título de la tarea
+      const newFileName = `${title}_support.${extension}`;
+      
       assignment.support_file = e.target.result;
+      assignment.support_file_name = newFileName;
+      assignment.support_file_type = supportFile.type;
+      
       sendAssignment(courseId, assignment);
     };
     reader.readAsDataURL(supportFile);
@@ -186,13 +194,6 @@ function prepareAssignmentModal(courseId) {
   }
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-  document.querySelector('#assignmentSupportFile').addEventListener('change', function(e) {
-    const fileName = e.target.files[0]?.name || 'Elegir archivo';
-    e.target.nextElementSibling.textContent = fileName;
-  });
-});
-
 function displayCourseDetails(courseId) {
   const course = sharedCourses.find(c => c.id === courseId);
   const coursesList = document.getElementById('coursesList');
@@ -279,6 +280,15 @@ function displayCourseDetails(courseId) {
                             assignment.status === 'submitted' ? 'Entregado' : 'Atrasado'}
                         </span>
                       </p>
+                      ${assignment.has_support_file ? `
+                        <p>
+                          <strong>Material de apoyo:</strong>
+                          <a href="/download/support/${assignment.id}/" 
+                             class="btn btn-sm btn-outline-info ml-2" download>
+                            <i class="fas fa-download"></i> ${assignment.support_file_name}
+                          </a>
+                        </p>
+                      ` : ''}
                     </div>
 
                     ${!isCreator && !userSubmission ? `
@@ -385,3 +395,10 @@ function displayCourseDetails(courseId) {
     });
   });
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelector('#assignmentSupportFile').addEventListener('change', function(e) {
+    const fileName = e.target.files[0]?.name || 'Elegir archivo';
+    e.target.nextElementSibling.textContent = fileName;
+  });
+});
