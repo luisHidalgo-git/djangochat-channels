@@ -69,6 +69,7 @@ function createAssignment(courseId) {
   const description = document.getElementById('assignmentDescription').value;
   const dueDate = document.getElementById('assignmentDueDate').value;
   const points = document.getElementById('assignmentPoints').value;
+  const supportFile = document.getElementById('assignmentSupportFile').files[0];
   const currentUser = document.getElementById('user_username').textContent.replace(/"/g, '');
 
   const assignment = {
@@ -82,6 +83,19 @@ function createAssignment(courseId) {
     }
   };
 
+  if (supportFile) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      assignment.support_file = e.target.result;
+      sendAssignment(courseId, assignment);
+    };
+    reader.readAsDataURL(supportFile);
+  } else {
+    sendAssignment(courseId, assignment);
+  }
+}
+
+function sendAssignment(courseId, assignment) {
   courseSocket.send(JSON.stringify({
     action: 'new_assignment',
     courseId: courseId,
@@ -90,6 +104,7 @@ function createAssignment(courseId) {
 
   $('#createAssignmentModal').modal('hide');
   document.getElementById('createAssignmentForm').reset();
+  document.querySelector('#assignmentSupportFile').nextElementSibling.textContent = 'Elegir archivo';
 }
 
 function gradeSubmission(submissionId, grade, feedback) {
@@ -162,7 +177,21 @@ function prepareAssignmentModal(courseId) {
   
   modal.setAttribute('data-course-id', courseId);
   if (form) form.reset();
+
+  // Reset file input label
+  const fileInput = document.querySelector('#assignmentSupportFile');
+  if (fileInput) {
+    fileInput.value = '';
+    fileInput.nextElementSibling.textContent = 'Elegir archivo';
+  }
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelector('#assignmentSupportFile').addEventListener('change', function(e) {
+    const fileName = e.target.files[0]?.name || 'Elegir archivo';
+    e.target.nextElementSibling.textContent = fileName;
+  });
+});
 
 function displayCourseDetails(courseId) {
   const course = sharedCourses.find(c => c.id === courseId);

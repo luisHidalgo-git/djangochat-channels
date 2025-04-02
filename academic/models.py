@@ -34,6 +34,9 @@ class Assignment(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='active')
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
+    support_file = models.FileField(upload_to='assignment_support/', null=True, blank=True)
+    support_file_name = models.CharField(max_length=255, null=True, blank=True)
+    support_file_type = models.CharField(max_length=255, null=True, blank=True)
 
     def get_status_for_student(self, student):
         # Si el usuario es el creador, buscar todas las entregas
@@ -68,7 +71,7 @@ class AssignmentSubmission(models.Model):
     student = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     file = models.FileField(upload_to='assignment_submissions/')
     file_name = models.CharField(max_length=255)
-    file_type = models.CharField(max_length=255)  # Aumentado de 50 a 255 caracteres
+    file_type = models.CharField(max_length=255)
     submitted_at = models.DateTimeField(auto_now_add=True)
     grade = models.IntegerField(null=True, blank=True)
     feedback = models.TextField(blank=True)

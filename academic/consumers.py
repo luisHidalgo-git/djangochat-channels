@@ -84,7 +84,10 @@ class CourseConsumer(AsyncWebsocketConsumer):
                         'avatar': f'https://ui-avatars.com/api/?name={assignment.creator.username}&size=64&background=random'
                     },
                     'created_at': assignment.created_at.strftime('%Y-%m-%d'),
-                    'submissions': submissions_data
+                    'submissions': submissions_data,
+                    'support_file_name': assignment.support_file_name,
+                    'support_file_type': assignment.support_file_type,
+                    'has_support_file': bool(assignment.support_file)
                 })
 
             courses.append({
@@ -135,6 +138,7 @@ class CourseConsumer(AsyncWebsocketConsumer):
             # Parse the date string correctly
             due_date = timezone.datetime.strptime(data['dueDate'], '%Y-%m-%dT%H:%M')
             
+            # Create assignment without file first
             assignment = Assignment.objects.create(
                 course=course,
                 title=data['title'],
@@ -144,6 +148,24 @@ class CourseConsumer(AsyncWebsocketConsumer):
                 status='active',
                 creator=user
             )
+
+            # Handle support file if provided
+            if 'support_file' in data:
+                file_info, file_content = data['support_file'].split(',', 1)
+                content_type = file_info.split(';')[0].split(':')[1]
+                
+                # Get file extension
+                extension = mimetypes.guess_extension(content_type) or ''
+                file_name = f"support_{assignment.id}{extension}"
+                
+                # Convert base64 to file
+                file_content = base64.b64decode(file_content)
+                
+                # Save the file
+                assignment.support_file.save(file_name, ContentFile(file_content), save=False)
+                assignment.support_file_name = file_name
+                assignment.support_file_type = content_type
+                assignment.save()
             
             return {
                 'id': assignment.id,
@@ -156,7 +178,10 @@ class CourseConsumer(AsyncWebsocketConsumer):
                     'name': assignment.creator.username,
                     'avatar': f'https://ui-avatars.com/api/?name={assignment.creator.username}&size=64&background=random'
                 },
-                'created_at': assignment.created_at.strftime('%Y-%m-%d')
+                'created_at': assignment.created_at.strftime('%Y-%m-%d'),
+                'support_file_name': assignment.support_file_name,
+                'support_file_type': assignment.support_file_type,
+                'has_support_file': bool(assignment.support_file)
             }
         except Exception as e:
             print(f"Error creating assignment: {str(e)}")
