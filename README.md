@@ -16,7 +16,7 @@
 
 ## Configuraciones de archivos local
 ### Crear Base de datos PostgreSQL "chat"
-### Entrar en chat_app/settings.py y cambiar las variables de conexión
+### Entrar en chat_app/settings.py y cambiar las variables de conexión de la base de datos
 ### Crear y configurar venv
 ```
 python3 -m venv venv && source venv/bin/activate
