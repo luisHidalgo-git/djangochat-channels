@@ -38,6 +38,24 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
+  // Add user search functionality
+  const userSearch = document.querySelector('#userSearch');
+  if (userSearch) {
+    userSearch.addEventListener('input', function(e) {
+      const searchTerm = e.target.value.toLowerCase();
+      const userItems = document.querySelectorAll('.contacts .list-group-item');
+      
+      userItems.forEach(item => {
+        const username = item.getAttribute('data-username').toLowerCase();
+        if (username.includes(searchTerm)) {
+          item.style.display = '';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    });
+  }
+
   function createMessageElement(data, userUsername) {
     const messageContainer = document.createElement("div");
     messageContainer.className = "chat-message " + (data.sender === userUsername ? "sender" : "receiver");

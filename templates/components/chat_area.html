@@ -19,12 +19,17 @@
                 </a>
             </div>
 
-            <h5 class="text-white">Chats</h5>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="text-white mb-0">Chats</h5>
+                <div class="flex-grow-1 ml-2">
+                    <input type="text" id="userSearch" class="form-control form-control-sm" placeholder="Buscar usuarios...">
+                </div>
+            </div>
             <div class="contacts">
                 {% for item in user_last_messages %}
                 <a href="{% url 'chat' item.user.username %}"
                     class="list-group-item list-group-item-action {% if item.user.username == room_name %} active {% endif %}"
-                    data-id="{{ room_name }}">
+                    data-id="{{ room_name }}" data-username="{{ item.user.username }}">
                     <div class="d-flex align-items-center">
                         <div class="position-relative">
                             <img src="https://ui-avatars.com/api/?name={{ item.user.username|urlencode }}&size=64&background=random"
