@@ -19,6 +19,18 @@
                 </a>
             </div>
 
+            <!-- Exams Section -->
+            <div class="exams-section mb-4">
+                <h5 class="text-white">Exámenes</h5>
+                <a href="/chat/Sala/" onclick="showExams()"
+                    class="list-group-item list-group-item-action">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-file-alt mr-2"></i>
+                        <span>Exámenes Disponibles</span>
+                    </div>
+                </a>
+            </div>
+
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h5 class="text-white mb-0">Chats</h5>
                 <div class="flex-grow-1 ml-2">
@@ -86,16 +98,24 @@
         <!-- Chat Area -->
         <div class="col-9 d-flex flex-column chat" data-id="{{ room_name }}">
             {% if room_name == 'Sala' %}
-            <!-- Courses View -->
+            <!-- Main Content Area -->
             <div class="h-100 d-flex flex-column">
                 <div class="d-flex justify-content-between align-items-center p-3">
                     <h3 id="currentView">Cursos Disponibles</h3>
-                    <button class="btn btn-primary" data-toggle="modal" data-target="#createCourseModal">
-                        <i class="fas fa-plus mr-2"></i>Crear Curso
-                    </button>
+                    <div id="actionButtons">
+                        <button class="btn btn-primary" data-toggle="modal" data-target="#createCourseModal" id="createCourseBtn">
+                            <i class="fas fa-plus mr-2"></i>Crear Curso
+                        </button>
+                        <button class="btn btn-primary d-none" data-toggle="modal" data-target="#createExamModal" id="createExamBtn">
+                            <i class="fas fa-plus mr-2"></i>Crear Examen
+                        </button>
+                    </div>
                 </div>
                 <div class="p-3" id="coursesList">
                     <!-- Courses will be displayed here -->
+                </div>
+                <div class="p-3 d-none" id="examsList">
+                    <!-- Exams will be displayed here -->
                 </div>
             </div>
             {% else %}
@@ -236,3 +256,25 @@
         </div>
     </div>
 </div>
+
+<script>
+function showExams() {
+    document.getElementById('currentView').textContent = 'Exámenes Disponibles';
+    document.getElementById('coursesList').classList.add('d-none');
+    document.getElementById('examsList').classList.remove('d-none');
+    document.getElementById('createCourseBtn').classList.add('d-none');
+    document.getElementById('createExamBtn').classList.remove('d-none');
+    examSocket.send(JSON.stringify({ action: 'request_exams' }));
+}
+
+// Add click handler for Cursos Disponibles
+document.querySelector('.courses-section a').addEventListener('click', function(e) {
+    e.preventDefault();
+    document.getElementById('currentView').textContent = 'Cursos Disponibles';
+    document.getElementById('coursesList').classList.remove('d-none');
+    document.getElementById('examsList').classList.add('d-none');
+    document.getElementById('createCourseBtn').classList.remove('d-none');
+    document.getElementById('createExamBtn').classList.add('d-none');
+    courseSocket.send(JSON.stringify({ action: 'request_courses' }));
+});
+</script>

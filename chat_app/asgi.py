@@ -8,6 +8,7 @@ from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.auth import AuthMiddlewareStack
 from chat import routing as chat_routing
 from academic import routing as academic_routing
+from exams import routing as exam_routing
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'chat_app.settings')
 
@@ -16,7 +17,8 @@ application = ProtocolTypeRouter({
     "websocket": AuthMiddlewareStack(
         URLRouter(
             chat_routing.websocket_urlpatterns +
-            academic_routing.websocket_urlpatterns
+            academic_routing.websocket_urlpatterns +
+            exam_routing.websocket_urlpatterns
         )
     ),
 })

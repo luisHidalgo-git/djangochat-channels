@@ -1,0 +1,37 @@
+<div class="modal fade" id="createExamModal" tabindex="-1" role="dialog" aria-labelledby="createExamModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createExamModalLabel">Crear Nuevo Examen</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="createExamForm">
+                    <div class="form-group">
+                        <label for="examTitle">Título del Examen</label>
+                        <input type="text" class="form-control" id="examTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="examDescription">Descripción</label>
+                        <textarea class="form-control" id="examDescription" rows="3" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="questionCount">Número de Preguntas</label>
+                        <input type="number" class="form-control" id="questionCount" min="1" max="10" value="1"
+                               onchange="updateQuestionForm()" required>
+                    </div>
+                    <div id="questionsContainer">
+                        <!-- Questions will be dynamically added here -->
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="createExam()">Crear Examen</button>
+            </div>
+        </div>
+    </div>
+</div>
