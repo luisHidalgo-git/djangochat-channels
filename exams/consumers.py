@@ -156,12 +156,17 @@ class ExamConsumer(AsyncWebsocketConsumer):
         # Create or get submission
         submission, created = ExamSubmission.objects.get_or_create(
             exam=exam,
-            student=student
+            student=student,
+            defaults={
+                'completed': True  # Set completed to True for new submissions
+            }
         )
 
         if not created:
             # Delete previous answers if resubmitting
             submission.answers.all().delete()
+            submission.completed = True
+            submission.save()
 
         total_correct = 0
         total_questions = exam.questions.count()

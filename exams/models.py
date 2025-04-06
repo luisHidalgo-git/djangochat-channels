@@ -40,6 +40,7 @@ class ExamSubmission(models.Model):
     student = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     submitted_at = models.DateTimeField(auto_now_add=True)
     score = models.IntegerField(null=True, blank=True)
+    completed = models.BooleanField(default=False)  # Added this field
 
     class Meta:
         unique_together = ['exam', 'student']

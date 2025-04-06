@@ -324,59 +324,59 @@ function updateQuestionForm() {
 
     for (let i = 1; i <= count; i++) {
         container.innerHTML += `
-      <div class="question-section mb-4">
-        <h5>Pregunta ${i}</h5>
-        <div class="form-group">
-          <label>Tipo de Pregunta</label>
-          <select class="form-control" id="questionType${i}" onchange="updateChoiceInputs(${i})">
-            <option value="single">Respuesta Única</option>
-            <option value="multiple">Respuesta Múltiple</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Texto de la Pregunta</label>
-          <input type="text" class="form-control" id="questionText${i}" required>
-        </div>
-        <div id="questionChoices${i}">
-          <div class="form-group">
-            <label>Opciones</label>
-            <div class="choice-inputs">
-              <div class="input-group mb-2">
-                <div class="input-group-prepend">
-                  <div class="input-group-text">
-                    <input type="radio" name="correct${i}" value="0">
-                  </div>
-                </div>
-                <input type="text" class="form-control" placeholder="Opción 1" required>
-              </div>
-              <div class="input-group mb-2">
-                <div class="input-group-prepend">
-                  <div class="input-group-text">
-                    <input type="radio" name="correct${i}" value="1">
-                  </div>
-                </div>
-                <input type="text" class="form-control" placeholder="Opción 2" required>
-              </div>
-              <div class="input-group mb-2">
-                <div class="input-group-prepend">
-                  <div class="input-group-text">
-                    <input type="radio" name="correct${i}" value="2">
-                  </div>
-                </div>
-                <input type="text" class="form-control" placeholder="Opción 3" required>
-              </div>
-              <div class="input-group mb-2">
-                <div class="input-group-prepend">
-                  <div class="input-group-text">
-                    <input type="radio" name="correct${i}" value="3">
-                  </div>
-                </div>
-                <input type="text" class="form-control" placeholder="Opción 4" required>
-              </div>
+        <div class="question-section mb-4">
+            <h5>Pregunta ${i}</h5>
+            <div class="form-group">
+            <label>Tipo de Pregunta</label>
+            <select class="form-control" id="questionType${i}" onchange="updateChoiceInputs(${i})">
+                <option value="single">Respuesta Única</option>
+                <option value="multiple">Respuesta Múltiple</option>
+            </select>
             </div>
-          </div>
+            <div class="form-group">
+            <label>Texto de la Pregunta</label>
+            <input type="text" class="form-control" id="questionText${i}" required>
+            </div>
+            <div id="questionChoices${i}">
+            <div class="form-group">
+                <label>Opciones</label>
+                <div class="choice-inputs">
+                <div class="input-group mb-2">
+                    <div class="input-group-prepend">
+                    <div class="input-group-text">
+                        <input type="radio" name="correct${i}" value="0">
+                    </div>
+                    </div>
+                    <input type="text" class="form-control" placeholder="Opción 1" required>
+                </div>
+                <div class="input-group mb-2">
+                    <div class="input-group-prepend">
+                    <div class="input-group-text">
+                        <input type="radio" name="correct${i}" value="1">
+                    </div>
+                    </div>
+                    <input type="text" class="form-control" placeholder="Opción 2" required>
+                </div>
+                <div class="input-group mb-2">
+                    <div class="input-group-prepend">
+                    <div class="input-group-text">
+                        <input type="radio" name="correct${i}" value="2">
+                    </div>
+                    </div>
+                    <input type="text" class="form-control" placeholder="Opción 3" required>
+                </div>
+                <div class="input-group mb-2">
+                    <div class="input-group-prepend">
+                    <div class="input-group-text">
+                        <input type="radio" name="correct${i}" value="3">
+                    </div>
+                    </div>
+                    <input type="text" class="form-control" placeholder="Opción 4" required>
+                </div>
+                </div>
+            </div>
+            </div>
         </div>
-      </div>
     `;
     }
 }
