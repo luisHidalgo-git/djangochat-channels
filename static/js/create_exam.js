@@ -531,6 +531,72 @@ function submitExam(examId) {
     }));
 }
 
+function showSubmissionDetails(examId, studentName) {
+  const exam = sharedExams.find(e => e.id === examId);
+  const submission = exam.submissions.find(s => s.student.name === studentName);
+
+  const modalHtml = `
+      <div class="modal fade" id="submissionDetailsModal" tabindex="-1" role="dialog">
+          <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                  <div class="modal-header">
+                      <h5 class="modal-title">Respuestas de ${studentName}</h5>
+                      <button type="button" class="close" data-dismiss="modal">
+                          <span>&times;</span>
+                      </button>
+                  </div>
+                  <div class="modal-body">
+                      <div class="alert ${submission.score >= 60 ? 'alert-success' : 'alert-danger'}">
+                          <h4>Calificación Final: ${submission.score}%</h4>
+                          <p>Fecha de entrega: ${submission.submitted_at}</p>
+                      </div>
+                      
+                      ${exam.questions.map((question, index) => {
+                          const answer = submission.answers.find(a => a.question_id === question.id);
+                          return `
+                              <div class="question-review mb-4">
+                                  <h6>Pregunta ${index + 1}: ${question.text}</h6>
+                                  <div class="choices">
+                                      ${question.choices.map(choice => `
+                                          <div class="form-check">
+                                              <input class="form-check-input" type="${question.question_type === 'single' ? 'radio' : 'checkbox'}"
+                                                     ${answer.selected_choices.includes(choice.id) ? 'checked' : ''} disabled>
+                                              <label class="form-check-label ${choice.is_correct ? 'text-success font-weight-bold' : ''}">
+                                                  ${choice.text}
+                                                  ${choice.is_correct ? '<i class="fas fa-check text-success ml-2"></i>' : ''}
+                                              </label>
+                                          </div>
+                                      `).join('')}
+                                  </div>
+                                  <div class="alert ${answer.is_correct ? 'alert-success' : 'alert-danger'} mt-2">
+                                      ${answer.is_correct ? '¡Respuesta Correcta!' : 'Respuesta Incorrecta'}
+                                  </div>
+                              </div>
+                          `;
+                      }).join('')}
+                  </div>
+                  <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                  </div>
+              </div>
+          </div>
+      </div>
+  `;
+
+  // Remover modal anterior si existe
+  const existingModal = document.getElementById('submissionDetailsModal');
+  if (existingModal) {
+      existingModal.remove();
+  }
+
+  // Agregar nuevo modal al DOM
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+  
+  // Mostrar el modal
+  $('#submissionDetailsModal').modal('show');
+}
+
+
 // Initialize WebSocket connection when on the exams page
 if (window.location.pathname === '/chat/Sala/') {
     examSocket = initializeExamSocket();
