@@ -72,6 +72,7 @@ class ExamConsumer(AsyncWebsocketConsumer):
                 },
                 'created_at': exam.created_at.strftime('%Y-%m-%d'),
                 'total_points': exam.total_points,
+                'is_active': exam.is_active,
                 'questions': questions,
                 'submission': submission_data
             })
@@ -92,7 +93,8 @@ class ExamConsumer(AsyncWebsocketConsumer):
             title=data['title'],
             description=data['description'],
             creator=user,
-            total_points=100
+            total_points=100,
+            is_active=True
         )
 
         points_per_question = 100 // len(data['questions'])
@@ -131,6 +133,7 @@ class ExamConsumer(AsyncWebsocketConsumer):
             },
             'created_at': exam.created_at.strftime('%Y-%m-%d'),
             'total_points': exam.total_points,
+            'is_active': exam.is_active,
             'questions': [{
                 'id': q.id,
                 'text': q.text,

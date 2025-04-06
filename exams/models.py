@@ -7,6 +7,7 @@ class Exam(models.Model):
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     total_points = models.IntegerField(default=100)
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.title

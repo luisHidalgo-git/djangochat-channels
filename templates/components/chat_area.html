@@ -10,7 +10,7 @@
                         <i class="fas fa-moon"></i>
                     </a>
                 </div>
-                <a href="/chat/Sala/"
+                <a href="#" onclick="showCourses(event)"
                     class="list-group-item list-group-item-action {% if room_name == 'Sala' %} active {% endif %}">
                     <div class="d-flex align-items-center">
                         <i class="fas fa-graduation-cap mr-2"></i>
@@ -22,7 +22,7 @@
             <!-- Exams Section -->
             <div class="exams-section mb-4">
                 <h5 class="text-white">Exámenes</h5>
-                <a href="/chat/Sala/" onclick="showExams()"
+                <a href="#" onclick="showExams(event)"
                     class="list-group-item list-group-item-action">
                     <div class="d-flex align-items-center">
                         <i class="fas fa-file-alt mr-2"></i>
@@ -258,7 +258,8 @@
 </div>
 
 <script>
-function showExams() {
+function showExams(e) {
+    e.preventDefault();
     document.getElementById('currentView').textContent = 'Exámenes Disponibles';
     document.getElementById('coursesList').classList.add('d-none');
     document.getElementById('examsList').classList.remove('d-none');
@@ -267,8 +268,7 @@ function showExams() {
     examSocket.send(JSON.stringify({ action: 'request_exams' }));
 }
 
-// Add click handler for Cursos Disponibles
-document.querySelector('.courses-section a').addEventListener('click', function(e) {
+function showCourses(e) {
     e.preventDefault();
     document.getElementById('currentView').textContent = 'Cursos Disponibles';
     document.getElementById('coursesList').classList.remove('d-none');
@@ -276,5 +276,5 @@ document.querySelector('.courses-section a').addEventListener('click', function(
     document.getElementById('createCourseBtn').classList.remove('d-none');
     document.getElementById('createExamBtn').classList.add('d-none');
     courseSocket.send(JSON.stringify({ action: 'request_courses' }));
-});
+}
 </script>
