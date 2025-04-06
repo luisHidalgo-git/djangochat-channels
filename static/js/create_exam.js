@@ -116,145 +116,293 @@ function updateExamSubmission(examId, submission) {
         const submissionSection = examElement.querySelector('.submission-section');
         if (submissionSection) {
             submissionSection.innerHTML = `
-        <div class="alert ${submission.score >= 60 ? 'alert-success' : 'alert-danger'}">
-          <h4>Calificación: ${submission.score}%</h4>
-          <p>Enviado: ${submission.submitted_at}</p>
-        </div>
-      `;
+                <div class="alert ${submission.score >= 60 ? 'alert-success' : 'alert-danger'}">
+                    <h4>Calificación: ${submission.score}%</h4>
+                    <p>Enviado: ${submission.submitted_at}</p>
+                </div>
+            `;
         }
     }
 }
 
 function displayExamDetails(examId) {
+  const exam = sharedExams.find(e => e.id === examId);
+  const examsList = document.getElementById('examsList');
+  const currentUser = document.getElementById('user_username').textContent.replace(/"/g, '');
+  const currentView = document.getElementById('currentView');
+  const isCreator = exam.creator.name === currentUser;
+
+  if (!exam) return;
+
+  if (currentView) {
+      currentView.textContent = exam.title;
+  }
+
+  examsList.innerHTML = `
+  <div class="mb-4">
+    <button class="btn btn-secondary" onclick="displayExams()">
+      <i class="fas fa-arrow-left"></i> Volver a Exámenes
+    </button>
+  </div>
+
+  <div class="card" data-exam-id="${exam.id}">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">${exam.title}</h5>
+      ${isCreator ? '<span class="badge badge-primary">Creador</span>' : ''}
+    </div>
+    <div class="card-body">
+      <p class="card-text">${exam.description}</p>
+      <p><small class="text-muted">Puntos totales: ${exam.total_points}</small></p>
+      
+      ${isCreator ? `
+        <div class="submissions-list mt-4">
+          <h5>Entregas de Alumnos</h5>
+          ${exam.submissions && exam.submissions.length > 0 ? `
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead class="thead-light">
+                  <tr>
+                    <th>Alumno</th>
+                    <th>Fecha de Entrega</th>
+                    <th>Calificación</th>
+                    <th>Estado</th>
+                    <th>Detalles</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${exam.submissions.map(submission => `
+                    <tr>
+                      <td>
+                        <div class="d-flex align-items-center">
+                          <img src="${submission.student.avatar}" alt="${submission.student.name}"
+                               class="rounded-circle mr-2" style="width: 32px; height: 32px;">
+                          <span>${submission.student.name}</span>
+                        </div>
+                      </td>
+                      <td>${submission.submitted_at}</td>
+                      <td>
+                        <span class="badge badge-${submission.score >= 60 ? 'success' : 'danger'} p-2">
+                          ${submission.score}%
+                        </span>
+                      </td>
+                      <td>
+                        <span class="badge badge-${submission.score >= 60 ? 'success' : 'danger'}">
+                          ${submission.score >= 60 ? 'Aprobado' : 'No Aprobado'}
+                        </span>
+                      </td>
+                      <td>
+                        <button class="btn btn-sm btn-info" onclick="showSubmissionDetails(${exam.id}, '${submission.student.name}')">
+                          Ver Respuestas
+                        </button>
+                      </td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+            <div class="mt-3">
+              <div class="alert alert-info">
+                <h6 class="mb-2">Resumen de Resultados:</h6>
+                <p class="mb-1">Total de entregas: ${exam.submissions.length}</p>
+                <p class="mb-1">Aprobados: ${exam.submissions.filter(s => s.score >= 60).length}</p>
+                <p class="mb-0">No aprobados: ${exam.submissions.filter(s => s.score < 60).length}</p>
+              </div>
+            </div>
+          ` : '<div class="alert alert-info">Aún no hay entregas para este examen.</div>'}
+        </div>
+      ` : exam.submission ? `
+        <div class="submission-section">
+          <div class="alert ${exam.submission.score >= 60 ? 'alert-success' : 'alert-danger'}">
+            <h4>Tu Calificación: ${exam.submission.score}%</h4>
+            <p>Enviado: ${exam.submission.submitted_at}</p>
+          </div>
+          <h5 class="mt-4">Revisión de tus Respuestas:</h5>
+          ${exam.questions.map((question, index) => {
+              const userAnswer = exam.submission.answers.find(a => a.question_id === question.id);
+              return `
+                  <div class="question mb-4" data-question-id="${question.id}">
+                      <h6>Pregunta ${index + 1}: ${question.text}</h6>
+                      <div class="choices">
+                          ${question.choices.map(choice => `
+                              <div class="form-check">
+                                  <input class="form-check-input" type="${question.question_type === 'single' ? 'radio' : 'checkbox'}"
+                                         ${userAnswer?.selected_choices.includes(choice.id) ? 'checked' : ''} disabled>
+                                  <label class="form-check-label">
+                                      ${choice.text}
+                                      ${choice.is_correct ? '<i class="fas fa-check text-success ml-2"></i>' : ''}
+                                  </label>
+                              </div>
+                          `).join('')}
+                      </div>
+                      <div class="alert ${userAnswer?.is_correct ? 'alert-success' : 'alert-danger'} mt-2">
+                          ${userAnswer?.is_correct ? '¡Correcto!' : 'Incorrecto'}
+                      </div>
+                  </div>
+              `;
+          }).join('')}
+        </div>
+      ` : `
+        <form class="exam-form">
+          ${exam.questions.map((question, index) => `
+            <div class="question mb-4" data-question-id="${question.id}">
+              <h6>Pregunta ${index + 1}: ${question.text}</h6>
+              <div class="choices">
+                ${question.choices.map(choice => `
+                  <div class="form-check">
+                    <input class="form-check-input" type="${question.question_type === 'single' ? 'radio' : 'checkbox'}"
+                           name="question_${question.id}" value="${choice.id}">
+                    <label class="form-check-label">${choice.text}</label>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          `).join('')}
+          <button type="button" class="btn btn-primary" onclick="submitExam(${exam.id})">
+            Enviar Examen
+          </button>
+        </form>
+      `}
+    </div>
+    <div class="card-footer">
+      <div class="d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+          <img src="${exam.creator.avatar}" alt="${exam.creator.name}" 
+               class="rounded-circle mr-2" style="width: 24px; height: 24px;">
+          <small class="text-muted">${exam.creator.name}</small>
+        </div>
+        <small class="text-muted">${exam.created_at}</small>
+      </div>
+    </div>
+  </div>
+`;
+}
+
+// Agregar función para mostrar detalles de una entrega específica
+function showSubmissionDetails(examId, studentName) {
+  const exam = sharedExams.find(e => e.id === examId);
+  const submission = exam.submissions.find(s => s.student.name === studentName);
+  
+  if (!exam || !submission) return;
+
+  const modalHtml = `
+      <div class="modal fade" id="submissionDetailsModal" tabindex="-1" role="dialog">
+          <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                  <div class="modal-header">
+                      <h5 class="modal-title">Respuestas de ${studentName}</h5>
+                      <button type="button" class="close" data-dismiss="modal">
+                          <span>&times;</span>
+                      </button>
+                  </div>
+                  <div class="modal-body">
+                      <div class="alert ${submission.score >= 60 ? 'alert-success' : 'alert-danger'}">
+                          <h4>Calificación Final: ${submission.score}%</h4>
+                          <p class="mb-0">Fecha de entrega: ${submission.submitted_at}</p>
+                      </div>
+                      ${exam.questions.map((question, index) => {
+                          const answer = submission.answers.find(a => a.question_id === question.id);
+                          return `
+                              <div class="question-review mb-4">
+                                  <h6>Pregunta ${index + 1}: ${question.text}</h6>
+                                  <div class="choices">
+                                      ${question.choices.map(choice => `
+                                          <div class="form-check">
+                                              <input class="form-check-input" type="${question.question_type === 'single' ? 'radio' : 'checkbox'}"
+                                                     ${answer?.selected_choices.includes(choice.id) ? 'checked' : ''} disabled>
+                                              <label class="form-check-label">
+                                                  ${choice.text}
+                                                  ${choice.is_correct ? '<i class="fas fa-check text-success ml-2"></i>' : ''}
+                                              </label>
+                                          </div>
+                                      `).join('')}
+                                  </div>
+                                  <div class="alert ${answer?.is_correct ? 'alert-success' : 'alert-danger'} mt-2">
+                                      ${answer?.is_correct ? '¡Correcto!' : 'Incorrecto'}
+                                  </div>
+                              </div>
+                          `;
+                      }).join('')}
+                  </div>
+                  <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                  </div>
+              </div>
+          </div>
+      </div>
+  `;
+
+  // Remover modal anterior si existe
+  const existingModal = document.getElementById('submissionDetailsModal');
+  if (existingModal) {
+      existingModal.remove();
+  }
+
+  // Agregar nuevo modal al documento
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+  
+  // Mostrar el modal
+  $('#submissionDetailsModal').modal('show');
+}
+
+function showSubmissionDetails(examId, studentName) {
     const exam = sharedExams.find(e => e.id === examId);
-    const examsList = document.getElementById('examsList');
-    const currentUser = document.getElementById('user_username').textContent.replace(/"/g, '');
-    const currentView = document.getElementById('currentView');
-    const isCreator = exam.creator.name === currentUser;
+    const submission = exam.submissions.find(s => s.student.name === studentName);
+    
+    const modalHtml = `
+        <div class="modal fade" id="submissionDetailsModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Respuestas de ${studentName}</h5>
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span>&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert ${submission.score >= 60 ? 'alert-success' : 'alert-danger'}">
+                            <h4>Calificación Final: ${submission.score}%</h4>
+                            <p>Fecha de entrega: ${submission.submitted_at}</p>
+                        </div>
+                        ${exam.questions.map((question, index) => {
+                            const answer = submission.answers.find(a => a.question_id === question.id);
+                            return `
+                                <div class="question-review mb-4">
+                                    <h6>Pregunta ${index + 1}: ${question.text}</h6>
+                                    <div class="choices">
+                                        ${question.choices.map(choice => `
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="${question.question_type === 'single' ? 'radio' : 'checkbox'}"
+                                                       ${answer.selected_choices.includes(choice.id) ? 'checked' : ''} disabled>
+                                                <label class="form-check-label">
+                                                    ${choice.text}
+                                                    ${choice.is_correct ? '<i class="fas fa-check text-success ml-2"></i>' : ''}
+                                                </label>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                    <div class="alert ${answer.is_correct ? 'alert-success' : 'alert-danger'} mt-2">
+                                        ${answer.is_correct ? '¡Correcto!' : 'Incorrecto'}
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
 
-    if (!exam) return;
-
-    if (currentView) {
-        currentView.textContent = exam.title;
+    // Remover modal anterior si existe
+    const existingModal = document.getElementById('submissionDetailsModal');
+    if (existingModal) {
+        existingModal.remove();
     }
 
-    examsList.innerHTML = `
-    <div class="mb-4">
-      <button class="btn btn-secondary" onclick="displayExams()">
-        <i class="fas fa-arrow-left"></i> Volver a Exámenes
-      </button>
-    </div>
-
-    <div class="card" data-exam-id="${exam.id}">
-      <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">${exam.title}</h5>
-        ${isCreator ? '<span class="badge badge-primary">Creador</span>' : ''}
-      </div>
-      <div class="card-body">
-        <p class="card-text">${exam.description}</p>
-        <p><small class="text-muted">Puntos totales: ${exam.total_points}</small></p>
-        
-        ${isCreator ? `
-          <div class="submissions-list">
-            <h5>Entregas de Alumnos</h5>
-            ${exam.submissions && exam.submissions.length > 0 ? `
-              <div class="table-responsive">
-                <table class="table">
-                  <thead>
-                    <tr>
-                      <th>Alumno</th>
-                      <th>Fecha de Entrega</th>
-                      <th>Calificación</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    ${exam.submissions.map(submission => `
-                      <tr>
-                        <td>
-                          <div class="d-flex align-items-center">
-                            <img src="${submission.student.avatar}" alt="${submission.student.name}"
-                                 class="rounded-circle mr-2" style="width: 24px; height: 24px;">
-                            ${submission.student.name}
-                          </div>
-                        </td>
-                        <td>${submission.submitted_at}</td>
-                        <td>
-                          <span class="badge badge-${submission.score >= 60 ? 'success' : 'danger'}">
-                            ${submission.score}%
-                          </span>
-                        </td>
-                      </tr>
-                    `).join('')}
-                  </tbody>
-                </table>
-              </div>
-            ` : '<p>Aún no hay entregas</p>'}
-          </div>
-        ` : exam.submission ? `
-          <div class="submission-section">
-            <div class="alert ${exam.submission.score >= 60 ? 'alert-success' : 'alert-danger'}">
-              <h4>Tu Calificación: ${exam.submission.score}%</h4>
-              <p>Enviado: ${exam.submission.submitted_at}</p>
-            </div>
-            <h5 class="mt-4">Revisión de tus Respuestas:</h5>
-            ${exam.questions.map((question, index) => {
-        const userAnswer = exam.submission.answers.find(a => a.question_id === question.id);
-        return `
-                <div class="question mb-4" data-question-id="${question.id}">
-                  <h6>Pregunta ${index + 1}: ${question.text}</h6>
-                  <div class="choices">
-                    ${question.choices.map(choice => `
-                      <div class="form-check">
-                        <input class="form-check-input" type="${question.question_type === 'single' ? 'radio' : 'checkbox'}"
-                               ${userAnswer?.selected_choices.includes(choice.id) ? 'checked' : ''} disabled>
-                        <label class="form-check-label">
-                          ${choice.text}
-                          ${choice.is_correct ? '<i class="fas fa-check text-success ml-2"></i>' : ''}
-                        </label>
-                      </div>
-                    `).join('')}
-                  </div>
-                  <div class="alert ${userAnswer?.is_correct ? 'alert-success' : 'alert-danger'} mt-2">
-                    ${userAnswer?.is_correct ? '¡Correcto!' : 'Incorrecto'}
-                  </div>
-                </div>
-              `;
-    }).join('')}
-          </div>
-        ` : `
-          <form class="exam-form">
-            ${exam.questions.map((question, index) => `
-              <div class="question mb-4" data-question-id="${question.id}">
-                <h6>Pregunta ${index + 1}: ${question.text}</h6>
-                <div class="choices">
-                  ${question.choices.map(choice => `
-                    <div class="form-check">
-                      <input class="form-check-input" type="${question.question_type === 'single' ? 'radio' : 'checkbox'}"
-                             name="question_${question.id}" value="${choice.id}">
-                      <label class="form-check-label">${choice.text}</label>
-                    </div>
-                  `).join('')}
-                </div>
-              </div>
-            `).join('')}
-            <button type="button" class="btn btn-primary" onclick="submitExam(${exam.id})">
-              Enviar Examen
-            </button>
-          </form>
-        `}
-      </div>
-      <div class="card-footer">
-        <div class="d-flex justify-content-between align-items-center">
-          <div class="d-flex align-items-center">
-            <img src="${exam.creator.avatar}" alt="${exam.creator.name}" 
-                 class="rounded-circle mr-2" style="width: 24px; height: 24px;">
-            <small class="text-muted">${exam.creator.name}</small>
-          </div>
-          <small class="text-muted">${exam.created_at}</small>
-        </div>
-      </div>
-    </div>
-  `;
+    // Agregar nuevo modal al DOM
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+    
+    // Mostrar el modal
+    $('#submissionDetailsModal').modal('show');
 }
 
 function displayExams() {
@@ -286,13 +434,21 @@ function displayExams() {
             <div class="card-header d-flex justify-content-between align-items-center">
               <h5 class="mb-0">${exam.title}</h5>
               ${exam.creator.name === currentUser ?
-            '<span class="badge badge-primary">Creador</span>' : ''}
+                '<span class="badge badge-primary">Creador</span>' : ''}
             </div>
             <div class="card-body">
               <p class="card-text">${exam.description}</p>
               <p><small class="text-muted">Puntos totales: ${exam.total_points}</small></p>
               ${exam.creator.name === currentUser ? `
                 <p><small class="text-muted">Entregas: ${exam.submissions ? exam.submissions.length : 0}</small></p>
+                ${exam.submissions && exam.submissions.length > 0 ? `
+                    <div class="mt-2">
+                        <small class="text-muted">
+                            Aprobados: ${exam.submissions.filter(s => s.score >= 60).length} |
+                            Reprobados: ${exam.submissions.filter(s => s.score < 60).length}
+                        </small>
+                    </div>
+                ` : ''}
               ` : exam.submission ? `
                 <div class="alert ${exam.submission.score >= 60 ? 'alert-success' : 'alert-danger'} mb-0">
                   <strong>Tu Calificación: ${exam.submission.score}%</strong>

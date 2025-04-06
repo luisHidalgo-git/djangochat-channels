@@ -38,29 +38,56 @@ class ExamConsumer(AsyncWebsocketConsumer):
                     'choices': choices
                 })
 
-            # Get user's submission if exists
-            submission = ExamSubmission.objects.filter(
-                exam=exam,
-                student=current_user
-            ).first()
-
-            submission_data = None
-            if submission:
-                answers = []
-                for answer in submission.answers.all():
-                    selected_choices = [choice.id for choice in answer.selected_choices.all()]
-                    answers.append({
-                        'question_id': answer.question.id,
-                        'selected_choices': selected_choices,
-                        'is_correct': answer.is_correct
+            # Obtener todas las entregas para el examen si el usuario es el creador
+            submissions = []
+            if exam.creator == current_user:
+                for submission in ExamSubmission.objects.filter(exam=exam).select_related('student'):
+                    answers = []
+                    for answer in submission.answers.all().prefetch_related('selected_choices'):
+                        selected_choices = [choice.id for choice in answer.selected_choices.all()]
+                        answers.append({
+                            'question_id': answer.question.id,
+                            'selected_choices': selected_choices,
+                            'is_correct': answer.is_correct
+                        })
+                    
+                    submissions.append({
+                        'id': submission.id,
+                        'student': {
+                            'name': submission.student.username,
+                            'avatar': f'https://ui-avatars.com/api/?name={submission.student.username}&size=64&background=random'
+                        },
+                        'submitted_at': submission.submitted_at.strftime('%Y-%m-%d %H:%M'),
+                        'score': submission.score,
+                        'answers': answers
                     })
+            # Si el usuario no es el creador, solo obtener su propia entrega
+            else:
+                submission = ExamSubmission.objects.filter(
+                    exam=exam,
+                    student=current_user
+                ).first()
                 
-                submission_data = {
-                    'id': submission.id,
-                    'submitted_at': submission.submitted_at.strftime('%Y-%m-%d %H:%M'),
-                    'score': submission.score,
-                    'answers': answers
-                }
+                if submission:
+                    answers = []
+                    for answer in submission.answers.all().prefetch_related('selected_choices'):
+                        selected_choices = [choice.id for choice in answer.selected_choices.all()]
+                        answers.append({
+                            'question_id': answer.question.id,
+                            'selected_choices': selected_choices,
+                            'is_correct': answer.is_correct
+                        })
+                    
+                    submissions.append({
+                        'id': submission.id,
+                        'student': {
+                            'name': current_user.username,
+                            'avatar': f'https://ui-avatars.com/api/?name={current_user.username}&size=64&background=random'
+                        },
+                        'submitted_at': submission.submitted_at.strftime('%Y-%m-%d %H:%M'),
+                        'score': submission.score,
+                        'answers': answers
+                    })
 
             exams.append({
                 'id': exam.id,
@@ -74,7 +101,8 @@ class ExamConsumer(AsyncWebsocketConsumer):
                 'total_points': exam.total_points,
                 'is_active': exam.is_active,
                 'questions': questions,
-                'submission': submission_data
+                'submissions': submissions,
+                'submission': next((sub for sub in submissions if sub['student']['name'] == current_user.username), None)
             })
         
         return exams
