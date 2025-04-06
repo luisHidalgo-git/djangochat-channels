@@ -136,16 +136,28 @@ function createExam() {
     for (let i = 1; i <= questionCount; i++) {
         const questionType = document.getElementById(`questionType${i}`).value;
         const questionText = document.getElementById(`questionText${i}`).value;
-        const choiceInputs = document.querySelectorAll(`#questionChoices${i} input[type="text"]`);
-        const correctChoices = document.querySelectorAll(`#questionChoices${i} input[type="checkbox"]:checked, #questionChoices${i} input[type="radio"]:checked`);
+        
+        let choices = [];
+        if (questionType === 'true_false') {
+            choices = [
+                { text: 'Verdadero', is_correct: document.querySelector(`input[name="correct${i}"][value="true"]`).checked },
+                { text: 'Falso', is_correct: document.querySelector(`input[name="correct${i}"][value="false"]`).checked }
+            ];
+        } else if (questionType === 'open') {
+            choices = [{ text: '', is_correct: true }]; // Para respuestas abiertas
+        } else {
+            const choiceInputs = document.querySelectorAll(`#questionChoices${i} input[type="text"]`);
+            const correctChoices = document.querySelectorAll(`#questionChoices${i} input[type="checkbox"]:checked, #questionChoices${i} input[type="radio"]:checked`);
 
-        const choices = [];
-        choiceInputs.forEach((input, index) => {
-            choices.push({
-                text: input.value,
-                is_correct: Array.from(correctChoices).some(checkbox => checkbox.value === index.toString())
+            choiceInputs.forEach((input, index) => {
+                if (input.value.trim() !== '') { // Solo incluir opciones con texto
+                    choices.push({
+                        text: input.value,
+                        is_correct: Array.from(correctChoices).some(checkbox => checkbox.value === index.toString())
+                    });
+                }
             });
-        });
+        }
 
         questions.push({
             text: questionText,
@@ -172,6 +184,49 @@ function createExam() {
 
     $('#createExamModal').modal('hide');
     document.getElementById('createExamForm').reset();
+}
+
+function addChoice(questionNum) {
+    const choicesContainer = document.querySelector(`#questionChoices${questionNum} .choice-inputs`);
+    const choiceCount = choicesContainer.children.length;
+    const newChoice = document.createElement('div');
+    newChoice.className = 'input-group mb-2';
+    
+    const questionType = document.getElementById(`questionType${questionNum}`).value;
+    const inputType = questionType === 'single' ? 'radio' : 'checkbox';
+    
+    newChoice.innerHTML = `
+        <div class="input-group-prepend">
+            <div class="input-group-text">
+                <input type="${inputType}" name="correct${questionNum}" value="${choiceCount}">
+            </div>
+        </div>
+        <input type="text" class="form-control" placeholder="Opción ${choiceCount + 1}" required>
+        <div class="input-group-append">
+            <button class="btn btn-danger" type="button" onclick="removeChoice(this)">
+                <i class="fas fa-minus"></i>
+            </button>
+        </div>
+    `;
+    
+    choicesContainer.appendChild(newChoice);
+}
+
+function removeChoice(button) {
+    const choiceElement = button.closest('.input-group');
+    const choicesContainer = choiceElement.parentElement;
+    
+    if (choicesContainer.children.length > 2) { // Mantener al menos 2 opciones
+        choiceElement.remove();
+        
+        // Actualizar los índices de las opciones restantes
+        const choices = choicesContainer.children;
+        Array.from(choices).forEach((choice, index) => {
+            const input = choice.querySelector('input[type="radio"], input[type="checkbox"]');
+            input.value = index.toString();
+            choice.querySelector('input[type="text"]').placeholder = `Opción ${index + 1}`;
+        });
+    }
 }
 
 function displayExamDetails(examId, startTimer = false) {
@@ -255,14 +310,6 @@ function displayExamDetails(examId, startTimer = false) {
                                     </tbody>
                                 </table>
                             </div>
-                            <div class="mt-3">
-                                <div class="alert alert-info">
-                                    <h6 class="mb-2">Resumen de Resultados:</h6>
-                                    <p class="mb-1">Total de entregas: ${exam.submissions.length}</p>
-                                    <p class="mb-1">Aprobados: ${exam.submissions.filter(s => s.score >= 60).length}</p>
-                                    <p class="mb-0">No aprobados: ${exam.submissions.filter(s => s.score < 60).length}</p>
-                                </div>
-                            </div>
                         ` : '<div class="alert alert-info">Aún no hay entregas para este examen.</div>'}
                     </div>
                 ` : exam.submission ? `
@@ -277,18 +324,27 @@ function displayExamDetails(examId, startTimer = false) {
                             return `
                                 <div class="question mb-4" data-question-id="${question.id}">
                                     <h6>Pregunta ${index + 1}: ${question.text}</h6>
-                                    <div class="choices">
-                                        ${question.choices.map(choice => `
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="${question.question_type === 'single' ? 'radio' : 'checkbox'}"
-                                                       ${userAnswer?.selected_choices.includes(choice.id) ? 'checked' : ''} disabled>
-                                                <label class="form-check-label">
-                                                    ${choice.text}
-                                                    ${choice.is_correct ? '<i class="fas fa-check text-success ml-2"></i>' : ''}
-                                                </label>
+                                    ${question.question_type === 'open' ? `
+                                        <div class="form-group">
+                                            <p>Tu respuesta:</p>
+                                            <div class="border rounded p-3 bg-light">
+                                                ${userAnswer?.selected_choices[0] || 'Sin respuesta'}
                                             </div>
-                                        `).join('')}
-                                    </div>
+                                        </div>
+                                    ` : `
+                                        <div class="choices">
+                                            ${question.choices.map(choice => `
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="${question.question_type === 'single' ? 'radio' : 'checkbox'}"
+                                                           ${userAnswer?.selected_choices.includes(choice.id) ? 'checked' : ''} disabled>
+                                                    <label class="form-check-label">
+                                                        ${choice.text}
+                                                        ${choice.is_correct ? '<i class="fas fa-check text-success ml-2"></i>' : ''}
+                                                    </label>
+                                                </div>
+                                            `).join('')}
+                                        </div>
+                                    `}
                                     <div class="alert ${userAnswer?.is_correct ? 'alert-success' : 'alert-danger'} mt-2">
                                         ${userAnswer?.is_correct ? '¡Correcto!' : 'Incorrecto'}
                                     </div>
@@ -301,15 +357,24 @@ function displayExamDetails(examId, startTimer = false) {
                         ${exam.questions.map((question, index) => `
                             <div class="question mb-4" data-question-id="${question.id}">
                                 <h6>Pregunta ${index + 1}: ${question.text}</h6>
-                                <div class="choices">
-                                    ${question.choices.map(choice => `
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="${question.question_type === 'single' ? 'radio' : 'checkbox'}"
-                                                   name="question_${question.id}" value="${choice.id}">
-                                            <label class="form-check-label">${choice.text}</label>
-                                        </div>
-                                    `).join('')}
-                                </div>
+                                ${question.question_type === 'open' ? `
+                                    <div class="form-group">
+                                        <textarea class="form-control" rows="3" 
+                                                 name="question_${question.id}"
+                                                 placeholder="Escribe tu respuesta aquí..."
+                                                 required></textarea>
+                                    </div>
+                                ` : `
+                                    <div class="choices">
+                                        ${question.choices.map(choice => `
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="${question.question_type === 'single' ? 'radio' : 'checkbox'}"
+                                                       name="question_${question.id}" value="${choice.id}">
+                                                <label class="form-check-label">${choice.text}</label>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                `}
                             </div>
                         `).join('')}
                         <button type="button" class="btn btn-primary" onclick="submitExam(${exam.id})">
@@ -330,11 +395,6 @@ function displayExamDetails(examId, startTimer = false) {
             </div>
         </div>
     `;
-
-    // Si el usuario no es el creador y no tiene una entrega, mostrar el modal de instrucciones
-    if (!isCreator && !exam.submission && startTimer) {
-        startExamTimer();
-    }
 }
 
 function displayExams() {
@@ -423,6 +483,8 @@ function updateQuestionForm() {
                     <select class="form-control" id="questionType${i}" onchange="updateChoiceInputs(${i})">
                         <option value="single">Respuesta Única</option>
                         <option value="multiple">Respuesta Múltiple</option>
+                        <option value="true_false">Verdadero/Falso</option>
+                        <option value="open">Respuesta Abierta</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -440,6 +502,11 @@ function updateQuestionForm() {
                                     </div>
                                 </div>
                                 <input type="text" class="form-control" placeholder="Opción 1" required>
+                                <div class="input-group-append">
+                                    <button class="btn btn-danger" type="button" onclick="removeChoice(this)">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                </div>
                             </div>
                             <div class="input-group mb-2">
                                 <div class="input-group-prepend">
@@ -448,24 +515,16 @@ function updateQuestionForm() {
                                     </div>
                                 </div>
                                 <input type="text" class="form-control" placeholder="Opción 2" required>
-                            </div>
-                            <div class="input-group mb-2">
-                                <div class="input-group-prepend">
-                                    <div class="input-group-text">
-                                        <input type="radio" name="correct${i}" value="2">
-                                    </div>
+                                <div class="input-group-append">
+                                    <button class="btn btn-danger" type="button" onclick="removeChoice(this)">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
                                 </div>
-                                <input type="text" class="form-control" placeholder="Opción 3" required>
-                            </div>
-                            <div class="input-group mb-2">
-                                <div class="input-group-prepend">
-                                    <div class="input-group-text">
-                                        <input type="radio" name="correct${i}" value="3">
-                                    </div>
-                                </div>
-                                <input type="text" class="form-control" placeholder="Opción 4" required>
                             </div>
                         </div>
+                        <button type="button" class="btn btn-success btn-sm mt-2" onclick="addChoice(${i})">
+                            <i class="fas fa-plus"></i> Añadir Opción
+                        </button>
                     </div>
                 </div>
             </div>
@@ -476,16 +535,38 @@ function updateQuestionForm() {
 function updateChoiceInputs(questionNum) {
     const type = document.getElementById(`questionType${questionNum}`).value;
     const container = document.getElementById(`questionChoices${questionNum}`);
-    const inputs = container.querySelectorAll('.input-group-text input');
-
-    inputs.forEach(input => {
-        input.type = type === 'single' ? 'radio' : 'checkbox';
-        if (type === 'single') {
-            input.name = `correct${questionNum}`;
-        } else {
-            input.name = `correct${questionNum}_${input.value}`;
-        }
-    });
+    
+    if (type === 'true_false') {
+        container.innerHTML = `
+            <div class="form-group">
+                <div class="custom-control custom-radio mb-2">
+                    <input type="radio" id="true${questionNum}" name="correct${questionNum}" value="true" class="custom-control-input" required>
+                    <label class="custom-control-label" for="true${questionNum}">Verdadero</label>
+                </div>
+                <div class="custom-control custom-radio">
+                    <input type="radio" id="false${questionNum}" name="correct${questionNum}" value="false" class="custom-control-input" required>
+                    <label class="custom-control-label" for="false${questionNum}">Falso</label>
+                </div>
+            </div>
+        `;
+    } else if (type === 'open') {
+        container.innerHTML = `
+            <div class="form-group">
+                <label>Respuesta Modelo (opcional)</label>
+                <textarea class="form-control" rows="3" placeholder="Escribe aquí la respuesta modelo..."></textarea>
+            </div>
+        `;
+    } else {
+        const inputs = container.querySelectorAll('.input-group-text input');
+        inputs.forEach(input => {
+            input.type = type === 'single' ? 'radio' : 'checkbox';
+            if (type === 'single') {
+                input.name = `correct${questionNum}`;
+            } else {
+                input.name = `correct${questionNum}_${input.value}`;
+            }
+        });
+    }
 }
 
 function submitExam(examId) {
@@ -499,18 +580,27 @@ function submitExam(examId) {
     questions.forEach(question => {
         const questionId = parseInt(question.dataset.questionId);
         const examQuestion = exam.questions.find(q => q.id === questionId);
-        const selectedInputs = question.querySelectorAll('input:checked');
         
-        if (selectedInputs.length === 0) {
-            allQuestionsAnswered = false;
+        if (examQuestion.question_type === 'open') {
+            const textarea = question.querySelector('textarea');
+            if (!textarea.value.trim()) {
+                allQuestionsAnswered = false;
+            }
+            answers.push({
+                questionId: questionId,
+                selectedChoices: [textarea.value.trim()]
+            });
+        } else {
+            const selectedInputs = question.querySelectorAll('input:checked');
+            if (selectedInputs.length === 0) {
+                allQuestionsAnswered = false;
+            }
+            const selectedChoices = Array.from(selectedInputs).map(input => parseInt(input.value));
+            answers.push({
+                questionId: questionId,
+                selectedChoices: selectedChoices
+            });
         }
-
-        const selectedChoices = Array.from(selectedInputs).map(input => parseInt(input.value));
-        
-        answers.push({
-            questionId: questionId,
-            selectedChoices: selectedChoices
-        });
     });
 
     if (!allQuestionsAnswered) {
