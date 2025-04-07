@@ -399,4 +399,32 @@ select.form-control {
         min-width: 200px;
         margin-bottom: 5px;
     }
+
+    /* New styles for mobile header */
+    .mobile-header {
+        position: relative;
+        padding-top: 60px !important;
+    }
+
+    .mobile-header h3 {
+        margin: 0;
+        text-align: center;
+        width: 100%;
+    }
+
+    #actionButtons {
+        position: absolute;
+        right: 15px;
+        top: 70px;
+    }
+
+    #actionButtons .btn {
+        width: 40px;
+        height: 40px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+    }
 }
