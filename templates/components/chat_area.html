@@ -1,8 +1,18 @@
 {% load static %}
 <div class="container-fluid h-100">
+    <!-- Mobile Toggle Button -->
+    <button class="toggle-sidebar d-md-none" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </button>
+
     <div class="row h-100">
         <!-- User List Sidebar -->
-        <div class="col-3 sidebar p-3 chats">
+        <div class="col-md-3 sidebar p-3 chats">
+            <!-- Close Button for Mobile -->
+            <button class="close-sidebar d-md-none" onclick="toggleSidebar()">
+                <i class="fas fa-times"></i>
+            </button>
+
             <!-- Cursos Section -->
             <div class="courses-section mb-4">
                 <div class="d-flex justify-content-between align-items-center">
@@ -42,7 +52,7 @@
                 {% for item in user_last_messages %}
                 <a href="{% url 'chat' item.user.username %}"
                     class="list-group-item list-group-item-action {% if item.user.username == room_name and room_name != 'Sala' %} active {% endif %}"
-                    data-id="{{ room_name }}" data-username="{{ item.user.username }}">
+                    data-id="{{ room_name }}" data-username="{{ item.user.username }}" onclick="toggleSidebar()">
                     <div class="d-flex align-items-center">
                         <div class="position-relative">
                             <img src="https://ui-avatars.com/api/?name={{ item.user.username|urlencode }}&size=64&background=random"
@@ -97,7 +107,7 @@
         </div>
 
         <!-- Chat Area -->
-        <div class="col-9 d-flex flex-column chat" data-id="{{ room_name }}">
+        <div class="col-md-9 d-flex flex-column chat" data-id="{{ room_name }}">
             {% if room_name == 'Sala' %}
             <!-- Main Content Area -->
             <div class="h-100 d-flex flex-column">
@@ -257,3 +267,19 @@
         </div>
     </div>
 </div>
+
+<script>
+function toggleSidebar() {
+    const sidebar = document.querySelector('.sidebar');
+    sidebar.classList.toggle('show');
+}
+
+// Cerrar sidebar al hacer clic en un enlace (en móvil)
+document.querySelectorAll('.sidebar a').forEach(link => {
+    link.addEventListener('click', () => {
+        if (window.innerWidth <= 768) {
+            toggleSidebar();
+        }
+    });
+});
+</script>
