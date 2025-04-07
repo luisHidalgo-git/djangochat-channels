@@ -5,6 +5,18 @@ document.addEventListener("DOMContentLoaded", function () {
     chatbox.scrollTop = chatbox.scrollHeight;
   }
 
+  function showLoading(minDuration = 500) {
+    const loader = document.querySelector('.loading-overlay');
+    loader.classList.add('show');
+    return new Promise(resolve => {
+      setTimeout(resolve, minDuration);
+    });
+  }
+
+  function hideLoading() {
+    document.querySelector('.loading-overlay').classList.remove('show');
+  }
+
   function createStatusIndicator(status) {
     const statusDiv = document.createElement('div');
     statusDiv.className = 'message-status';
@@ -58,14 +70,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Manejar la selección activa en la barra lateral
   document.querySelectorAll('.list-group-item').forEach(item => {
-    item.addEventListener('click', function(e) {
-      // Si el enlace es de un usuario (chat)
+    item.addEventListener('click', async function(e) {
       if (this.closest('.contacts')) {
-        // Remover active de todos los elementos
+        await showLoading();
         document.querySelectorAll('.list-group-item').forEach(el => el.classList.remove('active'));
-        // Añadir active solo al elemento clickeado
         this.classList.add('active');
-        // Asegurarse de que los enlaces de cursos y exámenes no estén activos
         document.querySelector('.courses-section a').classList.remove('active');
         document.querySelector('.exams-section a').classList.remove('active');
       }
@@ -84,7 +93,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const messageContent = document.createElement("div");
     messageContent.className = "d-flex align-items-center position-relative";
 
-    // Add options dropdown for sender's messages
     if (data.sender === userUsername) {
       const dropdownHtml = `
         <div class="dropdown message-options">
@@ -111,7 +119,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     messageContainer.appendChild(messageContent);
 
-    // Add labels if needed
     if (data.message_type === 'urgent') {
       const urgentLabel = document.createElement("div");
       urgentLabel.className = "message-label urgent-label";
@@ -157,8 +164,9 @@ document.addEventListener("DOMContentLoaded", function () {
   };
 
   // Handle message options
-  $(document).on('click', '.set-urgent', function(e) {
+  $(document).on('click', '.set-urgent', async function(e) {
     e.preventDefault();
+    await showLoading();
     const messageContainer = $(this).closest('.chat-message');
     const messageId = messageContainer.data('messageId');
     
@@ -167,6 +175,7 @@ document.addEventListener("DOMContentLoaded", function () {
       message_id: messageId,
       message_type: 'urgent'
     }));
+    hideLoading();
   });
 
   $(document).on('click', '.set-subject', function(e) {
@@ -177,7 +186,8 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // Handle subject selection
-  $('#subjectModal .list-group-item').click(function() {
+  $('#subjectModal .list-group-item').click(async function() {
+    await showLoading();
     const subject = $(this).data('subject');
     const messageContainer = $('#subjectModal').data('messageContainer');
     const messageId = messageContainer.data('messageId');
@@ -189,6 +199,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }));
     
     $('#subjectModal').modal('hide');
+    hideLoading();
   });
 
   $(document).on('click', '.show-details', function(e) {
@@ -210,12 +221,13 @@ document.addEventListener("DOMContentLoaded", function () {
     $('#messageDetailsModal').modal('show');
   });
 
-  document.querySelector("#submit_button").onclick = function (e) {
+  document.querySelector("#submit_button").onclick = async function (e) {
     var messageInput = document.querySelector("#my_input").value;
 
     if (messageInput.length == 0) {
       alert("Add some input first or press the Send button!");
     } else {
+      await showLoading();
       chatSocket.send(
         JSON.stringify({
           action: 'new_message',
@@ -227,10 +239,11 @@ document.addEventListener("DOMContentLoaded", function () {
         })
       );
       document.querySelector("#my_input").value = "";
+      hideLoading();
     }
   };
 
-  chatSocket.onmessage = function (e) {
+  chatSocket.onmessage = async function (e) {
     const data = JSON.parse(e.data);
 
     if (data.type === 'status') {
@@ -252,9 +265,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     if (data.action === 'message_updated') {
+      await showLoading();
       const messageContainer = $(`.chat-message[data-message-id="${data.message_id}"]`);
       
-      // Update message type
       if (data.message_type) {
         messageContainer.attr('data-type', data.message_type);
         if (data.message_type === 'urgent') {
@@ -265,7 +278,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       }
       
-      // Update subject
       if (data.subject) {
         messageContainer.attr('data-subject', data.subject);
         messageContainer.find('.subject-label').remove();
@@ -275,11 +287,12 @@ document.addEventListener("DOMContentLoaded", function () {
         const label = $(`<div class="message-label subject-label">${subjectText}</div>`);
         messageContainer.append(label);
       }
-      
+      hideLoading();
       return;
     }
 
     if (data.message && data.sender) {
+      await showLoading();
       const chatbox = document.querySelector("#chatbox");
       const noMessages = document.querySelector(".no-messages");
       if (noMessages) {
@@ -290,7 +303,6 @@ document.addEventListener("DOMContentLoaded", function () {
       chatbox.appendChild(messageElement);
       scrollToBottom();
 
-      // Update unread count if message is received
       if (data.sender !== userUsername) {
         updateUnreadCount(data.sender, data.unread_count);
       }
@@ -322,6 +334,7 @@ document.addEventListener("DOMContentLoaded", function () {
           contacts.appendChild(chat);
         });
       }
+      hideLoading();
     }
   };
   
