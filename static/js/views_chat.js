@@ -30,46 +30,43 @@ document.addEventListener('DOMContentLoaded', function() {
         const currentView = viewParam || 'courses';
         localStorage.setItem('currentView', currentView);
         
-        // Update active states based on current view
+        const currentViewElement = document.getElementById('currentView');
+        const coursesListElement = document.getElementById('coursesList');
+        const examsListElement = document.getElementById('examsList');
+        const createCourseBtnElement = document.getElementById('createCourseBtn');
+        const createExamBtnElement = document.getElementById('createExamBtn');
+        
+        // Ensure the correct title and visibility are set immediately
         if (currentView === 'exams') {
+            // Exam view settings
+            currentViewElement.textContent = 'Exámenes Disponibles';
+            coursesListElement.classList.add('d-none');
+            examsListElement.classList.remove('d-none');
+            createCourseBtnElement.classList.add('d-none');
+            createExamBtnElement.classList.remove('d-none');
+            
             document.querySelector('.courses-section a').classList.remove('active');
             document.querySelector('.exams-section a').classList.add('active');
             document.querySelectorAll('.contacts a').forEach(a => a.classList.remove('active'));
             
-            document.getElementById('currentView').textContent = 'Exámenes Disponibles';
-            document.getElementById('coursesList').classList.add('d-none');
-            document.getElementById('examsList').classList.remove('d-none');
-            document.getElementById('createCourseBtn').classList.add('d-none');
-            document.getElementById('createExamBtn').classList.remove('d-none');
             if (examSocket) {
                 examSocket.send(JSON.stringify({ action: 'request_exams' }));
             }
         } else if (currentView === 'courses') {
+            // Course view settings
+            currentViewElement.textContent = 'Todos los Cursos';
+            coursesListElement.classList.remove('d-none');
+            examsListElement.classList.add('d-none');
+            createCourseBtnElement.classList.remove('d-none');
+            createExamBtnElement.classList.add('d-none');
+            
             document.querySelector('.courses-section a').classList.add('active');
             document.querySelector('.exams-section a').classList.remove('active');
             document.querySelectorAll('.contacts a').forEach(a => a.classList.remove('active'));
             
-            document.getElementById('currentView').textContent = 'Cursos Disponibles';
-            document.getElementById('coursesList').classList.remove('d-none');
-            document.getElementById('examsList').classList.add('d-none');
-            document.getElementById('createCourseBtn').classList.remove('d-none');
-            document.getElementById('createExamBtn').classList.add('d-none');
             if (courseSocket) {
                 courseSocket.send(JSON.stringify({ action: 'request_courses' }));
             }
         }
     }
-
-    // Manejar clics en los enlaces de chat
-    document.querySelectorAll('.contacts a').forEach(chatLink => {
-        chatLink.addEventListener('click', function() {
-            // Remover active de todos los elementos
-            document.querySelectorAll('.list-group-item').forEach(el => el.classList.remove('active'));
-            // Añadir active solo al elemento clickeado
-            this.classList.add('active');
-            // Asegurarse de que los enlaces de cursos y exámenes no estén activos
-            document.querySelector('.courses-section a').classList.remove('active');
-            document.querySelector('.exams-section a').classList.remove('active');
-        });
-    });
 });
