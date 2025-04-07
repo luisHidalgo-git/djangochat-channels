@@ -21,11 +21,22 @@ function toggleFilter(button, filterType, value) {
         input.value = value;
     }
 
-    // Prevenir el comportamiento por defecto y enviar el formulario manualmente
-    const form = button.closest('form');
-    const formData = new FormData(form);
-    const queryString = new URLSearchParams(formData).toString();
-    const newUrl = `${window.location.pathname}?${queryString}`;
+    // Obtener todos los valores de los filtros
+    const searchQuery = document.querySelector('input[name="search"]').value;
+    const messageType = document.getElementById('messageType').value;
+    const subject = document.getElementById('subject').value;
+    const status = document.getElementById('status').value;
+    const direction = document.getElementById('direction').value;
+
+    // Construir la URL con los parámetros activos
+    const params = new URLSearchParams();
+    if (searchQuery) params.append('search', searchQuery);
+    if (messageType) params.append('message_type', messageType);
+    if (subject) params.append('subject', subject);
+    if (status) params.append('status', status);
+    if (direction) params.append('direction', direction);
+
+    const newUrl = `${window.location.pathname}?${params.toString()}`;
     
     // Actualizar la URL sin recargar la página
     window.history.pushState({}, '', newUrl);
@@ -39,6 +50,7 @@ function toggleFilter(button, filterType, value) {
             const newChatbox = doc.getElementById('chatbox');
             if (newChatbox) {
                 document.getElementById('chatbox').innerHTML = newChatbox.innerHTML;
+                scrollToBottom();
             }
         });
 }
@@ -62,6 +74,26 @@ function initializeFilterStates() {
         }
     });
 }
+
+// Función para hacer scroll al final del chat
+function scrollToBottom() {
+    const chatbox = document.getElementById('chatbox');
+    if (chatbox) {
+        chatbox.scrollTop = chatbox.scrollHeight;
+    }
+}
+
+// Manejar la búsqueda en tiempo real
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.querySelector('input[name="search"]');
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const button = document.createElement('button');
+            button.style.display = 'none';
+            toggleFilter(button, 'search', this.value);
+        });
+    }
+});
 
 // Cerrar sidebar al hacer clic en un enlace (en móvil)
 document.querySelectorAll('.sidebar a').forEach(link => {
