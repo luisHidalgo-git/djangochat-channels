@@ -159,7 +159,7 @@ function createExam() {
 
         questions.push({
             text: questionText,
-            type: questionType,
+            type: questionType === 'true_false' ? 'single' : questionType,
             choices: choices
         });
     }
@@ -296,6 +296,7 @@ function updateChoiceInputs(questionNum) {
     if (type === 'true_false') {
         container.innerHTML = `
             <div class="form-group">
+                <label>Seleccione la respuesta correcta:</label>
                 <div class="custom-control custom-radio mb-2">
                     <input type="radio" id="true${questionNum}" name="correct${questionNum}" value="true" class="custom-control-input" required>
                     <label class="custom-control-label" for="true${questionNum}">Verdadero</label>
@@ -545,7 +546,7 @@ function showSubmissionDetails(examId, studentName) {
                     <div class="modal-header">
                         <h5 class="modal-title">Respuestas de ${studentName}</h5>
                         <button type="button" class="close" data-dismiss="modal">
-                            <span>&times;</span>
+                            <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
