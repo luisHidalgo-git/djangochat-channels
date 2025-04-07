@@ -230,6 +230,20 @@ label {
     color: var(--text-secondary) !important;
 }
 
+/* Estilos específicos para las estadísticas del examen */
+.theme-dark .exam-stats .text-muted {
+    color: var(--text-primary) !important;
+}
+
+.theme-dark .exam-stats h4,
+.theme-dark .exam-stats small {
+    color: var(--text-primary) !important;
+}
+
+.theme-dark .exam-stats i {
+    color: var(--text-primary) !important;
+}
+
 .theme-toggle {
     cursor: pointer;
     padding: 8px;
