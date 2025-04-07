@@ -26,6 +26,10 @@
     --dropdown-hover: #f8f9fa;
     --active-item-bg: #435f7a;
     --active-item-text: #ffffff;
+    --table-header-bg: #f8f9fa;
+    --table-header-text: #000000;
+    --table-cell-text: #000000;
+    --table-border: #dee2e6;
 }
 
 /* Tema Oscuro */
@@ -56,6 +60,10 @@
     --dropdown-hover: #3d3d3d;
     --active-item-bg: #3d3d3d;
     --active-item-text: #ffffff;
+    --table-header-bg: #2d2d2d;
+    --table-header-text: #ffffff;
+    --table-cell-text: #ffffff;
+    --table-border: #404040;
 }
 
 /* Aplicar variables */
@@ -169,6 +177,57 @@ label {
 .dropdown-item:hover {
     background-color: var(--dropdown-hover);
     color: var(--dropdown-text);
+}
+
+/* Estilos para la tabla de entregas de exámenes */
+.table {
+    color: var(--table-cell-text) !important;
+    border-color: var(--table-border);
+}
+
+.table thead th {
+    background-color: var(--table-header-bg);
+    color: var(--table-header-text);
+    border-color: var(--table-border);
+}
+
+.table td {
+    color: var(--table-cell-text) !important;
+    border-color: var(--table-border);
+}
+
+.table td span {
+    color: var(--table-cell-text) !important;
+}
+
+.table td small {
+    color: var(--text-secondary) !important;
+}
+
+/* Estilos específicos para las entregas de exámenes */
+.theme-dark .table tbody tr td {
+    color: var(--table-cell-text) !important;
+}
+
+.theme-dark .table tbody tr td span:not(.badge) {
+    color: var(--table-cell-text) !important;
+}
+
+.theme-dark .table tbody tr td small {
+    color: var(--text-secondary) !important;
+}
+
+/* Estilos específicos para la tabla de exámenes */
+.theme-dark .table td .d-flex {
+    color: var(--table-cell-text) !important;
+}
+
+.theme-dark .table td .d-flex span {
+    color: var(--table-cell-text) !important;
+}
+
+.theme-dark .table td .d-flex small {
+    color: var(--text-secondary) !important;
 }
 
 .theme-toggle {
