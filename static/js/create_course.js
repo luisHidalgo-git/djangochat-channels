@@ -103,6 +103,7 @@ function displayCourses() {
   const currentView = document.getElementById('currentView');
   const currentUser = document.getElementById('user_username').textContent.replace(/"/g, '');
 
+  // Siempre establecer el título como "Todos los Cursos" cuando se muestran los cursos
   if (currentView) {
     currentView.textContent = 'Todos los Cursos';
   }
