@@ -1,6 +1,6 @@
 function showExams(e) {
     e.preventDefault();
-    window.location.href = '/chat/Sala/';
+    window.location.href = '/chat/Sala/?view=exams';
     localStorage.setItem('currentView', 'exams');
     
     // Update active states
@@ -11,7 +11,7 @@ function showExams(e) {
 
 function showCourses(e) {
     e.preventDefault();
-    window.location.href = '/chat/Sala/';
+    window.location.href = '/chat/Sala/?view=courses';
     localStorage.setItem('currentView', 'courses');
     
     // Update active states
@@ -23,8 +23,12 @@ function showCourses(e) {
 // Verificar la vista actual al cargar la página
 document.addEventListener('DOMContentLoaded', function() {
     if (window.location.pathname === '/chat/Sala/') {
-        // Obtener la vista actual del localStorage o usar 'courses' como valor predeterminado
-        const currentView = localStorage.getItem('currentView') || 'courses';
+        const urlParams = new URLSearchParams(window.location.search);
+        const viewParam = urlParams.get('view');
+        
+        // Set current view based on URL parameter or default to 'courses'
+        const currentView = viewParam || 'courses';
+        localStorage.setItem('currentView', currentView);
         
         // Update active states based on current view
         if (currentView === 'exams') {

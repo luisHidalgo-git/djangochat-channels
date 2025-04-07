@@ -1,3 +1,4 @@
+/* Add your custom styles here */
 .profile-icon {
     color: #12151a;
 }
@@ -123,6 +124,13 @@
 .chats .list-group-item.active,
 .courses-section .list-group-item.active,
 .exams-section .list-group-item.active {
+    background-color: #435f7a !important;
+    color: white !important;
+    border-color: #435f7a !important;
+}
+
+/* Nuevo: Estilo activo específico para el enlace de cursos */
+.courses-section .list-group-item[href="/chat/Sala/"].active {
     background-color: #435f7a !important;
     color: white !important;
     border-color: #435f7a !important;
