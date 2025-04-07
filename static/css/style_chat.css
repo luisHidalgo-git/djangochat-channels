@@ -305,7 +305,7 @@ select.form-control {
 
     .col-9 {
         width: 100%;
-        padding-top: 60px; /* Space for the toggle button */
+        padding-top: 60px;
     }
 
     .chat-input {
@@ -426,5 +426,48 @@ select.form-control {
         align-items: center;
         justify-content: center;
         border-radius: 50%;
+    }
+
+    /* Updated mobile header controls styles */
+    .mobile-header-controls {
+        margin-bottom: 20px;
+    }
+
+    .mobile-header-controls .theme-toggle {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        background-color: transparent;
+        border-radius: 50%;
+        transition: background-color 0.3s;
+    }
+
+    .mobile-header-controls .theme-toggle:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .mobile-header-controls .close-sidebar {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        background-color: transparent;
+        border-radius: 50%;
+        transition: background-color 0.3s;
+        position: static;
+    }
+
+    .mobile-header-controls .close-sidebar:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    /* Hide desktop theme toggle in mobile */
+    .courses-section .theme-toggle {
+        display: none !important;
     }
 }

@@ -8,16 +8,23 @@
     <div class="row h-100">
         <!-- User List Sidebar -->
         <div class="col-md-3 sidebar p-3 chats">
-            <!-- Close Button for Mobile -->
-            <button class="close-sidebar d-md-none" onclick="toggleSidebar()">
-                <i class="fas fa-times"></i>
-            </button>
+            <!-- Mobile Header Controls -->
+            <div class="mobile-header-controls d-md-none">
+                <div class="d-flex justify-content-end align-items-center">
+                    <a href="#" class="theme-toggle mr-3" onclick="toggleTheme()">
+                        <i class="fas fa-moon"></i>
+                    </a>
+                    <button class="close-sidebar" onclick="toggleSidebar()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
 
             <!-- Cursos Section -->
             <div class="courses-section mb-4">
                 <div class="d-flex justify-content-between align-items-center">
                     <h5 class="text-white">Cursos</h5>
-                    <a href="#" class="theme-toggle" onclick="toggleTheme()">
+                    <a href="#" class="theme-toggle d-none d-md-inline-flex" onclick="toggleTheme()">
                         <i class="fas fa-moon"></i>
                     </a>
                 </div>
