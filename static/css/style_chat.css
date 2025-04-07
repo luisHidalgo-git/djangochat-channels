@@ -324,17 +324,79 @@ select.form-control {
     }
 
     .form-row {
-        flex-direction: column;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 5px;
     }
 
-    .form-row > .col,
-    .form-row > [class*="col-"] {
+    .form-row > .col-auto {
+        flex: 0 0 auto;
+        width: auto;
+        margin-bottom: 5px;
+    }
+
+    .form-row .search-input {
+        width: 100%;
         margin-bottom: 10px;
+    }
+
+    .form-row .filter-button {
+        padding: 8px;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+    }
+
+    .filter-button i {
+        font-size: 1.2rem;
+    }
+
+    .filter-label {
+        display: none;
+    }
+
+    .filter-icon {
+        display: inline-block;
     }
 
     .logout {
         position: fixed;
         bottom: 0;
         width: 100%;
+    }
+
+    .mobile-search-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        justify-content: center;
+        padding: 10px;
+    }
+
+    .mobile-filter-btn {
+        width: 40px;
+        height: 40px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background-color: #435f7a;
+        border: none;
+        color: white;
+    }
+
+    .mobile-filter-btn.active {
+        background-color: #28a745;
+    }
+
+    .mobile-search-input {
+        flex: 1;
+        min-width: 200px;
+        margin-bottom: 5px;
     }
 }

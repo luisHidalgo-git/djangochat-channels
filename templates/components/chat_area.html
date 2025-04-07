@@ -153,51 +153,68 @@
                 </div>
 
                 <!-- Enhanced Search Form -->
-                <form method="GET" action="" class="p-3 ml-auto">
-                    <div class="form-row align-items-center">
-                        <div class="col-auto">
-                            <input type="text" name="search" class="form-control" placeholder="Search messages..."
-                                value="{{ search_query }}">
-                        </div>
-                        <div class="col-auto">
-                            <select name="message_type" class="form-control">
-                                <option value="">Tipo de Mensaje</option>
-                                <option value="normal" {% if message_type == 'normal' %}selected{% endif %}>Normal
-                                </option>
-                                <option value="urgent" {% if message_type == 'urgent' %}selected{% endif %}>Urgente
-                                </option>
-                            </select>
-                        </div>
-                        <div class="col-auto">
-                            <select name="subject" class="form-control">
-                                <option value="all">Todas las Materias</option>
-                                <option value="programming" {% if subject == 'programming' %}selected{% endif %}>
-                                    Programación</option>
-                                <option value="math" {% if subject == 'math' %}selected{% endif %}>Matemáticas</option>
-                                <option value="english" {% if subject == 'english' %}selected{% endif %}>Inglés</option>
-                            </select>
-                        </div>
-                        <div class="col-auto">
-                            <select name="status" class="form-control">
-                                <option value="all">Todos los Estados</option>
-                                <option value="sent" {% if status == 'sent' %}selected{% endif %}>Enviado</option>
-                                <option value="delivered" {% if status == 'delivered' %}selected{% endif %}>Entregado
-                                </option>
-                                <option value="read" {% if status == 'read' %}selected{% endif %}>Leído</option>
-                            </select>
-                        </div>
-                        <div class="col-auto">
-                            <select name="direction" class="form-control">
-                                <option value="">Dirección</option>
-                                <option value="sent" {% if direction == 'sent' %}selected{% endif %}>Enviados</option>
-                                <option value="received" {% if direction == 'received' %}selected{% endif %}>Recibidos
-                                </option>
-                            </select>
-                        </div>
-                        <div class="col-auto">
-                            <button type="submit" class="btn btn-primary">Buscar</button>
-                        </div>
-                    </div>
+                <form method="GET" action="" class="mobile-search-container ml-auto">
+                    <input type="text" name="search" class="form-control mobile-search-input" 
+                           placeholder="Buscar mensajes..." value="{{ search_query }}">
+                    
+                    <button type="button" class="mobile-filter-btn {% if message_type == 'normal' %}active{% endif %}" 
+                            onclick="toggleFilter(this, 'message_type', 'normal')" title="Mensajes Normales">
+                        <i class="fas fa-comment"></i>
+                    </button>
+                    
+                    <button type="button" class="mobile-filter-btn {% if message_type == 'urgent' %}active{% endif %}" 
+                            onclick="toggleFilter(this, 'message_type', 'urgent')" title="Mensajes Urgentes">
+                        <i class="fas fa-exclamation-circle"></i>
+                    </button>
+                    
+                    <button type="button" class="mobile-filter-btn {% if subject == 'programming' %}active{% endif %}" 
+                            onclick="toggleFilter(this, 'subject', 'programming')" title="Programación">
+                        <i class="fas fa-code"></i>
+                    </button>
+                    
+                    <button type="button" class="mobile-filter-btn {% if subject == 'math' %}active{% endif %}" 
+                            onclick="toggleFilter(this, 'subject', 'math')" title="Matemáticas">
+                        <i class="fas fa-square-root-alt"></i>
+                    </button>
+                    
+                    <button type="button" class="mobile-filter-btn {% if subject == 'english' %}active{% endif %}" 
+                            onclick="toggleFilter(this, 'subject', 'english')" title="Inglés">
+                        <i class="fas fa-language"></i>
+                    </button>
+                    
+                    <button type="button" class="mobile-filter-btn {% if status == 'sent' %}active{% endif %}" 
+                            onclick="toggleFilter(this, 'status', 'sent')" title="Enviados">
+                        <i class="fas fa-check"></i>
+                    </button>
+                    
+                    <button type="button" class="mobile-filter-btn {% if status == 'delivered' %}active{% endif %}" 
+                            onclick="toggleFilter(this, 'status', 'delivered')" title="Entregados">
+                        <i class="fas fa-check-double"></i>
+                    </button>
+                    
+                    <button type="button" class="mobile-filter-btn {% if status == 'read' %}active{% endif %}" 
+                            onclick="toggleFilter(this, 'status', 'read')" title="Leídos">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    
+                    <button type="button" class="mobile-filter-btn {% if direction == 'sent' %}active{% endif %}" 
+                            onclick="toggleFilter(this, 'direction', 'sent')" title="Mensajes Enviados">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                    
+                    <button type="button" class="mobile-filter-btn {% if direction == 'received' %}active{% endif %}" 
+                            onclick="toggleFilter(this, 'direction', 'received')" title="Mensajes Recibidos">
+                        <i class="fas fa-inbox"></i>
+                    </button>
+
+                    <input type="hidden" id="messageType" name="message_type" value="{{ message_type }}">
+                    <input type="hidden" id="subject" name="subject" value="{{ subject }}">
+                    <input type="hidden" id="status" name="status" value="{{ status }}">
+                    <input type="hidden" id="direction" name="direction" value="{{ direction }}">
+                    
+                    <button type="submit" class="btn btn-primary mobile-filter-btn">
+                        <i class="fas fa-search"></i>
+                    </button>
                 </form>
             </div>
 
@@ -272,6 +289,23 @@
 function toggleSidebar() {
     const sidebar = document.querySelector('.sidebar');
     sidebar.classList.toggle('show');
+}
+
+function toggleFilter(button, filterType, value) {
+    const input = document.getElementById(filterType);
+    if (input.value === value) {
+        input.value = '';
+        button.classList.remove('active');
+    } else {
+        // Desactivar otros botones del mismo tipo
+        if (filterType === 'message_type' || filterType === 'status' || filterType === 'direction') {
+            document.querySelectorAll(`[onclick*="toggleFilter(this, '${filterType}'"]`).forEach(btn => {
+                btn.classList.remove('active');
+            });
+        }
+        input.value = value;
+        button.classList.add('active');
+    }
 }
 
 // Cerrar sidebar al hacer clic en un enlace (en móvil)
