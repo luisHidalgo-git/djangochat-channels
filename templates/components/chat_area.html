@@ -158,12 +158,12 @@
                            placeholder="Buscar mensajes..." value="{{ search_query }}">
                     
                     <button type="button" class="mobile-filter-btn {% if message_type == 'normal' %}active{% endif %}" 
-                            onclick="toggleFilter(this, 'message_type', 'normal')" title="Mensajes Normales">
+                            onclick="toggleFilter(this, 'messageType', 'normal')" title="Mensajes Normales">
                         <i class="fas fa-comment"></i>
                     </button>
                     
                     <button type="button" class="mobile-filter-btn {% if message_type == 'urgent' %}active{% endif %}" 
-                            onclick="toggleFilter(this, 'message_type', 'urgent')" title="Mensajes Urgentes">
+                            onclick="toggleFilter(this, 'messageType', 'urgent')" title="Mensajes Urgentes">
                         <i class="fas fa-exclamation-circle"></i>
                     </button>
                     
@@ -298,7 +298,7 @@ function toggleFilter(button, filterType, value) {
         button.classList.remove('active');
     } else {
         // Desactivar otros botones del mismo tipo
-        if (filterType === 'message_type' || filterType === 'status' || filterType === 'direction') {
+        if (filterType === 'messageType' || filterType === 'status' || filterType === 'direction') {
             document.querySelectorAll(`[onclick*="toggleFilter(this, '${filterType}'"]`).forEach(btn => {
                 btn.classList.remove('active');
             });
@@ -306,6 +306,7 @@ function toggleFilter(button, filterType, value) {
         input.value = value;
         button.classList.add('active');
     }
+    button.closest('form').submit();
 }
 
 // Cerrar sidebar al hacer clic en un enlace (en móvil)
