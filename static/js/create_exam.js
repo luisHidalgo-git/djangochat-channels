@@ -1,3 +1,4 @@
+// Course management functions with WebSocket support
 let examSocket;
 let sharedExams = [];
 let examTimer;

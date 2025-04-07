@@ -8,10 +8,12 @@ function hideLoading() {
 
 // Interceptar cambios de sección
 document.addEventListener('DOMContentLoaded', function() {
-    // Para los enlaces de la barra lateral
+    // Para los enlaces de la barra lateral (excluyendo enlaces de chat)
     document.querySelectorAll('.sidebar a').forEach(link => {
         link.addEventListener('click', function(e) {
-            if (!this.getAttribute('href').includes('#')) {
+            const href = this.getAttribute('href');
+            // Solo mostrar loader para enlaces de cursos y exámenes
+            if (href && href.includes('/chat/Sala/')) {
                 showLoading();
             }
         });
