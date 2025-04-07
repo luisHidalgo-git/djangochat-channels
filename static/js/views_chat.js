@@ -26,8 +26,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const urlParams = new URLSearchParams(window.location.search);
         const viewParam = urlParams.get('view');
         
-        // Set current view based on URL parameter or default to 'courses'
-        const currentView = viewParam || 'courses';
+        // Si no hay vista especificada en la URL, siempre mostrar cursos
+        const currentView = viewParam === 'exams' ? 'exams' : 'courses';
         localStorage.setItem('currentView', currentView);
         
         const currentViewElement = document.getElementById('currentView');
@@ -39,11 +39,11 @@ document.addEventListener('DOMContentLoaded', function() {
         // Ensure the correct title and visibility are set immediately
         if (currentView === 'exams') {
             // Exam view settings
-            currentViewElement.textContent = 'Exámenes Disponibles';
-            coursesListElement.classList.add('d-none');
-            examsListElement.classList.remove('d-none');
-            createCourseBtnElement.classList.add('d-none');
-            createExamBtnElement.classList.remove('d-none');
+            if (currentViewElement) currentViewElement.textContent = 'Exámenes Disponibles';
+            if (coursesListElement) coursesListElement.classList.add('d-none');
+            if (examsListElement) examsListElement.classList.remove('d-none');
+            if (createCourseBtnElement) createCourseBtnElement.classList.add('d-none');
+            if (createExamBtnElement) createExamBtnElement.classList.remove('d-none');
             
             document.querySelector('.courses-section a').classList.remove('active');
             document.querySelector('.exams-section a').classList.add('active');
@@ -52,13 +52,13 @@ document.addEventListener('DOMContentLoaded', function() {
             if (examSocket) {
                 examSocket.send(JSON.stringify({ action: 'request_exams' }));
             }
-        } else if (currentView === 'courses') {
-            // Course view settings
-            currentViewElement.textContent = 'Todos los Cursos';
-            coursesListElement.classList.remove('d-none');
-            examsListElement.classList.add('d-none');
-            createCourseBtnElement.classList.remove('d-none');
-            createExamBtnElement.classList.add('d-none');
+        } else {
+            // Course view settings - default view
+            if (currentViewElement) currentViewElement.textContent = 'Todos los Cursos';
+            if (coursesListElement) coursesListElement.classList.remove('d-none');
+            if (examsListElement) examsListElement.classList.add('d-none');
+            if (createCourseBtnElement) createCourseBtnElement.classList.remove('d-none');
+            if (createExamBtnElement) createExamBtnElement.classList.add('d-none');
             
             document.querySelector('.courses-section a').classList.add('active');
             document.querySelector('.exams-section a').classList.remove('active');
