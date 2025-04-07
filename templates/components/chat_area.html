@@ -119,7 +119,13 @@
             <!-- Main Content Area -->
             <div class="h-100 d-flex flex-column">
                 <div class="d-flex justify-content-between align-items-center p-3 mobile-header">
-                    <h3 id="currentView" class="text-center flex-grow-1">{% if request.GET.view == 'exams' %}Exámenes Disponibles{% else %}Cursos Disponibles{% endif %}</h3>
+                    <h3 id="currentView" class="text-center flex-grow-1">
+                        {% if request.GET.view == 'exams' %}
+                            Exámenes Disponibles
+                        {% else %}
+                            Todos los Cursos
+                        {% endif %}
+                    </h3>
                     <div id="actionButtons">
                         <button class="btn btn-primary {% if request.GET.view == 'exams' %}d-none{% endif %}" data-toggle="modal" data-target="#createCourseModal" id="createCourseBtn">
                             <i class="fas fa-plus d-md-none"></i>
