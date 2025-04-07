@@ -119,9 +119,13 @@
     color: white;
 }
 
-.active {
+/* Modificado: Estilo activo para todos los elementos de la sidebar */
+.chats .list-group-item.active,
+.courses-section .list-group-item.active,
+.exams-section .list-group-item.active {
     background-color: #435f7a !important;
-    color: white;
+    color: white !important;
+    border-color: #435f7a !important;
 }
 
 .logout {

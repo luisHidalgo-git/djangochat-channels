@@ -25,7 +25,6 @@ document.addEventListener('DOMContentLoaded', function() {
     if (window.location.pathname === '/chat/Sala/') {
         // Obtener la vista actual del localStorage o usar 'courses' como valor predeterminado
         const currentView = localStorage.getItem('currentView') || 'courses';
-        localStorage.setItem('currentView', currentView); // Asegurar que siempre haya un valor guardado
         
         // Update active states based on current view
         if (currentView === 'exams') {
