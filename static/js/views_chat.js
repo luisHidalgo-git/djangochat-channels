@@ -13,7 +13,10 @@ function showCourses(e) {
 // Verificar la vista actual al cargar la página
 document.addEventListener('DOMContentLoaded', function() {
     if (window.location.pathname === '/chat/Sala/') {
-        const currentView = localStorage.getItem('currentView');
+        // Obtener la vista actual del localStorage o usar 'courses' como valor predeterminado
+        const currentView = localStorage.getItem('currentView') || 'courses';
+        localStorage.setItem('currentView', currentView); // Asegurar que siempre haya un valor guardado
+        
         if (currentView === 'exams') {
             document.getElementById('currentView').textContent = 'Exámenes Disponibles';
             document.getElementById('coursesList').classList.add('d-none');
