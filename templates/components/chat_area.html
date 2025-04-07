@@ -12,7 +12,7 @@
                     </a>
                 </div>
                 <a href="/chat/Sala/" onclick="showCourses(event)"
-                    class="list-group-item list-group-item-action {% if room_name == 'Sala' %} active {% endif %}">
+                    class="list-group-item list-group-item-action">
                     <div class="d-flex align-items-center">
                         <i class="fas fa-graduation-cap mr-2"></i>
                         <span>Cursos Disponibles</span>
@@ -41,7 +41,7 @@
             <div class="contacts">
                 {% for item in user_last_messages %}
                 <a href="{% url 'chat' item.user.username %}"
-                    class="list-group-item list-group-item-action {% if item.user.username == room_name %} active {% endif %}"
+                    class="list-group-item list-group-item-action {% if item.user.username == room_name and room_name != 'Sala' %} active {% endif %}"
                     data-id="{{ room_name }}" data-username="{{ item.user.username }}">
                     <div class="d-flex align-items-center">
                         <div class="position-relative">
