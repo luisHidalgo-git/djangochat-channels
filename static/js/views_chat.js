@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (examSocket) {
                 examSocket.send(JSON.stringify({ action: 'request_exams' }));
             }
-        } else {
+        } else if (currentView === 'courses') {
             document.querySelector('.courses-section a').classList.add('active');
             document.querySelector('.exams-section a').classList.remove('active');
             document.querySelectorAll('.contacts a').forEach(a => a.classList.remove('active'));
@@ -58,9 +58,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 courseSocket.send(JSON.stringify({ action: 'request_courses' }));
             }
         }
-    } else {
-        // If we're in a chat view, remove active state from courses and exams
-        document.querySelector('.courses-section a')?.classList.remove('active');
-        document.querySelector('.exams-section a')?.classList.remove('active');
     }
+
+    // Manejar clics en los enlaces de chat
+    document.querySelectorAll('.contacts a').forEach(chatLink => {
+        chatLink.addEventListener('click', function() {
+            // Remover active de todos los elementos
+            document.querySelectorAll('.list-group-item').forEach(el => el.classList.remove('active'));
+            // Añadir active solo al elemento clickeado
+            this.classList.add('active');
+            // Asegurarse de que los enlaces de cursos y exámenes no estén activos
+            document.querySelector('.courses-section a').classList.remove('active');
+            document.querySelector('.exams-section a').classList.remove('active');
+        });
+    });
 });

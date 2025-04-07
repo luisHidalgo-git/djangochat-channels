@@ -56,6 +56,22 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  // Manejar la selección activa en la barra lateral
+  document.querySelectorAll('.list-group-item').forEach(item => {
+    item.addEventListener('click', function(e) {
+      // Si el enlace es de un usuario (chat)
+      if (this.closest('.contacts')) {
+        // Remover active de todos los elementos
+        document.querySelectorAll('.list-group-item').forEach(el => el.classList.remove('active'));
+        // Añadir active solo al elemento clickeado
+        this.classList.add('active');
+        // Asegurarse de que los enlaces de cursos y exámenes no estén activos
+        document.querySelector('.courses-section a').classList.remove('active');
+        document.querySelector('.exams-section a').classList.remove('active');
+      }
+    });
+  });
+
   function createMessageElement(data, userUsername) {
     const messageContainer = document.createElement("div");
     messageContainer.className = "chat-message " + (data.sender === userUsername ? "sender" : "receiver");
