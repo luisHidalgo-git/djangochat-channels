@@ -21,8 +21,26 @@ function toggleFilter(button, filterType, value) {
         input.value = value;
     }
 
-    // Enviar el formulario
-    button.closest('form').submit();
+    // Prevenir el comportamiento por defecto y enviar el formulario manualmente
+    const form = button.closest('form');
+    const formData = new FormData(form);
+    const queryString = new URLSearchParams(formData).toString();
+    const newUrl = `${window.location.pathname}?${queryString}`;
+    
+    // Actualizar la URL sin recargar la página
+    window.history.pushState({}, '', newUrl);
+    
+    // Realizar la búsqueda mediante fetch
+    fetch(newUrl)
+        .then(response => response.text())
+        .then(html => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const newChatbox = doc.getElementById('chatbox');
+            if (newChatbox) {
+                document.getElementById('chatbox').innerHTML = newChatbox.innerHTML;
+            }
+        });
 }
 
 // Función para mantener el estado activo de los filtros después de recargar
