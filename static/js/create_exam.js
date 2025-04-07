@@ -424,6 +424,56 @@ function displayExamDetails(examId, startTimer = false) {
                     <div class="submissions-list mt-4">
                         <h5>Entregas de Alumnos</h5>
                         ${exam.submissions && exam.submissions.length > 0 ? `
+                            <div class="exam-stats mb-4">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h6 class="mb-3">
+                                            <i class="fas fa-chart-bar text-primary mr-2"></i>
+                                            Estadísticas del Examen
+                                        </h6>
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <div class="text-center">
+                                                    <i class="fas fa-users text-info mb-2" style="font-size: 24px;"></i>
+                                                    <h4>${exam.submissions.length}</h4>
+                                                    <small class="text-muted">Total de Entregas</small>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="text-center">
+                                                    <i class="fas fa-check-circle text-success mb-2" style="font-size: 24px;"></i>
+                                                    <h4>${exam.submissions.filter(s => s.score >= 60).length}</h4>
+                                                    <small class="text-muted">Aprobados</small>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="text-center">
+                                                    <i class="fas fa-times-circle text-danger mb-2" style="font-size: 24px;"></i>
+                                                    <h4>${exam.submissions.filter(s => s.score < 60).length}</h4>
+                                                    <small class="text-muted">Reprobados</small>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="text-center">
+                                                    <i class="fas fa-chart-line text-primary mb-2" style="font-size: 24px;"></i>
+                                                    <h4>${Math.round(exam.submissions.reduce((acc, s) => acc + s.score, 0) / exam.submissions.length)}%</h4>
+                                                    <small class="text-muted">Promedio General</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="progress mt-4" style="height: 25px;">
+                                            <div class="progress-bar bg-success" role="progressbar" 
+                                                style="width: ${(exam.submissions.filter(s => s.score >= 60).length / exam.submissions.length) * 100}%">
+                                                Aprobados
+                                            </div>
+                                            <div class="progress-bar bg-danger" role="progressbar " 
+                                                style="width: ${(exam.submissions.filter(s => s.score < 60).length / exam.submissions.length) * 100}%">
+                                                Reprobados
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="table-responsive">
                                 <table class="table table-hover">
                                     <thead class="thead-light">
@@ -458,6 +508,7 @@ function displayExamDetails(examId, startTimer = false) {
                                                 </td>
                                                 <td>
                                                     <button class="btn btn-sm btn-info" onclick="showSubmissionDetails(${exam.id}, '${submission.student.name}')">
+                                                        <i class="fas fa-eye mr-1"></i>
                                                         Ver Respuestas
                                                     </button>
                                                 </td>
