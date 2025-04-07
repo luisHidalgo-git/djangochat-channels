@@ -27,10 +27,10 @@ def chat_room(request, room_name):
     if message_type:
         chats = chats.filter(message_type=message_type)
 
-    if subject and subject != 'all':
+    if subject:
         chats = chats.filter(subject=subject)
 
-    if status and status != 'all':
+    if status:
         chats = chats.filter(status=status)
 
     if direction:

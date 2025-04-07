@@ -5,19 +5,22 @@ function toggleSidebar() {
 
 function toggleFilter(button, filterType, value) {
     const input = document.getElementById(filterType);
-    if (input.value === value) {
-        input.value = '';
+    
+    // Si el botón ya está activo, desactivarlo
+    if (button.classList.contains('active')) {
         button.classList.remove('active');
+        input.value = '';
     } else {
         // Desactivar otros botones del mismo tipo
-        if (filterType === 'messageType' || filterType === 'status' || filterType === 'direction') {
-            document.querySelectorAll(`[onclick*="toggleFilter(this, '${filterType}'"]`).forEach(btn => {
-                btn.classList.remove('active');
-            });
-        }
-        input.value = value;
+        const buttons = document.querySelectorAll(`[onclick*="toggleFilter(this, '${filterType}'"]`);
+        buttons.forEach(btn => btn.classList.remove('active'));
+        
+        // Activar el botón actual y establecer el valor
         button.classList.add('active');
+        input.value = value;
     }
+
+    // Enviar el formulario
     button.closest('form').submit();
 }
 
