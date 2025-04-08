@@ -457,23 +457,24 @@
     /* Updated mobile header styles */
     .mobile-header {
         position: relative;
-        padding-top: 70px !important;
-        padding-left: 70px !important;
-        padding-right: 15px !important;
-        padding-bottom: 15px !important;
+        padding: 15px 60px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        min-height: 70px;
     }
 
     .mobile-header h3 {
         margin: 0;
-        text-align: left;
-        width: 100%;
+        text-align: center;
         font-size: 1.5rem;
+        flex: 1;
     }
 
     #actionButtons {
-        position: absolute;
-        right: 15px;
-        top: 15px;
+        position: static;
+        display: flex;
+        align-items: center;
     }
 
     #actionButtons .btn {
@@ -484,6 +485,28 @@
         align-items: center;
         justify-content: center;
         border-radius: 50%;
+    }
+
+    /* Chat header adjustments */
+    .chat .d-flex.align-items-center.p-1 {
+        padding: 15px 60px !important;
+        display: flex !important;
+        align-items: center !important;
+        min-height: 70px;
+    }
+
+    .chat .d-flex.align-items-center.p-1 .position-relative {
+        margin-right: 15px;
+    }
+
+    .chat .d-flex.align-items-center.p-1 .ml-3 {
+        margin-left: 0 !important;
+        flex: 1;
+    }
+
+    .mobile-search-container {
+        margin: 0;
+        padding: 0;
     }
 
     /* Updated mobile header controls styles */
@@ -528,10 +551,5 @@
     /* Hide desktop theme toggle in mobile */
     .courses-section .theme-toggle {
         display: none !important;
-    }
-
-    /* Chat header adjustments */
-    .chat .d-flex.align-items-center.p-1 {
-        padding: 70px 15px 15px 70px !important;
     }
 }
