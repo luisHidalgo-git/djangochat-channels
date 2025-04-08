@@ -457,7 +457,7 @@
     /* Updated mobile header styles */
     .mobile-header {
         position: relative;
-        padding: 15px 60px !important;
+        padding: 15px !important;
         display: flex !important;
         align-items: center !important;
         justify-content: space-between !important;
@@ -472,9 +472,10 @@
     }
 
     #actionButtons {
-        position: static;
-        display: flex;
-        align-items: center;
+        position: fixed;
+        top: 15px;
+        right: 15px;
+        z-index: 999;
     }
 
     #actionButtons .btn {
@@ -484,12 +485,12 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        border-radius: 50%;
+        border-radius: 5px;
     }
 
     /* Chat header adjustments */
     .chat .d-flex.align-items-center.p-1 {
-        padding: 15px 60px !important;
+        padding: 15px !important;
         display: flex !important;
         align-items: center !important;
         min-height: 70px;
@@ -507,6 +508,18 @@
     .mobile-search-container {
         margin: 0;
         padding: 0;
+        position: fixed;
+        top: 15px;
+        right: 15px;
+        z-index: 999;
+    }
+
+    .mobile-search-container .input-group {
+        width: auto;
+    }
+
+    .mobile-search-container .input-group-append {
+        margin-left: 0;
     }
 
     /* Updated mobile header controls styles */
