@@ -5,72 +5,46 @@ function toggleSidebar() {
 
 function toggleFilter(button, filterType, value) {
     const input = document.getElementById(filterType);
-    const currentValue = input.value;
-    
-    // Si el botón ya está activo o el valor es el mismo, desactivar el filtro
-    if (button.classList.contains('active') || currentValue === value) {
-        button.classList.remove('active');
-        input.value = '';
-    } else {
-        // Desactivar otros botones del mismo tipo
-        const buttons = document.querySelectorAll(`[onclick*="toggleFilter(this, '${filterType}'"]`);
-        buttons.forEach(btn => btn.classList.remove('active'));
-        
-        // Activar el botón actual y establecer el valor
-        button.classList.add('active');
-        input.value = value;
-    }
+    const isActive = button.classList.contains('active');
 
-    // Obtener todos los valores de los filtros
-    const searchQuery = document.querySelector('input[name="search"]').value;
-    const messageType = document.getElementById('messageType').value;
-    const subject = document.getElementById('subject').value;
-    const status = document.getElementById('status').value;
-    const direction = document.getElementById('direction').value;
+    // Actualizar el estado del botón y el valor del filtro
+    document.querySelectorAll(`[data-filter-type="${filterType}"]`).forEach(btn => btn.classList.remove('active'));
+    input.value = isActive ? '' : value;
+    if (!isActive) button.classList.add('active');
 
-    // Construir la URL con los parámetros activos
+    // Construir y actualizar la URL con los filtros activos
     const params = new URLSearchParams();
-    if (searchQuery) params.append('search', searchQuery);
-    if (messageType) params.append('message_type', messageType);
-    if (subject) params.append('subject', subject);
-    if (status) params.append('status', status);
-    if (direction) params.append('direction', direction);
+    ['search', 'messageType', 'subject', 'status', 'direction'].forEach(type => {
+        const val = document.getElementById(type)?.value;
+        if (val) params.append(type === 'messageType' ? 'message_type' : type, val);
+    });
 
     const newUrl = `${window.location.pathname}?${params.toString()}`;
-    
-    // Actualizar la URL sin recargar la página
     window.history.pushState({}, '', newUrl);
-    
-    // Realizar la búsqueda mediante fetch
+
+    // Actualizar el contenido del chat
     fetch(newUrl)
         .then(response => response.text())
         .then(html => {
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
-            const newChatbox = doc.getElementById('chatbox');
+            const newChatbox = new DOMParser().parseFromString(html, 'text/html').getElementById('chatbox');
             if (newChatbox) {
                 document.getElementById('chatbox').innerHTML = newChatbox.innerHTML;
                 scrollToBottom();
             }
-        });
+        })
+        .catch(error => console.error('Error al actualizar los mensajes:', error));
 }
 
-// Función para mantener el estado activo de los filtros después de recargar
+// Inicializar filtros activos al cargar la página
 function initializeFilterStates() {
-    const urlParams = new URLSearchParams(window.location.search);
-    
-    // Verificar y activar los filtros según los parámetros de la URL
-    const filterTypes = ['messageType', 'subject', 'status', 'direction'];
-    
-    filterTypes.forEach(type => {
-        const value = urlParams.get(type === 'messageType' ? 'message_type' : type);
+    const params = new URLSearchParams(window.location.search);
+    ['message_type', 'subject', 'status', 'direction', 'search'].forEach(type => {
+        const value = params.get(type);
         if (value) {
-            const buttons = document.querySelectorAll(`[onclick*="toggleFilter(this, '${type}'"]`);
-            buttons.forEach(button => {
-                if (button.onclick.toString().includes(`'${value}'`)) {
-                    button.classList.add('active');
-                }
-            });
+            const button = document.querySelector(`[data-filter-type="${type}"][data-value="${value}"]`);
+            if (button) button.classList.add('active');
+            const input = document.getElementById(type === 'message_type' ? 'messageType' : type);
+            if (input) input.value = value;
         }
     });
 }
@@ -78,21 +52,18 @@ function initializeFilterStates() {
 // Función para hacer scroll al final del chat
 function scrollToBottom() {
     const chatbox = document.getElementById('chatbox');
-    if (chatbox) {
-        chatbox.scrollTop = chatbox.scrollHeight;
-    }
+    if (chatbox) chatbox.scrollTop = chatbox.scrollHeight;
 }
 
 // Manejar la búsqueda en tiempo real
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const searchInput = document.querySelector('input[name="search"]');
     if (searchInput) {
-        searchInput.addEventListener('input', function() {
-            const button = document.createElement('button');
-            button.style.display = 'none';
-            toggleFilter(button, 'search', this.value);
+        searchInput.addEventListener('input', function () {
+            toggleFilter(document.createElement('button'), 'search', this.value);
         });
     }
+    initializeFilterStates();
 });
 
 // Cerrar sidebar al hacer clic en un enlace (en móvil)
@@ -103,6 +74,3 @@ document.querySelectorAll('.sidebar a').forEach(link => {
         }
     });
 });
-
-// Inicializar estados de los filtros cuando se carga la página
-document.addEventListener('DOMContentLoaded', initializeFilterStates);

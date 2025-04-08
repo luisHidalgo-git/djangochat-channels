@@ -314,5 +314,33 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
   };
-  
+
+  // Manejar la búsqueda en tiempo real
+  const searchInput = document.querySelector('input[name="search"]');
+  if (searchInput) {
+    searchInput.addEventListener('input', function () {
+      const params = new URLSearchParams(window.location.search);
+      params.set('search', this.value);
+
+      // Actualizar otros filtros
+      ['messageType', 'subject', 'status', 'direction'].forEach(type => {
+        const value = document.getElementById(type)?.value;
+        if (value) params.set(type === 'messageType' ? 'message_type' : type, value);
+      });
+
+      const newUrl = `${window.location.pathname}?${params.toString()}`;
+      window.history.pushState({}, '', newUrl);
+
+      fetch(newUrl)
+        .then(response => response.text())
+        .then(html => {
+          const newChatbox = new DOMParser().parseFromString(html, 'text/html').getElementById('chatbox');
+          if (newChatbox) {
+            chatbox.innerHTML = newChatbox.innerHTML;
+            scrollToBottom();
+          }
+        })
+        .catch(error => console.error('Error al buscar mensajes:', error));
+    });
+  }
 });
