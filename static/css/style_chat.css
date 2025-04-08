@@ -349,8 +349,23 @@
 
     /* Ajustes para el encabezado del chat */
     .chat > div:first-child {
-        padding-top: 70px !important;
+        padding-top: 15px !important;
         padding-left: 70px !important;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    /* Ajustes para la información del usuario y filtros */
+    .chat > div:first-child > div:first-child {
+        display: flex;
+        align-items: center;
+        margin-right: 10px;
+    }
+
+    .mobile-search-container {
+        margin-top: 0 !important;
+        padding: 0 !important;
     }
 
     /* Ajustes para la información del usuario */
@@ -360,11 +375,6 @@
     }
 
     /* Ajustes para los filtros */
-    .mobile-search-container {
-        padding: 10px 15px;
-        margin-top: 10px;
-    }
-
     .input-group {
         width: 100%;
     }
@@ -481,7 +491,10 @@
     /* New styles for mobile header */
     .mobile-header {
         position: relative;
-        padding-top: 60px !important;
+        padding-top: 15px !important;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
     }
 
     .mobile-header h3 {
@@ -493,7 +506,7 @@
     #actionButtons {
         position: absolute;
         right: 15px;
-        top: 70px;
+        top: 15px;
     }
 
     #actionButtons .btn {
