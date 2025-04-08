@@ -331,13 +331,14 @@
 
     .toggle-sidebar {
         position: fixed;
-        top: 10px;
-        left: 10px;
+        top: 15px;
+        left: 15px;
         z-index: 999;
         background-color: #435f7a;
         border: none;
         color: white;
-        padding: 10px;
+        width: 40px;
+        height: 40px;
         border-radius: 5px;
         display: flex;
         align-items: center;
@@ -357,7 +358,6 @@
 
     .col-9 {
         width: 100%;
-        padding-top: 60px;
     }
 
     .chat-input {
@@ -427,6 +427,7 @@
         gap: 5px;
         justify-content: center;
         padding: 10px;
+        margin-top: 5px;
     }
 
     .mobile-filter-btn {
@@ -453,22 +454,26 @@
         margin-bottom: 5px;
     }
 
-    /* New styles for mobile header */
+    /* Updated mobile header styles */
     .mobile-header {
         position: relative;
-        padding-top: 60px !important;
+        padding-top: 70px !important;
+        padding-left: 70px !important;
+        padding-right: 15px !important;
+        padding-bottom: 15px !important;
     }
 
     .mobile-header h3 {
         margin: 0;
-        text-align: center;
+        text-align: left;
         width: 100%;
+        font-size: 1.5rem;
     }
 
     #actionButtons {
         position: absolute;
         right: 15px;
-        top: 70px;
+        top: 15px;
     }
 
     #actionButtons .btn {
@@ -484,6 +489,7 @@
     /* Updated mobile header controls styles */
     .mobile-header-controls {
         margin-bottom: 20px;
+        padding-top: 15px;
     }
 
     .mobile-header-controls .theme-toggle {
@@ -522,5 +528,10 @@
     /* Hide desktop theme toggle in mobile */
     .courses-section .theme-toggle {
         display: none !important;
+    }
+
+    /* Chat header adjustments */
+    .chat .d-flex.align-items-center.p-1 {
+        padding: 70px 15px 15px 70px !important;
     }
 }
