@@ -422,70 +422,32 @@
     }
 
     .mobile-search-container {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 5px;
-        justify-content: center;
-        padding: 10px;
-        margin-top: 5px;
-    }
-
-    .mobile-filter-btn {
-        width: 40px;
-        height: 40px;
-        padding: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        background-color: transparent;
-        border: 1px solid #435f7a;
-        color: #435f7a;
-    }
-
-    .mobile-filter-btn.active {
-        background-color: #435f7a;
-        color: white;
-    }
-
-    .mobile-search-input {
-        flex: 1;
-        min-width: 200px;
-        margin-bottom: 5px;
-    }
-
-    /* Updated mobile header styles */
-    .mobile-header {
-        position: relative;
-        padding: 15px !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: space-between !important;
-        min-height: 70px;
-    }
-
-    .mobile-header h3 {
         margin: 0;
-        text-align: center;
-        font-size: 1.5rem;
-        flex: 1;
-    }
-
-    #actionButtons {
+        padding: 0;
         position: fixed;
         top: 15px;
-        right: 15px;
+        left: 70px; /* Aligned to the right of hamburger menu */
         z-index: 999;
+        width: calc(100% - 85px); /* Full width minus hamburger menu width and spacing */
     }
 
-    #actionButtons .btn {
-        width: 40px;
+    .mobile-search-container .input-group {
+        width: 100%;
+    }
+
+    .mobile-search-container .form-control {
         height: 40px;
+        padding: 0.375rem 0.75rem;
+        font-size: 0.875rem;
+    }
+
+    .mobile-search-container .input-group-append .btn {
+        height: 40px;
+        width: 40px;
         padding: 0;
         display: flex;
         align-items: center;
         justify-content: center;
-        border-radius: 5px;
     }
 
     /* Chat header adjustments */
@@ -494,6 +456,7 @@
         display: flex !important;
         align-items: center !important;
         min-height: 70px;
+        padding-top: 70px !important; /* Added space for the search container */
     }
 
     .chat .d-flex.align-items-center.p-1 .position-relative {
@@ -503,23 +466,6 @@
     .chat .d-flex.align-items-center.p-1 .ml-3 {
         margin-left: 0 !important;
         flex: 1;
-    }
-
-    .mobile-search-container {
-        margin: 0;
-        padding: 0;
-        position: fixed;
-        top: 15px;
-        right: 15px;
-        z-index: 999;
-    }
-
-    .mobile-search-container .input-group {
-        width: auto;
-    }
-
-    .mobile-search-container .input-group-append {
-        margin-left: 0;
     }
 
     /* Updated mobile header controls styles */
