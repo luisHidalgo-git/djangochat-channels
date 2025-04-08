@@ -25,6 +25,9 @@ urlpatterns = [
     path('api/', include('academic.api.urls')),  # API URLs
     path('api-auth/', include('rest_framework.urls')),  # DRF authentication URLs
     path('api-docs/', include_docs_urls(title='Academic API')),  # API Documentation
+    path('api/users/', include('users.api.urls')),
+    path('api/chat/', include('chat.api.urls')),
+    path('api/exams/', include('exams.api.urls')),
     path('', include('users.urls')),
     path('', include('chat.urls')),
     path('', include('academic.urls')),
