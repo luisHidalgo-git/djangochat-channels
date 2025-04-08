@@ -15,13 +15,21 @@
             {% endif %}
         </div>
     </div>
-    <ul>
+    <ul class="header-icons">
         <li>
             <a href="#" class="theme-toggle" onclick="toggleTheme()">
-                <i class="fas fa-moon"></i>
+                <i class="fas fa-moon"></i> <!-- Ícono de contraste -->
             </a>
         </li>
-        <li><a href="{% url 'login' %}">Login</a></li>
-        <li><a href="{% url 'signup' %}">Signup</a></li>
+        <li>
+            <a href="{% url 'login' %}" class="icon-link">
+                <i class="fas fa-sign-in-alt"></i> <!-- Ícono de Login -->
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'signup' %}" class="icon-link">
+                <i class="fas fa-user-plus"></i> <!-- Ícono de Signup -->
+            </a>
+        </li>
     </ul>
 </nav>

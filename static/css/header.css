@@ -17,6 +17,31 @@ nav {
     width: auto; /* Ajustar ancho automático */
 }
 
+.header-icons {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.header-icons .icon-link, .header-icons .theme-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: inherit;
+    font-size: 1.2rem;
+    height: 40px; /* Asegurar altura uniforme */
+    width: 40px; /* Asegurar ancho uniforme */
+    line-height: 40px; /* Centrar verticalmente el contenido */
+}
+
+.header-icons i {
+    margin: 0;
+}
+
 nav ul {
     list-style-type: none;
     display: flex;
