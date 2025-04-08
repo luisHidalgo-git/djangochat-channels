@@ -38,11 +38,26 @@
                 {% csrf_token %}
                 <div class="form-group">
                     <label for="email">Email</label>
-                    <input type="email" class="form-control" id="email" name="email" required>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                        </div>
+                        <input type="email" class="form-control" id="email" name="email" placeholder="example@example.com" required>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="password">Password</label>
-                    <input type="password" class="form-control" id="password" name="password" required>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                        </div>
+                        <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
+                        <div class="input-group-append">
+                            <button type="button" class="btn btn-outline-secondary toggle-password">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
                 <div class="g-recaptcha" data-sitekey="6Lf5t_YqAAAAANu39Mqhj5Um-xJ-2_talSnjmBeE"></div>
                 <button type="submit" class="btn btn-primary btn-block">Login</button>
@@ -111,5 +126,22 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="{% static 'js/login.js' %}"></script>
     <script src="{% static 'js/theme.js' %}"></script>
+    <script>
+        document.querySelectorAll('.toggle-password').forEach(button => {
+            button.addEventListener('click', function () {
+                const passwordInput = this.closest('.input-group').querySelector('input');
+                const icon = this.querySelector('i');
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                } else {
+                    passwordInput.type = 'password';
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                }
+            });
+        });
+    </script>
 </body>
 </html>
