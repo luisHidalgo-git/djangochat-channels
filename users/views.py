@@ -8,6 +8,7 @@ import requests
 from django.core.cache import cache
 from django.http import JsonResponse
 import json
+from .models import UserProfile
 
 def index(request):
     return render(request, "index.html", {'breadcrumb': 'Inicio'})
@@ -169,3 +170,30 @@ def signup_view(request):
     if request.user.is_authenticated:
         return redirect('/chat/Sala/')
     return render(request, 'signup.html', {'breadcrumb': 'Signup'})
+
+@login_required
+def update_profile_photo(request):
+    if request.method == 'POST' and request.FILES.get('profile_photo'):
+        profile_photo = request.FILES['profile_photo']
+        
+        # Validate file size (2MB max)
+        if profile_photo.size > 2 * 1024 * 1024:
+            messages.error(request, 'File size too large. Maximum size is 2MB.')
+            return redirect('/chat/Sala/')
+            
+        # Get or create user profile
+        user_profile, created = UserProfile.objects.get_or_create(user=request.user)
+        
+        # Delete old photo if it exists
+        if user_profile.profile_photo:
+            user_profile.profile_photo.delete()
+            
+        # Save new photo
+        user_profile.profile_photo = profile_photo
+        user_profile.save()
+        
+        messages.success(request, 'Profile photo updated successfully!')
+    else:
+        messages.error(request, 'Please select a photo to upload.')
+    
+    return redirect('/chat/Sala/')

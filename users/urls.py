@@ -1,5 +1,9 @@
 from django.urls import path
-from users.views import logout_page, signup_view, index, login_page, check_existing_session, force_login, check_user, update_password
+from users.views import (
+    logout_page, signup_view, index, login_page, 
+    check_existing_session, force_login, check_user, 
+    update_password, update_profile_photo
+)
 
 urlpatterns = [
     path('', index, name="index"),
@@ -10,4 +14,5 @@ urlpatterns = [
     path('force-login/', force_login, name='force_login'),
     path('check-user/', check_user, name='check_user'),
     path('update-password/', update_password, name='update_password'),
+    path('update-profile-photo/', update_profile_photo, name='update_profile_photo'),
 ]

@@ -62,9 +62,15 @@
                     data-id="{{ room_name }}" data-username="{{ item.user.username }}" onclick="toggleSidebar()">
                     <div class="d-flex align-items-center">
                         <div class="position-relative">
-                            <img src="https://ui-avatars.com/api/?name={{ item.user.username|urlencode }}&size=64&background=random"
-                                alt="{{ item.user.username }}'s Profile Image" class="profile-icon rounded-circle mr-3"
-                                style="width: 1.8rem; height: 1.8rem; object-fit: cover" />
+                            {% if item.user.userprofile.profile_photo %}
+                                <img src="{{ item.user.userprofile.profile_photo.url }}"
+                                    alt="{{ item.user.username }}'s Profile Image" class="profile-icon rounded-circle mr-3"
+                                    style="width: 1.8rem; height: 1.8rem; object-fit: cover" />
+                            {% else %}
+                                <img src="https://ui-avatars.com/api/?name={{ item.user.username|urlencode }}&size=64&background=random"
+                                    alt="{{ item.user.username }}'s Profile Image" class="profile-icon rounded-circle mr-3"
+                                    style="width: 1.8rem; height: 1.8rem; object-fit: cover" />
+                            {% endif %}
                             <span class="status-indicator {{ item.status }}" style="position: absolute; bottom: 0; right: 0; width: 10px; height: 10px; border-radius: 50%; 
                             background-color: {% if item.status == 'online' %}#28a745{% else %}#dc3545{% endif %};">
                             </span>
@@ -100,16 +106,58 @@
             </div>
 
             <div class="logout">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h5 class="text-white mb-0">
-                        <i class="fas fa-user"></i>
-                        {{ request.user.username|title }}
-                    </h5>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="user-profile-section" style="cursor: pointer;" data-toggle="modal" data-target="#profilePhotoModal">
+                        <div class="d-flex align-items-center">
+                            {% if request.user.userprofile.profile_photo %}
+                                <img src="{{ request.user.userprofile.profile_photo.url }}" 
+                                     alt="Profile Photo" 
+                                     class="rounded-circle mr-2"
+                                     style="width: 40px; height: 40px; object-fit: cover;">
+                            {% else %}
+                                <img src="https://ui-avatars.com/api/?name={{ request.user.username|urlencode }}&size=64&background=random"
+                                     alt="Profile Photo" 
+                                     class="rounded-circle mr-2"
+                                     style="width: 40px; height: 40px; object-fit: cover;">
+                            {% endif %}
+                            <h5 class="text-white mb-0">{{ request.user.username|title }}</h5>
+                        </div>
+                    </div>
                 </div>
-                <h5 style="cursor: pointer; font-size: 1rem; margin-top: 5px">
+                <h5 style="cursor: pointer; font-size: 1rem;">
                     <i class="fas fa-sign-out-alt" style="color: red"></i>
                     <a href="{% url 'logout' %}" class="text-white">Logout</a>
                 </h5>
+            </div>
+        </div>
+
+        <!-- Profile Photo Modal -->
+        <div class="modal fade" id="profilePhotoModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Update Profile Photo</h5>
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span>&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="{% url 'update_profile_photo' %}" method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label>Choose a new profile photo</label>
+                                <div class="custom-file">
+                                    <input type="file" class="custom-file-input" id="profilePhoto" name="profile_photo" accept="image/*" required>
+                                    <label class="custom-file-label" for="profilePhoto">Select file</label>
+                                </div>
+                                <small class="form-text text-muted">
+                                    Recommended size: 200x200 pixels. Maximum file size: 2MB.
+                                </small>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Upload Photo</button>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -148,14 +196,19 @@
             <!-- Chat View -->
             <div class="d-flex align-items-center p-1">
                 <div class="position-relative">
-                    <img src="https://ui-avatars.com/api/?name={{ room_name|urlencode }}&size=64&background=random"
-                        style="border-radius: 50%; height: 45px; width: auto" />
                     {% for item in user_last_messages %}
-                    {% if item.user.username == room_name %}
-                    <span class="status-indicator {{ item.status }}" style="position: absolute; bottom: 0; right: 0; width: 12px; height: 12px; border-radius: 50%;
-                            background-color: {% if item.status == 'online' %}#28a745{% else %}#dc3545{% endif %};">
-                    </span>
-                    {% endif %}
+                        {% if item.user.username == room_name %}
+                            {% if item.user.userprofile.profile_photo %}
+                                <img src="{{ item.user.userprofile.profile_photo.url }}"
+                                    style="border-radius: 50%; height: 45px; width: 45px; object-fit: cover;" />
+                            {% else %}
+                                <img src="https://ui-avatars.com/api/?name={{ room_name|urlencode }}&size=64&background=random"
+                                    style="border-radius: 50%; height: 45px; width: 45px;" />
+                            {% endif %}
+                            <span class="status-indicator {{ item.status }}" style="position: absolute; bottom: 0; right: 0; width: 12px; height: 12px; border-radius: 50%;
+                                    background-color: {% if item.status == 'online' %}#28a745{% else %}#dc3545{% endif %};">
+                            </span>
+                        {% endif %}
                     {% endfor %}
                 </div>
                 <div class="ml-3">
