@@ -3,20 +3,21 @@ function toggleSidebar() {
     sidebar.classList.toggle('show');
 }
 
-function toggleFilter(button, filterType, value) {
+function toggleFilter(element, filterType, value) {
     const input = document.getElementById(filterType);
-    const isActive = button.classList.contains('active');
-
-    // Actualizar el estado del botón y el valor del filtro
-    document.querySelectorAll(`[data-filter-type="${filterType}"]`).forEach(btn => btn.classList.remove('active'));
-    input.value = isActive ? '' : value;
-    if (!isActive) button.classList.add('active');
+    if (input) {
+        input.value = value || '';
+    }
 
     // Construir y actualizar la URL con los filtros activos
-    const params = new URLSearchParams();
+    const params = new URLSearchParams(window.location.search);
     ['search', 'messageType', 'subject', 'status', 'direction'].forEach(type => {
         const val = document.getElementById(type)?.value;
-        if (val) params.append(type === 'messageType' ? 'message_type' : type, val);
+        if (val) {
+            params.set(type === 'messageType' ? 'message_type' : type, val);
+        } else {
+            params.delete(type === 'messageType' ? 'message_type' : type);
+        }
     });
 
     const newUrl = `${window.location.pathname}?${params.toString()}`;
@@ -41,7 +42,7 @@ function initializeFilterStates() {
     ['message_type', 'subject', 'status', 'direction', 'search'].forEach(type => {
         const value = params.get(type);
         if (value) {
-            const button = document.querySelector(`[data-filter-type="${type}"][data-value="${value}"]`);
+            const button = document.querySelector(`[data-filter-type="${type === 'message_type' ? 'messageType' : type}"][data-value="${value}"]`);
             if (button) button.classList.add('active');
             const input = document.getElementById(type === 'message_type' ? 'messageType' : type);
             if (input) input.value = value;

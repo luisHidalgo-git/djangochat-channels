@@ -171,7 +171,8 @@
                 <form method="GET" action="" class="mobile-search-container ml-auto">
                     <div class="input-group">
                         <input type="text" name="search" class="form-control" 
-                            placeholder="Buscar mensajes..." value="{{ search_query }}">
+                            placeholder="Buscar mensajes..." value="{{ search_query }}" 
+                            oninput="toggleFilter(this, 'search', this.value)">
                         <div class="input-group-append">
                             <button type="button" class="btn btn-outline-secondary dropdown-toggle" 
                                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -180,10 +181,12 @@
                             <div class="dropdown-menu dropdown-menu-right filter-dropdown">
                                 <h6 class="dropdown-header">Tipo de Mensaje</h6>
                                 <button type="button" class="dropdown-item {% if message_type == 'normal' %}active{% endif %}" 
+                                        data-filter-type="messageType" data-value="normal" 
                                         onclick="toggleFilter(this, 'messageType', 'normal')">
                                     <i class="fas fa-comment"></i> Normal
                                 </button>
                                 <button type="button" class="dropdown-item {% if message_type == 'urgent' %}active{% endif %}" 
+                                        data-filter-type="messageType" data-value="urgent" 
                                         onclick="toggleFilter(this, 'messageType', 'urgent')">
                                     <i class="fas fa-exclamation-circle"></i> Urgente
                                 </button>
@@ -191,14 +194,17 @@
                                 <div class="dropdown-divider"></div>
                                 <h6 class="dropdown-header">Materia</h6>
                                 <button type="button" class="dropdown-item {% if subject == 'programming' %}active{% endif %}" 
+                                        data-filter-type="subject" data-value="programming" 
                                         onclick="toggleFilter(this, 'subject', 'programming')">
                                     <i class="fas fa-code"></i> Programación
                                 </button>
                                 <button type="button" class="dropdown-item {% if subject == 'math' %}active{% endif %}" 
+                                        data-filter-type="subject" data-value="math" 
                                         onclick="toggleFilter(this, 'subject', 'math')">
                                     <i class="fas fa-square-root-alt"></i> Matemáticas
                                 </button>
                                 <button type="button" class="dropdown-item {% if subject == 'english' %}active{% endif %}" 
+                                        data-filter-type="subject" data-value="english" 
                                         onclick="toggleFilter(this, 'subject', 'english')">
                                     <i class="fas fa-language"></i> Inglés
                                 </button>
@@ -206,14 +212,17 @@
                                 <div class="dropdown-divider"></div>
                                 <h6 class="dropdown-header">Estado</h6>
                                 <button type="button" class="dropdown-item {% if status == 'sent' %}active{% endif %}" 
+                                        data-filter-type="status" data-value="sent" 
                                         onclick="toggleFilter(this, 'status', 'sent')">
                                     <i class="fas fa-check"></i> Enviados
                                 </button>
                                 <button type="button" class="dropdown-item {% if status == 'delivered' %}active{% endif %}" 
+                                        data-filter-type="status" data-value="delivered" 
                                         onclick="toggleFilter(this, 'status', 'delivered')">
                                     <i class="fas fa-check-double"></i> Entregados
                                 </button>
                                 <button type="button" class="dropdown-item {% if status == 'read' %}active{% endif %}" 
+                                        data-filter-type="status" data-value="read" 
                                         onclick="toggleFilter(this, 'status', 'read')">
                                     <i class="fas fa-eye"></i> Leídos
                                 </button>
@@ -221,10 +230,12 @@
                                 <div class="dropdown-divider"></div>
                                 <h6 class="dropdown-header">Dirección</h6>
                                 <button type="button" class="dropdown-item {% if direction == 'sent' %}active{% endif %}" 
+                                        data-filter-type="direction" data-value="sent" 
                                         onclick="toggleFilter(this, 'direction', 'sent')">
                                     <i class="fas fa-paper-plane"></i> Enviados
                                 </button>
                                 <button type="button" class="dropdown-item {% if direction == 'received' %}active{% endif %}" 
+                                        data-filter-type="direction" data-value="received" 
                                         onclick="toggleFilter(this, 'direction', 'received')">
                                     <i class="fas fa-inbox"></i> Recibidos
                                 </button>
