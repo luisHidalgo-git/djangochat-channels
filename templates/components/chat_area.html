@@ -371,7 +371,8 @@
                     <div class="input-group-append">
                         <label for="imageInput" class="btn btn-outline-secondary mb-0" style="cursor: pointer;">
                             <i class="fas fa-image"></i>
-                            <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="handleImageSelect(this)">
+                            <input type="file" id="imageInput" accept="image/*" style="display: none;" 
+                                   onchange="if(typeof window.handleImageSelect === 'function') window.handleImageSelect(this);">
                         </label>
                         <button id="submit_button" class="btn btn-primary" type="button">
                             Send
@@ -381,7 +382,7 @@
                 <div id="imagePreview" class="mt-2" style="display: none;">
                     <div class="d-flex align-items-center">
                         <img id="selectedImage" style="max-height: 100px; max-width: 200px; object-fit: contain;">
-                        <button class="btn btn-sm btn-danger ml-2" onclick="removeSelectedImage()">
+                        <button class="btn btn-sm btn-danger ml-2" onclick="if(typeof window.removeSelectedImage === 'function') window.removeSelectedImage()">
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
