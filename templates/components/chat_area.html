@@ -334,7 +334,20 @@
                             </div>
                         </div>
                         {% endif %}
+
+                        {% if message.message_type == 'image' %}
+                        <div class="message-image-container">
+                            <img src="{{ message.image.url }}" alt="Shared image"
+                                 style="max-width: 200px; max-height: 200px; border-radius: 8px; cursor: pointer;"
+                                 onclick="window.open(this.src, '_blank')">
+                            {% if message.content %}
+                            <p class="mt-2 mb-0">{{ message.content }}</p>
+                            {% endif %}
+                        </div>
+                        {% else %}
                         <span>{{ message.content }}</span>
+                        {% endif %}
+
                         {% if message.sender == request.user %}
                         <div class="message-status">
                             {% if message.status == 'sent' %}

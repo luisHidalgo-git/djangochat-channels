@@ -4,8 +4,16 @@ let selectedImageData = null;
 window.handleImageSelect = function(input) {
     const file = input.files[0];
     if (file) {
+        // Validar tamaño máximo (5MB)
         if (file.size > 5 * 1024 * 1024) {
             alert('Image size should not exceed 5MB');
+            input.value = '';
+            return;
+        }
+
+        // Validar tipo de archivo
+        if (!file.type.startsWith('image/')) {
+            alert('Please select an image file');
             input.value = '';
             return;
         }
@@ -25,6 +33,7 @@ window.removeSelectedImage = function() {
     selectedImageData = null;
     document.getElementById('imageInput').value = '';
     document.getElementById('imagePreview').style.display = 'none';
+    document.getElementById('selectedImage').src = '';
     document.getElementById('my_input').placeholder = 'Type a message...';
 };
 
@@ -132,6 +141,10 @@ document.addEventListener("DOMContentLoaded", function () {
             image.style.maxWidth = "200px";
             image.style.maxHeight = "200px";
             image.style.borderRadius = "8px";
+            image.style.cursor = "pointer";
+            image.onclick = function() {
+                window.open(this.src, '_blank');
+            };
             imageContainer.appendChild(image);
             messageContent.appendChild(imageContainer);
 
@@ -191,7 +204,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     document.querySelector("#my_input").focus();
     document.querySelector("#my_input").onkeyup = function (e) {
-        if (e.keyCode == 13) {
+        if (e.keyCode == 13 && !e.shiftKey) {
             e.preventDefault();
             document.querySelector("#submit_button").click();
         }
@@ -250,7 +263,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     document.querySelector("#submit_button").onclick = function (e) {
-        var messageInput = document.querySelector("#my_input").value;
+        const messageInput = document.querySelector("#my_input").value;
 
         if (!messageInput && !selectedImageData) {
             alert("Please add a message or select an image!");
@@ -321,7 +334,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        if (data.message && data.sender) {
+        if (data.message || data.image_url) {
             const chatbox = document.querySelector("#chatbox");
             const noMessages = document.querySelector(".no-messages");
             if (noMessages) {
@@ -342,8 +355,8 @@ document.addEventListener("DOMContentLoaded", function () {
             if (lastMessage) {
                 lastMessage.innerHTML =
                     data.sender === userUsername
-                        ? "You: " + data.message
-                        : data.message;
+                        ? "You: " + (data.message || "Sent an image")
+                        : (data.message || "Sent an image");
 
                 const timestamp = document.querySelector(".list-group-item.active small");
                 const date = new Date().toUTCString();
