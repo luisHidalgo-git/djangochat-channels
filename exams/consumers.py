@@ -215,7 +215,8 @@ class ExamConsumer(AsyncWebsocketConsumer):
                     'text': c.text,
                     'is_correct': c.is_correct
                 } for c in q.choices.all()]
-            } for q in exam.questions.all()]
+            } for q in exam.questions.all()],
+            'submissions': []
         }
 
     @sync_to_async
@@ -307,6 +308,7 @@ class ExamConsumer(AsyncWebsocketConsumer):
                     'exam': exam
                 }
             )
+            await self.send_all_exams()  # Add this line to update all clients
         
         elif action == 'submit_exam':
             submission = await self.submit_exam(data)
