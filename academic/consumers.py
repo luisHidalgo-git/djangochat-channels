@@ -7,6 +7,7 @@ from django.utils import timezone
 from django.core.files.base import ContentFile
 import base64
 import mimetypes
+from users.models import UserProfile
 
 # Configurar tipos MIME adicionales
 mimetypes.add_type('application/vnd.openxmlformats-officedocument.wordprocessingml.document', '.docx')
@@ -25,15 +26,16 @@ class CourseConsumer(AsyncWebsocketConsumer):
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard('courses', self.channel_name)
 
-    async def send_all_courses(self):
+    @sync_to_async
+    def get_user_profile_photo(self, username):
         try:
-            courses = await self.get_all_courses()
-            await self.send(json.dumps({
-                'action': 'courses_update',
-                'courses': courses
-            }))
-        except Exception as e:
-            print(f"Error sending courses: {str(e)}")
+            user = User.objects.get(username=username)
+            profile = UserProfile.objects.get(user=user)
+            if profile.profile_photo:
+                return profile.profile_photo.url
+            return None
+        except (User.DoesNotExist, UserProfile.DoesNotExist):
+            return None
 
     @sync_to_async
     def get_all_courses(self):
@@ -41,24 +43,47 @@ class CourseConsumer(AsyncWebsocketConsumer):
         current_user = User.objects.get(username=self.scope['user'].username)
         
         for course in Course.objects.all().select_related('creator'):
+            # Get creator's profile photo
+            creator_photo = None
+            try:
+                creator_profile = UserProfile.objects.get(user=course.creator)
+                if creator_profile.profile_photo:
+                    creator_photo = creator_profile.profile_photo.url
+            except UserProfile.DoesNotExist:
+                pass
+
             assignments = course.assignments.all().select_related('creator')
             assignments_data = []
             
             for assignment in assignments:
-                # Filtrar las entregas según el usuario
+                # Get assignment creator's profile photo
+                assignment_creator_photo = None
+                try:
+                    assignment_creator_profile = UserProfile.objects.get(user=assignment.creator)
+                    if assignment_creator_profile.profile_photo:
+                        assignment_creator_photo = assignment_creator_profile.profile_photo.url
+                except UserProfile.DoesNotExist:
+                    pass
+
                 submissions = assignment.submissions.all().select_related('student')
                 submissions_data = []
                 
                 for submission in submissions:
-                    # Solo incluir la entrega si:
-                    # 1. El usuario actual es el creador de la tarea
-                    # 2. O el usuario actual es el estudiante que hizo la entrega
+                    # Get student's profile photo
+                    student_photo = None
+                    try:
+                        student_profile = UserProfile.objects.get(user=submission.student)
+                        if student_profile.profile_photo:
+                            student_photo = student_profile.profile_photo.url
+                    except UserProfile.DoesNotExist:
+                        pass
+
                     if assignment.creator == current_user or submission.student == current_user:
                         submissions_data.append({
                             'id': submission.id,
                             'student': {
                                 'name': submission.student.username,
-                                'avatar': f'https://ui-avatars.com/api/?name={submission.student.username}&size=64&background=random'
+                                'avatar': student_photo or f'https://ui-avatars.com/api/?name={submission.student.username}&size=64&background=random'
                             },
                             'file_name': submission.file_name,
                             'file_type': submission.file_type,
@@ -69,7 +94,6 @@ class CourseConsumer(AsyncWebsocketConsumer):
                             'is_passing': submission.is_passing_grade()
                         })
 
-                # Obtener el estado específico para el usuario actual
                 status = assignment.get_status_for_student(current_user)
 
                 assignments_data.append({
@@ -81,7 +105,7 @@ class CourseConsumer(AsyncWebsocketConsumer):
                     'status': status,
                     'creator': {
                         'name': assignment.creator.username,
-                        'avatar': f'https://ui-avatars.com/api/?name={assignment.creator.username}&size=64&background=random'
+                        'avatar': assignment_creator_photo or f'https://ui-avatars.com/api/?name={assignment.creator.username}&size=64&background=random'
                     },
                     'created_at': assignment.created_at.strftime('%Y-%m-%d'),
                     'submissions': submissions_data,
@@ -98,12 +122,19 @@ class CourseConsumer(AsyncWebsocketConsumer):
                 'room': course.room,
                 'creator': {
                     'name': course.creator.username,
-                    'avatar': f'https://ui-avatars.com/api/?name={course.creator.username}&size=64&background=random'
+                    'avatar': creator_photo or f'https://ui-avatars.com/api/?name={course.creator.username}&size=64&background=random'
                 },
                 'created_at': course.created_at.strftime('%Y-%m-%d'),
                 'assignments': assignments_data
             })
         return courses
+
+    async def send_all_courses(self):
+        courses = await self.get_all_courses()
+        await self.send(json.dumps({
+            'action': 'courses_update',
+            'courses': courses
+        }))
 
     @sync_to_async
     def create_course(self, data):
@@ -115,6 +146,16 @@ class CourseConsumer(AsyncWebsocketConsumer):
             room=data['room'],
             creator=user
         )
+
+        # Get creator's profile photo
+        creator_photo = None
+        try:
+            creator_profile = UserProfile.objects.get(user=user)
+            if creator_profile.profile_photo:
+                creator_photo = creator_profile.profile_photo.url
+        except UserProfile.DoesNotExist:
+            pass
+
         return {
             'id': course.id,
             'name': course.name,
@@ -123,7 +164,7 @@ class CourseConsumer(AsyncWebsocketConsumer):
             'room': course.room,
             'creator': {
                 'name': course.creator.username,
-                'avatar': f'https://ui-avatars.com/api/?name={course.creator.username}&size=64&background=random'
+                'avatar': creator_photo or f'https://ui-avatars.com/api/?name={course.creator.username}&size=64&background=random'
             },
             'created_at': course.created_at.strftime('%Y-%m-%d'),
             'assignments': []
@@ -148,6 +189,15 @@ class CourseConsumer(AsyncWebsocketConsumer):
                 status='active',
                 creator=user
             )
+
+            # Get creator's profile photo
+            creator_photo = None
+            try:
+                creator_profile = UserProfile.objects.get(user=user)
+                if creator_profile.profile_photo:
+                    creator_photo = creator_profile.profile_photo.url
+            except UserProfile.DoesNotExist:
+                pass
 
             # Handle support file if provided
             if 'support_file' in data:
@@ -176,7 +226,7 @@ class CourseConsumer(AsyncWebsocketConsumer):
                 'status': assignment.status,
                 'creator': {
                     'name': assignment.creator.username,
-                    'avatar': f'https://ui-avatars.com/api/?name={assignment.creator.username}&size=64&background=random'
+                    'avatar': creator_photo or f'https://ui-avatars.com/api/?name={assignment.creator.username}&size=64&background=random'
                 },
                 'created_at': assignment.created_at.strftime('%Y-%m-%d'),
                 'support_file_name': assignment.support_file_name,
@@ -245,12 +295,21 @@ class CourseConsumer(AsyncWebsocketConsumer):
 
             # Guardar el nuevo archivo
             submission.file.save(file_name, ContentFile(file_content), save=True)
+
+            # Get student's profile photo
+            student_photo = None
+            try:
+                student_profile = UserProfile.objects.get(user=student)
+                if student_profile.profile_photo:
+                    student_photo = student_profile.profile_photo.url
+            except UserProfile.DoesNotExist:
+                pass
             
             return {
                 'id': submission.id,
                 'student': {
                     'name': student.username,
-                    'avatar': f'https://ui-avatars.com/api/?name={student.username}&size=64&background=random'
+                    'avatar': student_photo or f'https://ui-avatars.com/api/?name={student.username}&size=64&background=random'
                 },
                 'file_name': submission.file_name,
                 'file_type': submission.file_type,

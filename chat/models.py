@@ -16,6 +16,7 @@ class Message(models.Model):
     MESSAGE_TYPES = [
         ('normal', 'Normal'),
         ('urgent', 'Urgent'),
+        ('image', 'Image'),
     ]
 
     SUBJECTS = [
@@ -32,6 +33,7 @@ class Message(models.Model):
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=SENT)
     message_type = models.CharField(max_length=10, choices=MESSAGE_TYPES, default='normal')
     subject = models.CharField(max_length=20, choices=SUBJECTS, default='none')
+    image = models.ImageField(upload_to='chat_images/', null=True, blank=True)
 
     def __str__(self):
         return self.content

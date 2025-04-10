@@ -158,8 +158,11 @@ function displayCourses() {
             <div class="card-footer bg-transparent">
               <div class="d-flex justify-content-between align-items-center">
                 <div class="d-flex align-items-center">
-                  <img src="${course.creator.avatar}" alt="${course.creator.name}" 
-                       class="rounded-circle mr-2" style="width: 24px; height: 24px;">
+                  <img src="/media/profile_photos/${course.creator.name}.jpg" 
+                       onerror="this.onerror=null; this.src='${course.creator.avatar}'"
+                       alt="${course.creator.name}" 
+                       class="rounded-circle mr-2" 
+                       style="width: 24px; height: 24px; object-fit: cover;">
                   <small class="text-muted">
                     ${course.creator.name}
                   </small>

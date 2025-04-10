@@ -38,7 +38,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // Add user search functionality
   const userSearch = document.querySelector('#userSearch');
   if (userSearch) {
     userSearch.addEventListener('input', function(e) {
@@ -56,7 +55,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Manejar la selección activa en la barra lateral
   document.querySelectorAll('.list-group-item').forEach(item => {
     item.addEventListener('click', function(e) {
       if (this.closest('.contacts')) {
@@ -67,6 +65,35 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
   });
+
+  let selectedImageData = null;
+
+  function handleImageSelect(input) {
+    const file = input.files[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        alert('Image size should not exceed 5MB');
+        input.value = '';
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        selectedImageData = e.target.result;
+        document.getElementById('selectedImage').src = selectedImageData;
+        document.getElementById('imagePreview').style.display = 'block';
+        document.getElementById('my_input').placeholder = 'Add a caption (optional)...';
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  function removeSelectedImage() {
+    selectedImageData = null;
+    document.getElementById('imageInput').value = '';
+    document.getElementById('imagePreview').style.display = 'none';
+    document.getElementById('my_input').placeholder = 'Type a message...';
+  }
 
   function createMessageElement(data, userUsername) {
     const messageContainer = document.createElement("div");
@@ -96,9 +123,28 @@ document.addEventListener("DOMContentLoaded", function () {
       messageContent.innerHTML = dropdownHtml;
     }
 
-    const messageText = document.createElement("span");
-    messageText.textContent = data.message;
-    messageContent.appendChild(messageText);
+    if (data.message_type === 'image') {
+      const imageContainer = document.createElement("div");
+      imageContainer.className = "message-image-container";
+      const image = document.createElement("img");
+      image.src = data.image_url;
+      image.style.maxWidth = "200px";
+      image.style.maxHeight = "200px";
+      image.style.borderRadius = "8px";
+      imageContainer.appendChild(image);
+      messageContent.appendChild(imageContainer);
+
+      if (data.message && data.message.trim() !== '') {
+        const caption = document.createElement("p");
+        caption.className = "mt-2 mb-0";
+        caption.textContent = data.message;
+        messageContainer.appendChild(caption);
+      }
+    } else {
+      const messageText = document.createElement("span");
+      messageText.textContent = data.message;
+      messageContent.appendChild(messageText);
+    }
 
     if (data.sender === userUsername) {
       messageContent.appendChild(createStatusIndicator(data.status));
@@ -117,8 +163,8 @@ document.addEventListener("DOMContentLoaded", function () {
       const subjectLabel = document.createElement("div");
       subjectLabel.className = "message-label subject-label";
       subjectLabel.textContent = data.subject === 'programming' ? 'Programación' :
-                                data.subject === 'math' ? 'Matemáticas' :
-                                data.subject === 'english' ? 'Inglés' : data.subject;
+                              data.subject === 'math' ? 'Matemáticas' :
+                              data.subject === 'english' ? 'Inglés' : data.subject;
       messageContainer.appendChild(subjectLabel);
     }
 
@@ -150,7 +196,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   };
 
-  // Handle message options
   $(document).on('click', '.set-urgent', function(e) {
     e.preventDefault();
     const messageContainer = $(this).closest('.chat-message');
@@ -170,7 +215,6 @@ document.addEventListener("DOMContentLoaded", function () {
     $('#subjectModal').data('messageContainer', messageContainer);
   });
 
-  // Handle subject selection
   $('#subjectModal .list-group-item').click(function() {
     const subject = $(this).data('subject');
     const messageContainer = $('#subjectModal').data('messageContainer');
@@ -207,20 +251,26 @@ document.addEventListener("DOMContentLoaded", function () {
   document.querySelector("#submit_button").onclick = function (e) {
     var messageInput = document.querySelector("#my_input").value;
 
-    if (messageInput.length == 0) {
-      alert("Add some input first or press the Send button!");
-    } else {
-      chatSocket.send(
-        JSON.stringify({
-          action: 'new_message',
-          message: messageInput,
-          username: userUsername,
-          room_name: roomName,
-          message_type: 'normal',
-          subject: 'none'
-        })
-      );
-      document.querySelector("#my_input").value = "";
+    if (!messageInput && !selectedImageData) {
+      alert("Please add a message or select an image!");
+      return;
+    }
+
+    chatSocket.send(
+      JSON.stringify({
+        action: 'new_message',
+        message: messageInput,
+        username: userUsername,
+        room_name: roomName,
+        message_type: selectedImageData ? 'image' : 'normal',
+        subject: 'none',
+        image: selectedImageData
+      })
+    );
+
+    document.querySelector("#my_input").value = "";
+    if (selectedImageData) {
+      removeSelectedImage();
     }
   };
 
@@ -315,14 +365,12 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   };
 
-  // Manejar la búsqueda en tiempo real
   const searchInput = document.querySelector('input[name="search"]');
   if (searchInput) {
     searchInput.addEventListener('input', function () {
       const params = new URLSearchParams(window.location.search);
       params.set('search', this.value);
 
-      // Actualizar otros filtros
       ['messageType', 'subject', 'status', 'direction'].forEach(type => {
         const value = document.getElementById(type)?.value;
         if (value) params.set(type === 'messageType' ? 'message_type' : type, value);

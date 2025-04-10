@@ -1,10 +1,12 @@
 import json
+import base64
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.contrib.auth.models import User
 from .models import Message
 from asgiref.sync import sync_to_async
 from channels.layers import get_channel_layer
 from django.core.cache import cache
+from django.core.files.base import ContentFile
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -49,10 +51,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
             message = text_data_json['message']
             message_type = text_data_json.get('message_type', 'normal')
             subject = text_data_json.get('subject', 'none')
+            image_data = text_data_json.get('image')
             sender = self.scope['user']
             receiver = await self.get_receiver_user()
 
-            saved_message = await self.save_message(sender, receiver, message, message_type, subject)
+            saved_message = await self.save_message(sender, receiver, message, message_type, subject, image_data)
             message_status = await self.get_message_status(saved_message)
             unread_count = await self.get_unread_count(receiver, sender)
 
@@ -68,7 +71,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     'subject': subject,
                     'timestamp': saved_message.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
                     'message_id': str(saved_message.id),
-                    'unread_count': unread_count
+                    'unread_count': unread_count,
+                    'image_url': saved_message.image.url if saved_message.image else None
                 }
             )
         
@@ -119,8 +123,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
         }))
 
     @sync_to_async
-    def save_message(self, sender, receiver, message, message_type='normal', subject='none'):
-        msg = Message.objects.create(
+    def save_message(self, sender, receiver, message, message_type='normal', subject='none', image_data=None):
+        msg = Message(
             sender=sender,
             receiver=receiver,
             content=message,
@@ -128,6 +132,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
             message_type=message_type,
             subject=subject
         )
+
+        if image_data:
+            format, imgstr = image_data.split(';base64,')
+            ext = format.split('/')[-1]
+            data = ContentFile(base64.b64decode(imgstr), name=f'msg_image_{msg.id}.{ext}')
+            msg.image = data
+            msg.message_type = 'image'
+
+        msg.save()
         return msg
 
     @sync_to_async
