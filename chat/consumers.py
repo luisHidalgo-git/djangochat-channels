@@ -104,7 +104,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'subject': event['subject'],
             'timestamp': event['timestamp'],
             'message_id': event['message_id'],
-            'unread_count': event['unread_count']
+            'unread_count': event['unread_count'],
+            'image_url': event.get('image_url')
         }))
 
     async def message_updated(self, event):
