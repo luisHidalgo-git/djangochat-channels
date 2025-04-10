@@ -29,10 +29,6 @@ pip install -r requirements.txt
 ```
 python3 manage.py makemigrations && python3 manage.py migrate
 ```
-### Creacion de carpeta media
-```
-mkdir -p media/assignment_submissions
-```
 ### Ejecución del proyecto
 ```
 python3 manage.py runserver
