@@ -133,28 +133,35 @@
 
         <!-- Profile Photo Modal -->
         <div class="modal fade" id="profilePhotoModal" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Update Profile Photo</h5>
-                        <button type="button" class="close" data-dismiss="modal">
-                            <span>&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <form action="{% url 'update_profile_photo' %}" method="POST" enctype="multipart/form-data">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content border-0 shadow">
+                    <div class="modal-body text-center p-5">
+                        <h1 class="display-4 mb-4">Perfil</h1>
+                        <h4 class="text-muted mb-5">Tu información de perfil</h4>
+                        
+                        <div class="position-relative d-inline-block mb-5">
+                            {% if request.user.userprofile.profile_photo %}
+                                <img src="{{ request.user.userprofile.profile_photo.url }}" 
+                                     alt="Profile Photo" 
+                                     class="rounded-circle"
+                                     style="width: 200px; height: 200px; object-fit: cover;">
+                            {% else %}
+                                <img src="https://ui-avatars.com/api/?name={{ request.user.username|urlencode }}&size=200&background=random"
+                                     alt="Profile Photo" 
+                                     class="rounded-circle"
+                                     style="width: 200px; height: 200px; object-fit: cover;">
+                            {% endif %}
+                            
+                            <label for="profilePhoto" class="position-absolute" style="bottom: 10px; right: 10px; cursor: pointer; background: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                <i class="fas fa-camera"></i>
+                            </label>
+                        </div>
+                        
+                        <p class="text-muted mb-4">Click the camera icon to update your photo</p>
+                        
+                        <form action="{% url 'update_profile_photo' %}" method="POST" enctype="multipart/form-data" class="d-none">
                             {% csrf_token %}
-                            <div class="form-group">
-                                <label>Choose a new profile photo</label>
-                                <div class="custom-file">
-                                    <input type="file" class="custom-file-input" id="profilePhoto" name="profile_photo" accept="image/*" required>
-                                    <label class="custom-file-label" for="profilePhoto">Select file</label>
-                                </div>
-                                <small class="form-text text-muted">
-                                    Recommended size: 200x200 pixels. Maximum file size: 2MB.
-                                </small>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Upload Photo</button>
+                            <input type="file" id="profilePhoto" name="profile_photo" accept="image/*" onchange="this.form.submit()">
                         </form>
                     </div>
                 </div>

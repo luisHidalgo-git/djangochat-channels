@@ -3,6 +3,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from django.contrib.auth.models import User
 from .models import Exam, Question, Choice, ExamSubmission, Answer
 from asgiref.sync import sync_to_async
+from users.models import UserProfile
 
 class ExamConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -14,11 +15,31 @@ class ExamConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_discard('exams', self.channel_name)
 
     @sync_to_async
+    def get_user_profile_photo(self, username):
+        try:
+            user = User.objects.get(username=username)
+            profile = UserProfile.objects.get(user=user)
+            if profile.profile_photo:
+                return profile.profile_photo.url
+            return None
+        except (User.DoesNotExist, UserProfile.DoesNotExist):
+            return None
+
+    @sync_to_async
     def get_all_exams(self):
         current_user = User.objects.get(username=self.scope['user'].username)
         exams = []
         
         for exam in Exam.objects.all().select_related('creator'):
+            # Get creator's profile photo
+            creator_photo = None
+            try:
+                creator_profile = UserProfile.objects.get(user=exam.creator)
+                if creator_profile.profile_photo:
+                    creator_photo = creator_profile.profile_photo.url
+            except UserProfile.DoesNotExist:
+                pass
+
             questions = []
             for question in exam.questions.all().prefetch_related('choices'):
                 choices = []
@@ -38,10 +59,18 @@ class ExamConsumer(AsyncWebsocketConsumer):
                     'choices': choices
                 })
 
-            # Obtener todas las entregas para el examen si el usuario es el creador
             submissions = []
             if exam.creator == current_user:
                 for submission in ExamSubmission.objects.filter(exam=exam).select_related('student'):
+                    # Get student's profile photo
+                    student_photo = None
+                    try:
+                        student_profile = UserProfile.objects.get(user=submission.student)
+                        if student_profile.profile_photo:
+                            student_photo = student_profile.profile_photo.url
+                    except UserProfile.DoesNotExist:
+                        pass
+
                     answers = []
                     for answer in submission.answers.all().prefetch_related('selected_choices'):
                         selected_choices = [choice.id for choice in answer.selected_choices.all()]
@@ -55,13 +84,12 @@ class ExamConsumer(AsyncWebsocketConsumer):
                         'id': submission.id,
                         'student': {
                             'name': submission.student.username,
-                            'avatar': f'https://ui-avatars.com/api/?name={submission.student.username}&size=64&background=random'
+                            'avatar': student_photo or f'https://ui-avatars.com/api/?name={submission.student.username}&size=64&background=random'
                         },
                         'submitted_at': submission.submitted_at.strftime('%Y-%m-%d %H:%M'),
                         'score': submission.score,
                         'answers': answers
                     })
-            # Si el usuario no es el creador, solo obtener su propia entrega
             else:
                 submission = ExamSubmission.objects.filter(
                     exam=exam,
@@ -69,6 +97,15 @@ class ExamConsumer(AsyncWebsocketConsumer):
                 ).first()
                 
                 if submission:
+                    # Get current user's profile photo
+                    user_photo = None
+                    try:
+                        user_profile = UserProfile.objects.get(user=current_user)
+                        if user_profile.profile_photo:
+                            user_photo = user_profile.profile_photo.url
+                    except UserProfile.DoesNotExist:
+                        pass
+
                     answers = []
                     for answer in submission.answers.all().prefetch_related('selected_choices'):
                         selected_choices = [choice.id for choice in answer.selected_choices.all()]
@@ -82,7 +119,7 @@ class ExamConsumer(AsyncWebsocketConsumer):
                         'id': submission.id,
                         'student': {
                             'name': current_user.username,
-                            'avatar': f'https://ui-avatars.com/api/?name={current_user.username}&size=64&background=random'
+                            'avatar': user_photo or f'https://ui-avatars.com/api/?name={current_user.username}&size=64&background=random'
                         },
                         'submitted_at': submission.submitted_at.strftime('%Y-%m-%d %H:%M'),
                         'score': submission.score,
@@ -95,7 +132,7 @@ class ExamConsumer(AsyncWebsocketConsumer):
                 'description': exam.description,
                 'creator': {
                     'name': exam.creator.username,
-                    'avatar': f'https://ui-avatars.com/api/?name={exam.creator.username}&size=64&background=random'
+                    'avatar': creator_photo or f'https://ui-avatars.com/api/?name={exam.creator.username}&size=64&background=random'
                 },
                 'created_at': exam.created_at.strftime('%Y-%m-%d'),
                 'total_points': exam.total_points,
@@ -117,6 +154,16 @@ class ExamConsumer(AsyncWebsocketConsumer):
     @sync_to_async
     def create_exam(self, data):
         user = User.objects.get(username=data['creator']['name'])
+        
+        # Get creator's profile photo
+        creator_photo = None
+        try:
+            creator_profile = UserProfile.objects.get(user=user)
+            if creator_profile.profile_photo:
+                creator_photo = creator_profile.profile_photo.url
+        except UserProfile.DoesNotExist:
+            pass
+
         exam = Exam.objects.create(
             title=data['title'],
             description=data['description'],
@@ -129,7 +176,6 @@ class ExamConsumer(AsyncWebsocketConsumer):
         remaining_points = 100 % len(data['questions'])
 
         for i, q_data in enumerate(data['questions']):
-            # Add remaining points to last question
             question_points = points_per_question + (remaining_points if i == len(data['questions']) - 1 else 0)
             
             question = Question.objects.create(
@@ -147,17 +193,13 @@ class ExamConsumer(AsyncWebsocketConsumer):
                     is_correct=c_data['is_correct']
                 )
 
-        return self.get_exam_data(exam)
-
-    @sync_to_async
-    def get_exam_data(self, exam):
         return {
             'id': exam.id,
             'title': exam.title,
             'description': exam.description,
             'creator': {
                 'name': exam.creator.username,
-                'avatar': f'https://ui-avatars.com/api/?name={exam.creator.username}&size=64&background=random'
+                'avatar': creator_photo or f'https://ui-avatars.com/api/?name={exam.creator.username}&size=64&background=random'
             },
             'created_at': exam.created_at.strftime('%Y-%m-%d'),
             'total_points': exam.total_points,
@@ -181,17 +223,24 @@ class ExamConsumer(AsyncWebsocketConsumer):
         exam = Exam.objects.get(id=data['examId'])
         student = User.objects.get(username=data['student'])
         
-        # Create or get submission
+        # Get student's profile photo
+        student_photo = None
+        try:
+            student_profile = UserProfile.objects.get(user=student)
+            if student_profile.profile_photo:
+                student_photo = student_profile.profile_photo.url
+        except UserProfile.DoesNotExist:
+            pass
+        
         submission, created = ExamSubmission.objects.get_or_create(
             exam=exam,
             student=student,
             defaults={
-                'completed': True  # Set completed to True for new submissions
+                'completed': True
             }
         )
 
         if not created:
-            # Delete previous answers if resubmitting
             submission.answers.all().delete()
             submission.completed = True
             submission.save()
@@ -209,7 +258,6 @@ class ExamConsumer(AsyncWebsocketConsumer):
             selected_choices = Choice.objects.filter(id__in=answer_data['selectedChoices'])
             answer.selected_choices.set(selected_choices)
 
-            # Check if answer is correct
             if question.question_type == 'single':
                 is_correct = selected_choices.filter(is_correct=True).exists()
             else:  # multiple
@@ -225,12 +273,15 @@ class ExamConsumer(AsyncWebsocketConsumer):
             if is_correct:
                 total_correct += 1
 
-        # Calculate score
         submission.score = round((total_correct / total_questions) * 100)
         submission.save()
 
         return {
             'id': submission.id,
+            'student': {
+                'name': student.username,
+                'avatar': student_photo or f'https://ui-avatars.com/api/?name={student.username}&size=64&background=random'
+            },
             'submitted_at': submission.submitted_at.strftime('%Y-%m-%d %H:%M'),
             'score': submission.score,
             'answers': [{
