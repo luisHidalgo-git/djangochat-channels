@@ -29,6 +29,10 @@ pip install -r requirements.txt
 ```
 python3 manage.py makemigrations && python3 manage.py migrate
 ```
+### Directorio Media
+```
+mkdir media && mkdir assignment_subimissions && mkdir assignment_support && mkdir chat_images && mkdir profile_photos
+```
 ### Ejecución del proyecto
 ```
 python3 manage.py runserver
