@@ -37,6 +37,12 @@ window.removeSelectedImage = function() {
     document.getElementById('my_input').placeholder = 'Type a message...';
 };
 
+// Función para mostrar la imagen en el modal
+function showImageModal(imageUrl) {
+    document.getElementById('modalImage').src = imageUrl;
+    $('#imagePreviewModal').modal('show');
+}
+
 document.addEventListener("DOMContentLoaded", function () {
     const chatbox = document.querySelector("#chatbox");
 
@@ -143,7 +149,7 @@ document.addEventListener("DOMContentLoaded", function () {
             image.style.borderRadius = "8px";
             image.style.cursor = "pointer";
             image.onclick = function() {
-                window.open(this.src, '_blank');
+                showImageModal(this.src);
             };
             imageContainer.appendChild(image);
             messageContent.appendChild(imageContainer);

@@ -1,11 +1,32 @@
 {% load static %}
 <div class="container-fluid h-100">
-    <!-- Mobile Toggle Button -->
+    <!-- Loading Overlay -->
     <button class="toggle-sidebar d-md-none" onclick="toggleSidebar()">
         <i class="fas fa-bars"></i>
     </button>
 
+    <!-- Image Preview Modal -->
+    <div class="modal fade" id="imagePreviewModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Vista previa de imagen</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body text-center">
+                    <img id="modalImage" src="" alt="Preview" style="max-width: 100%; max-height: 80vh;">
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="row h-100">
+        <!-- Rest of the existing chat area code remains unchanged -->
+        {{ room_name|json_script:"room_name" }}
+        {{ request.user.username|json_script:"user_username" }}
+        
         <!-- User List Sidebar -->
         <div class="col-md-3 sidebar p-3 chats">
             <!-- Mobile Header Controls -->
@@ -339,7 +360,7 @@
                         <div class="message-image-container">
                             <img src="{{ message.image.url }}" alt="Shared image"
                                  style="max-width: 200px; max-height: 200px; border-radius: 8px; cursor: pointer;"
-                                 onclick="window.open(this.src, '_blank')">
+                                 onclick="showImageModal('{{ message.image.url }}')" />
                             {% if message.content %}
                             <p class="mt-2 mb-0">{{ message.content }}</p>
                             {% endif %}
