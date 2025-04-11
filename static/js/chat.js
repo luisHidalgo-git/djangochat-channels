@@ -411,4 +411,4 @@ document.addEventListener("DOMContentLoaded", function () {
                 .catch(error => console.error('Error al buscar mensajes:', error));
         });
     }
-});
+}); 

@@ -11,3 +11,4 @@ __pycache__
 staticfiles/
 db.sqlite3
 media/
+migrations/
