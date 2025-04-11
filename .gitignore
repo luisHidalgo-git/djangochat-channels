@@ -10,6 +10,4 @@ __pycache__
 .env.local
 staticfiles/
 db.sqlite3
-tex.txt
-bolt.txt
 media/
