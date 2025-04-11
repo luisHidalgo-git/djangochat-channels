@@ -90,23 +90,6 @@
                     {% if is_password_reset %}Update Password{% else %}Signup{% endif %}
                 </button>
             </form>
-            <script>
-                document.querySelectorAll('.toggle-password').forEach(button => {
-                    button.addEventListener('click', function () {
-                        const passwordInput = this.closest('.input-group').querySelector('input');
-                        const icon = this.querySelector('i');
-                        if (passwordInput.type === 'password') {
-                            passwordInput.type = 'text';
-                            icon.classList.remove('fa-eye');
-                            icon.classList.add('fa-eye-slash');
-                        } else {
-                            passwordInput.type = 'password';
-                            icon.classList.remove('fa-eye-slash');
-                            icon.classList.add('fa-eye');
-                        }
-                    });
-                });
-            </script>
             {% if not is_password_reset %}
             <div class="text-center link mt-3">
                 <a href="/login">Already have an account? Login</a>
@@ -120,5 +103,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="{% static 'js/theme.js' %}"></script>
+    <script src="{% static 'js/hide_password_signup.js' %}"></script>
 </body>
 </html>
