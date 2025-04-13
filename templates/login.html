@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Page</title>
+    <title data-translate="login">Login Page</title>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
@@ -32,26 +32,26 @@
         </div>
         {% endif %}
         <div class="login-container">
-            <h2 class="login-title">Login</h2>
+            <h2 class="login-title" data-translate="login">Login</h2>
 
             <form action="{% url 'login' %}" method="POST" id="loginForm">
                 {% csrf_token %}
                 <div class="form-group">
-                    <label for="email">Email</label>
+                    <label for="email" data-translate="emailLabel">Email</label>
                     <div class="input-group">
                         <div class="input-group-prepend">
                             <span class="input-group-text"><i class="fas fa-envelope"></i></span>
                         </div>
-                        <input type="email" class="form-control" id="email" name="email" placeholder="example@example.com" required>
+                        <input type="email" class="form-control" id="email" name="email" data-translate="enterEmail" placeholder="example@example.com" required>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="password">Password</label>
+                    <label for="password" data-translate="passwordLabel">Password</label>
                     <div class="input-group">
                         <div class="input-group-prepend">
                             <span class="input-group-text"><i class="fas fa-lock"></i></span>
                         </div>
-                        <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
+                        <input type="password" class="form-control" id="password" name="password" data-translate="enterPassword" placeholder="Enter your password" required>
                         <div class="input-group-append">
                             <button type="button" class="btn btn-outline-secondary toggle-password">
                                 <i class="fas fa-eye"></i>
@@ -60,12 +60,12 @@
                     </div>
                 </div>
                 <div class="g-recaptcha" data-sitekey="6Lf5t_YqAAAAANu39Mqhj5Um-xJ-2_talSnjmBeE"></div>
-                <button type="submit" class="btn btn-primary btn-block">Login</button>
+                <button type="submit" class="btn btn-primary btn-block" data-translate="loginBtn">Login</button>
             </form>
             <div class="text-center link mt-3">
-                <a href="/signup">Don't have an account? Register</a>
+                <a href="/signup" data-translate="noAccount">Don't have an account? Register</a>
                 <br>
-                <a href="#" data-toggle="modal" data-target="#forgotPasswordModal">Forgot Password?</a>
+                <a href="#" data-toggle="modal" data-target="#forgotPasswordModal" data-translate="forgotPassword">Forgot Password?</a>
             </div>
         </div>
     </div>
@@ -84,8 +84,8 @@
                     <p>You already have an active session in another browser. What would you like to do?</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel Login</button>
-                    <button type="button" class="btn btn-primary" id="forceLogin">Close Other Session and Login Here</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" data-translate="cancel">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="forceLogin" data-translate="loginBtn">Login</button>
                 </div>
             </div>
         </div>
@@ -96,7 +96,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="forgotPasswordModalLabel">Reset Password</h5>
+                    <h5 class="modal-title" id="forgotPasswordModalLabel" data-translate="forgotPassword">Reset Password</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -105,14 +105,14 @@
                     <form id="forgotPasswordForm" action="{% url 'check_user' %}" method="POST">
                         {% csrf_token %}
                         <div class="form-group">
-                            <label for="resetEmail">Email</label>
-                            <input type="email" class="form-control" id="resetEmail" name="email" required>
+                            <label for="resetEmail" data-translate="emailLabel">Email</label>
+                            <input type="email" class="form-control" id="resetEmail" name="email" data-translate="enterEmail" required>
                         </div>
                         <div class="form-group">
                             <label for="resetUsername">Username</label>
                             <input type="text" class="form-control" id="resetUsername" name="username" required>
                         </div>
-                        <button type="submit" class="btn btn-primary btn-block">Verify Account</button>
+                        <button type="submit" class="btn btn-primary btn-block" data-translate="verify">Verify Account</button>
                     </form>
                 </div>
             </div>

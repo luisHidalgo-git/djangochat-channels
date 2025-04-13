@@ -3,7 +3,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="createAssignmentModalLabel">Crear Nueva Tarea</h5>
+                <h5 class="modal-title" id="createAssignmentModalLabel" data-translate="createAssignment">Crear Nueva Tarea</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -11,40 +11,39 @@
             <div class="modal-body">
                 <form id="createAssignmentForm">
                     <div class="form-group">
-                        <label for="assignmentTitle">Título de la Tarea</label>
+                        <label for="assignmentTitle" data-translate="examTitle">Título de la Tarea</label>
                         <input type="text" class="form-control" id="assignmentTitle" required>
                     </div>
                     <div class="form-group">
-                        <label for="assignmentDescription">Descripción</label>
+                        <label for="assignmentDescription" data-translate="description">Descripción</label>
                         <textarea class="form-control" id="assignmentDescription" rows="3" required></textarea>
                     </div>
                     <div class="form-group">
-                        <label for="assignmentDueDate">Fecha de Entrega</label>
+                        <label for="assignmentDueDate" data-translate="dueDate">Fecha de Entrega</label>
                         <input type="datetime-local" class="form-control" id="assignmentDueDate" required>
                     </div>
                     <div class="form-group">
-                        <label for="assignmentPoints">Puntos</label>
+                        <label for="assignmentPoints" data-translate="points">Puntos</label>
                         <input type="number" class="form-control" id="assignmentPoints" min="0" required>
                     </div>
                     <div class="form-group">
-                        <label for="assignmentSupportFile">Archivo de Soporte (opcional)</label>
+                        <label for="assignmentSupportFile" data-translate="supportMaterial">Archivo de Soporte (opcional)</label>
                         <div class="custom-file">
                             <input type="file" class="custom-file-input" id="assignmentSupportFile"
                                    accept=".doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf,.jpg,.jpeg,.png">
-                            <label class="custom-file-label" for="assignmentSupportFile">Elegir archivo</label>
+                            <label class="custom-file-label" for="assignmentSupportFile" data-translate="chooseFile">Elegir archivo</label>
                         </div>
-                        <small class="form-text text-muted">
+                        <small class="form-text text-muted" data-translate="acceptedFormats">
                             Formatos aceptados: Word, Excel, PowerPoint, PDF e imágenes
                         </small>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" data-translate="cancel">Cancelar</button>
                 <button type="button" class="btn btn-primary"
-                    onclick="createAssignment(parseInt(this.closest('.modal').getAttribute('data-course-id')))">
-                    Crear Tarea
-                </button>
+                    onclick="createAssignment(parseInt(this.closest('.modal').getAttribute('data-course-id')))"
+                    data-translate="create">Crear</button>
             </div>
         </div>
     </div>

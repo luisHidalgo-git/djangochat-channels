@@ -3,7 +3,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="createCourseModalLabel">Crear Nuevo Curso</h5>
+                <h5 class="modal-title" id="createCourseModalLabel" data-translate="createCourse">Crear Nuevo Curso</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -11,30 +11,30 @@
             <div class="modal-body">
                 <form id="createCourseForm">
                     <div class="form-group">
-                        <label for="courseName">Nombre del Curso</label>
+                        <label for="courseName" data-translate="courseName">Nombre del Curso</label>
                         <input type="text" class="form-control" id="courseName" required>
                     </div>
                     <div class="form-group">
-                        <label for="courseSubject">Materia</label>
+                        <label for="courseSubject" data-translate="subject">Materia</label>
                         <select class="form-control" id="courseSubject" required>
-                            <option value="programming">Programación</option>
-                            <option value="math">Matemáticas</option>
-                            <option value="english">Inglés</option>
+                            <option value="programming" data-translate="programming">Programación</option>
+                            <option value="math" data-translate="mathematics">Matemáticas</option>
+                            <option value="english" data-translate="english">Inglés</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="courseDescription">Descripción</label>
+                        <label for="courseDescription" data-translate="description">Descripción</label>
                         <textarea class="form-control" id="courseDescription" rows="3" required></textarea>
                     </div>
                     <div class="form-group">
-                        <label for="courseRoom">Sala</label>
+                        <label for="courseRoom" data-translate="room">Sala</label>
                         <input type="text" class="form-control" id="courseRoom" required>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="createCourse()">Crear Curso</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" data-translate="cancel">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="createCourse()" data-translate="create">Crear</button>
             </div>
         </div>
     </div>

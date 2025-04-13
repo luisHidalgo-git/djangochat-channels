@@ -27,6 +27,7 @@ function translatePage(lang) {
     const translations = {
         en: {
             // Header & Navigation
+            schoolMoodle: "School Moodle",
             home: "Home",
             login: "Login",
             signup: "Signup",
@@ -53,6 +54,7 @@ function translatePage(lang) {
             runServer: "Run development server",
 
             // Login Page
+            username: "Username",
             emailLabel: "Email",
             passwordLabel: "Password",
             confirmPassword: "Confirm Password",
@@ -132,6 +134,12 @@ function translatePage(lang) {
             normal: "Normal",
             urgent: "Urgent",
             selectSubject: "Select Subject",
+            imagePreview: "Image Preview",
+            sent: "Sent",
+            read: "Read",
+            received: "Received",
+            address: "Address",
+            searchMessages: "Search messages...",
 
             // Profile
             profile: "Profile",
@@ -141,6 +149,9 @@ function translatePage(lang) {
             // Buttons & Actions
             cancel: "Cancel",
             create: "Create",
+            createCourse: "Create Course",
+            createAssignment: "Create Assignment",
+            createExam: "Create Exam",
             update: "Update",
             delete: "Delete",
             save: "Save",
@@ -174,6 +185,7 @@ function translatePage(lang) {
             runServer: "Ejecutar servidor de desarrollo",
 
             // Login Page
+            username: "Nombre de usuario",
             emailLabel: "Correo Electrónico",
             passwordLabel: "Contraseña",
             confirmPassword: "Confirmar Contraseña",
@@ -253,6 +265,12 @@ function translatePage(lang) {
             normal: "Normal",
             urgent: "Urgente",
             selectSubject: "Seleccionar Materia",
+            imagePreview: "Vista previa de la imagen",
+            sent: "Enviado",
+            read: "Leído",
+            received: "Recibido",
+            address: "Dirección",
+            searchMessages: "Buscar mensajes...",
 
             // Profile
             profile: "Perfil",
@@ -262,6 +280,9 @@ function translatePage(lang) {
             // Buttons & Actions
             cancel: "Cancelar",
             create: "Crear",
+            createCourse: "Crear Curso",
+            createAssignment: "Crear Tarea",
+            createExam: "Crear Examen",
             update: "Actualizar",
             delete: "Eliminar",
             save: "Guardar",

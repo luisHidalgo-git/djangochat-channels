@@ -4,7 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% if is_password_reset %}Reset Password{% else %}Signup Page{% endif %}</title>
+    <title data-translate="{% if is_password_reset %}forgotPassword{% else %}signup{% endif %}">
+        {% if is_password_reset %}Reset Password{% else %}Signup Page{% endif %}
+    </title>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
     <link rel="stylesheet" href="{% static 'css/style_signup.css' %}">
@@ -32,26 +34,28 @@
         {% endif %}
 
         <div class="login-container">
-            <h2 class="login-title">{% if is_password_reset %}Reset Password{% else %}Create Account{% endif %}</h2>
+            <h2 class="login-title" data-translate="{% if is_password_reset %}forgotPassword{% else %}signup{% endif %}">
+                {% if is_password_reset %}Reset Password{% else %}Create Account{% endif %}
+            </h2>
             <form action="{% if is_password_reset %}{% url 'update_password' %}{% else %}{% url 'signup' %}{% endif %}" method="POST">
                 {% csrf_token %}
                 {% if not is_password_reset %}
                 <div class="form-group">
-                    <label for="email">Email</label>
+                    <label for="email" data-translate="emailLabel">Email</label>
                     <div class="input-group">
                         <div class="input-group-prepend">
                             <span class="input-group-text"><i class="fas fa-envelope"></i></span>
                         </div>
-                        <input type="email" class="form-control" id="email" name="email" placeholder="example@example.com" required {% if email %}value="{{ email }}" readonly{% endif %}>
+                        <input type="email" class="form-control" id="email" name="email" data-translate="enterEmail" placeholder="example@example.com" required {% if email %}value="{{ email }}" readonly{% endif %}>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="username">Username</label>
+                    <label for="username" data-translate="username">Username</label>
                     <div class="input-group">
                         <div class="input-group-prepend">
                             <span class="input-group-text"><i class="fas fa-user"></i></span>
                         </div>
-                        <input type="text" class="form-control" id="username" name="username" placeholder="Enter your username" required {% if username %}value="{{ username }}" readonly{% endif %}>
+                        <input type="text" class="form-control" id="username" name="username" data-translate="username" placeholder="Enter your username" required {% if username %}value="{{ username }}" readonly{% endif %}>
                     </div>
                 </div>
                 {% else %}
@@ -59,12 +63,14 @@
                     <input type="hidden" name="username" value="{{ username }}">
                 {% endif %}
                 <div class="form-group">
-                    <label for="password">{% if is_password_reset %}New Password{% else %}Password{% endif %}</label>
+                    <label for="password" data-translate="{% if is_password_reset %}newPassword{% else %}passwordLabel{% endif %}">
+                        {% if is_password_reset %}New Password{% else %}Password{% endif %}
+                    </label>
                     <div class="input-group">
                         <div class="input-group-prepend">
                             <span class="input-group-text"><i class="fas fa-lock"></i></span>
                         </div>
-                        <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
+                        <input type="password" class="form-control" id="password" name="password" data-translate="enterPassword" placeholder="Enter your password" required>
                         <div class="input-group-append">
                             <button type="button" class="btn btn-outline-secondary toggle-password">
                                 <i class="fas fa-eye"></i>
@@ -73,12 +79,12 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="confirm_password">Confirm {% if is_password_reset %}New {% endif %}Password</label>
+                    <label for="confirm_password" data-translate="confirmPassword">Confirm Password</label>
                     <div class="input-group">
                         <div class="input-group-prepend">
                             <span class="input-group-text"><i class="fas fa-lock"></i></span>
                         </div>
-                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Re-enter your password" required>
+                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" data-translate="reenterPassword" placeholder="Re-enter your password" required>
                         <div class="input-group-append">
                             <button type="button" class="btn btn-outline-secondary toggle-password">
                                 <i class="fas fa-eye"></i>
@@ -86,13 +92,13 @@
                         </div>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary btn-block">
+                <button type="submit" class="btn btn-primary btn-block" data-translate="{% if is_password_reset %}update{% else %}signupBtn{% endif %}">
                     {% if is_password_reset %}Update Password{% else %}Signup{% endif %}
                 </button>
             </form>
             {% if not is_password_reset %}
             <div class="text-center link mt-3">
-                <a href="/login">Already have an account? Login</a>
+                <a href="/login" data-translate="hasAccount">Already have an account? Login</a>
             </div>
             {% endif %}
         </div>

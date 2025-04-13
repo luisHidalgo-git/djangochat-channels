@@ -3,7 +3,9 @@
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="createExamModalLabel">Crear Nuevo Examen</h5>
+                <h5 class="modal-title" id="createExamModalLabel" data-translate="createEx
+
+am">Crear Nuevo Examen</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -11,15 +13,15 @@
             <div class="modal-body">
                 <form id="createExamForm">
                     <div class="form-group">
-                        <label for="examTitle">Título del Examen</label>
+                        <label for="examTitle" data-translate="examTitle">Título del Examen</label>
                         <input type="text" class="form-control" id="examTitle" required>
                     </div>
                     <div class="form-group">
-                        <label for="examDescription">Descripción</label>
+                        <label for="examDescription" data-translate="description">Descripción</label>
                         <textarea class="form-control" id="examDescription" rows="3" required></textarea>
                     </div>
                     <div class="form-group">
-                        <label for="questionCount">Número de Preguntas</label>
+                        <label for="questionCount" data-translate="questionCount">Número de Preguntas</label>
                         <input type="number" class="form-control" id="questionCount" min="1" max="10" value="1"
                                onchange="updateQuestionForm()" required>
                     </div>
@@ -29,8 +31,8 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="createExam()">Crear Examen</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" data-translate="cancel">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="createExam()" data-translate="create">Crear</button>
             </div>
         </div>
     </div>

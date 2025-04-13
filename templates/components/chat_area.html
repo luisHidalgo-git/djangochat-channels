@@ -10,7 +10,7 @@
         <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Vista previa de imagen</h5>
+                    <h5 class="modal-title" data-translate="imagePreview">Vista previa de imagen</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -63,7 +63,7 @@
                     class="list-group-item list-group-item-action {% if request.GET.view == 'courses' or not request.GET.view %}active{% endif %}">
                     <div class="d-flex align-items-center">
                         <i class="fas fa-graduation-cap mr-2"></i>
-                        <span>Cursos Disponibles</span>
+                        <span data-translate="courses">Cursos Disponibles</span>
                     </div>
                 </a>
             </div>
@@ -75,7 +75,7 @@
                     class="list-group-item list-group-item-action {% if request.GET.view == 'exams' %}active{% endif %}">
                     <div class="d-flex align-items-center">
                         <i class="fas fa-file-alt mr-2"></i>
-                        <span>Exámenes Disponibles</span>
+                        <span data-translate="exams">Exámenes Disponibles</span>
                     </div>
                 </a>
             </div>
@@ -83,7 +83,7 @@
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h5 class="text-white mb-0">Chats</h5>
                 <div class="flex-grow-1 ml-2">
-                    <input type="text" id="userSearch" class="form-control form-control-sm" placeholder="Buscar usuarios...">
+                    <input type="text" id="userSearch" class="form-control form-control-sm" data-translate="searchUsers" placeholder="Buscar usuarios...">
                 </div>
             </div>
             <div class="contacts">
@@ -167,8 +167,8 @@
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content border-0 shadow">
                     <div class="modal-body text-center p-5">
-                        <h1 class="display-4 mb-4">Perfil</h1>
-                        <h4 class="text-muted mb-5">Tu información de perfil</h4>
+                        <h1 class="display-4 mb-4" data-translate="profile">Perfil</h1>
+                        <h4 class="text-muted mb-5" data-translate="profileInfo">Tu información de perfil</h4>
                         
                         <div class="position-relative d-inline-block mb-5">
                             {% if request.user.userprofile.profile_photo %}
@@ -188,7 +188,7 @@
                             </label>
                         </div>
                         
-                        <p class="text-muted mb-4">Click the camera icon to update your photo</p>
+                        <p class="text-muted mb-4" data-translate="updatePhoto">Click the camera icon to update your photo</p>
                         
                         <form action="{% url 'update_profile_photo' %}" method="POST" enctype="multipart/form-data" class="d-none">
                             {% csrf_token %}
@@ -215,11 +215,11 @@
                     <div id="actionButtons">
                         <button class="btn btn-primary {% if request.GET.view == 'exams' %}d-none{% endif %}" data-toggle="modal" data-target="#createCourseModal" id="createCourseBtn">
                             <i class="fas fa-plus d-md-none"></i>
-                            <span class="d-none d-md-inline">Crear Curso</span>
+                            <span class="d-none d-md-inline" data-translate="createCourse">Crear Curso</span>
                         </button>
                         <button class="btn btn-primary {% if request.GET.view != 'exams' %}d-none{% endif %}" data-toggle="modal" data-target="#createExamModal" id="createExamBtn">
                             <i class="fas fa-plus d-md-none"></i>
-                            <span class="d-none d-md-inline">Crear Examen</span>
+                            <span class="d-none d-md-inline" data-translate="createExam">Crear Examen</span>
                         </button>
                     </div>
                 </div>
@@ -261,7 +261,7 @@
                 <!-- Enhanced Search Form with Dropdown -->
                 <form method="GET" action="" class="mobile-search-container ml-auto">
                     <div class="input-group">
-                        <input type="text" name="search" class="form-control" 
+                        <input type="text" data-translate="searchMessages" name="search" class="form-control" 
                             placeholder="Buscar mensajes..." value="{{ search_query }}" 
                             oninput="toggleFilter(this, 'search', this.value)">
                         <div class="input-group-append">
@@ -270,62 +270,62 @@
                                 <i class="fas fa-filter"></i>
                             </button>
                             <div class="dropdown-menu dropdown-menu-right filter-dropdown">
-                                <h6 class="dropdown-header">Tipo de Mensaje</h6>
-                                <button type="button" class="dropdown-item {% if message_type == 'normal' %}active{% endif %}" 
+                                <h6 class="dropdown-header" data-translate="messageType">Tipo de Mensaje</h6>
+                                <button type="button" data-translate="normal" class="dropdown-item {% if message_type == 'normal' %}active{% endif %}" 
                                         data-filter-type="messageType" data-value="normal" 
                                         onclick="toggleFilter(this, 'messageType', 'normal')">
                                     <i class="fas fa-comment"></i> Normal
                                 </button>
-                                <button type="button" class="dropdown-item {% if message_type == 'urgent' %}active{% endif %}" 
+                                <button type="button" data-translate="urgent" class="dropdown-item {% if message_type == 'urgent' %}active{% endif %}" 
                                         data-filter-type="messageType" data-value="urgent" 
                                         onclick="toggleFilter(this, 'messageType', 'urgent')">
                                     <i class="fas fa-exclamation-circle"></i> Urgente
                                 </button>
                                 
                                 <div class="dropdown-divider"></div>
-                                <h6 class="dropdown-header">Materia</h6>
-                                <button type="button" class="dropdown-item {% if subject == 'programming' %}active{% endif %}" 
+                                <h6 class="dropdown-header" data-translate="subject">Materia</h6>
+                                <button type="button" data-translate="programming" class="dropdown-item {% if subject == 'programming' %}active{% endif %}" 
                                         data-filter-type="subject" data-value="programming" 
                                         onclick="toggleFilter(this, 'subject', 'programming')">
                                     <i class="fas fa-code"></i> Programación
                                 </button>
-                                <button type="button" class="dropdown-item {% if subject == 'math' %}active{% endif %}" 
+                                <button type="button" data-translate="mathematics" class="dropdown-item {% if subject == 'math' %}active{% endif %}" 
                                         data-filter-type="subject" data-value="math" 
                                         onclick="toggleFilter(this, 'subject', 'math')">
                                     <i class="fas fa-square-root-alt"></i> Matemáticas
                                 </button>
-                                <button type="button" class="dropdown-item {% if subject == 'english' %}active{% endif %}" 
+                                <button type="button" data-translate="english" class="dropdown-item {% if subject == 'english' %}active{% endif %}" 
                                         data-filter-type="subject" data-value="english" 
                                         onclick="toggleFilter(this, 'subject', 'english')">
                                     <i class="fas fa-language"></i> Inglés
                                 </button>
                                 
                                 <div class="dropdown-divider"></div>
-                                <h6 class="dropdown-header">Estado</h6>
-                                <button type="button" class="dropdown-item {% if status == 'sent' %}active{% endif %}" 
+                                <h6 class="dropdown-header" data-translate="status">Estado</h6>
+                                <button type="button" data-translate="sent" class="dropdown-item {% if status == 'sent' %}active{% endif %}" 
                                         data-filter-type="status" data-value="sent" 
                                         onclick="toggleFilter(this, 'status', 'sent')">
                                     <i class="fas fa-check"></i> Enviados
                                 </button>
-                                <button type="button" class="dropdown-item {% if status == 'delivered' %}active{% endif %}" 
+                                <button type="button" data-translate="submitted" class="dropdown-item {% if status == 'delivered' %}active{% endif %}" 
                                         data-filter-type="status" data-value="delivered" 
                                         onclick="toggleFilter(this, 'status', 'delivered')">
                                     <i class="fas fa-check-double"></i> Entregados
                                 </button>
-                                <button type="button" class="dropdown-item {% if status == 'read' %}active{% endif %}" 
+                                <button type="button" data-translate="read" class="dropdown-item {% if status == 'read' %}active{% endif %}" 
                                         data-filter-type="status" data-value="read" 
                                         onclick="toggleFilter(this, 'status', 'read')">
                                     <i class="fas fa-eye"></i> Leídos
                                 </button>
                                 
                                 <div class="dropdown-divider"></div>
-                                <h6 class="dropdown-header">Dirección</h6>
-                                <button type="button" class="dropdown-item {% if direction == 'sent' %}active{% endif %}" 
+                                <h6 class="dropdown-header" data-translate="address">Dirección</h6>
+                                <button type="button" data-translate="sent" class="dropdown-item {% if direction == 'sent' %}active{% endif %}" 
                                         data-filter-type="direction" data-value="sent" 
                                         onclick="toggleFilter(this, 'direction', 'sent')">
                                     <i class="fas fa-paper-plane"></i> Enviados
                                 </button>
-                                <button type="button" class="dropdown-item {% if direction == 'received' %}active{% endif %}" 
+                                <button type="button" data-translate="received" class="dropdown-item {% if direction == 'received' %}active{% endif %}" 
                                         data-filter-type="direction" data-value="received" 
                                         onclick="toggleFilter(this, 'direction', 'received')">
                                     <i class="fas fa-inbox"></i> Recibidos
@@ -359,9 +359,9 @@
                                 <i class="fas fa-ellipsis-v"></i>
                             </button>
                             <div class="dropdown-menu">
-                                <a class="dropdown-item set-urgent" href="#">Mensaje Urgente</a>
-                                <a class="dropdown-item set-subject" href="#">Materia</a>
-                                <a class="dropdown-item show-details" href="#">Más detalles</a>
+                                <a class="dropdown-item set-urgent" data-translate="urgentMessage" href="#">Mensaje Urgente</a>
+                                <a class="dropdown-item set-subject" data-translate="subject" href="#">Materia</a>
+                                <a class="dropdown-item show-details" data-translate="messageDetails" href="#">Más detalles</a>
                             </div>
                         </div>
                         {% endif %}
