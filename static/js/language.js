@@ -103,6 +103,8 @@ function translatePage(lang) {
             supportMaterial: "Support Material",
             submit: "Submit",
             download: "Download",
+            chooseFile: "Choose file",
+            acceptedFormats: "Accepted formats: Word, Excel, PowerPoint, PDF and images",
 
             // Exam System
             examTitle: "Exam Title",
@@ -125,6 +127,18 @@ function translatePage(lang) {
             submitExam: "Submit Exam",
             examInstructions: "Exam Instructions",
             startExam: "Start Exam",
+            examStats: "Exam Statistics",
+            totalSubmissions: "Total Submissions",
+            passedCount: "Passed",
+            failedCount: "Failed",
+            averageGrade: "Average Grade",
+            studentAnswers: "Student Answers",
+            correct: "Correct!",
+            incorrect: "Incorrect",
+            viewAnswers: "View Answers",
+            examCompleted: "Exam Completed",
+            yourGrade: "Your Grade",
+            submittedOn: "Submitted on",
 
             // Messages & Alerts
             urgentMessage: "Urgent Message",
@@ -140,6 +154,12 @@ function translatePage(lang) {
             received: "Received",
             address: "Address",
             searchMessages: "Search messages...",
+            addCaption: "Add a caption (optional)...",
+            imageSizeError: "Image size should not exceed 5MB",
+            selectImageError: "Please select an image file",
+            answerAllQuestions: "Please answer all questions before submitting the exam",
+            activeSession: "Active Session Detected",
+            sessionMessage: "You already have an active session in another browser. What would you like to do?",
 
             // Profile
             profile: "Profile",
@@ -149,16 +169,16 @@ function translatePage(lang) {
             // Buttons & Actions
             cancel: "Cancel",
             create: "Create",
-            createCourse: "Create Course",
-            createAssignment: "Create Assignment",
-            createExam: "Create Exam",
             update: "Update",
             delete: "Delete",
             save: "Save",
-            close: "Close"
+            close: "Close",
+            verify: "Verify Account",
+            newPassword: "New Password"
         },
         es: {
             // Header & Navigation
+            schoolMoodle: "Módulo Escolar",
             home: "Inicio",
             login: "Iniciar Sesión",
             signup: "Registrarse",
@@ -234,6 +254,8 @@ function translatePage(lang) {
             supportMaterial: "Material de Apoyo",
             submit: "Entregar",
             download: "Descargar",
+            chooseFile: "Elegir archivo",
+            acceptedFormats: "Formatos aceptados: Word, Excel, PowerPoint, PDF e imágenes",
 
             // Exam System
             examTitle: "Título del Examen",
@@ -256,6 +278,18 @@ function translatePage(lang) {
             submitExam: "Enviar Examen",
             examInstructions: "Instrucciones del Examen",
             startExam: "Comenzar Examen",
+            examStats: "Estadísticas del Examen",
+            totalSubmissions: "Total de Entregas",
+            passedCount: "Aprobados",
+            failedCount: "Reprobados",
+            averageGrade: "Promedio General",
+            studentAnswers: "Respuestas del Alumno",
+            correct: "¡Correcto!",
+            incorrect: "Incorrecto",
+            viewAnswers: "Ver Respuestas",
+            examCompleted: "Examen Completado",
+            yourGrade: "Tu Calificación",
+            submittedOn: "Enviado el",
 
             // Messages & Alerts
             urgentMessage: "Mensaje Urgente",
@@ -265,12 +299,18 @@ function translatePage(lang) {
             normal: "Normal",
             urgent: "Urgente",
             selectSubject: "Seleccionar Materia",
-            imagePreview: "Vista previa de la imagen",
+            imagePreview: "Vista previa de imagen",
             sent: "Enviado",
             read: "Leído",
             received: "Recibido",
             address: "Dirección",
             searchMessages: "Buscar mensajes...",
+            addCaption: "Agregar un título (opcional)...",
+            imageSizeError: "El tamaño de la imagen no debe exceder 5MB",
+            selectImageError: "Por favor seleccione un archivo de imagen",
+            answerAllQuestions: "Por favor responda todas las preguntas antes de enviar el examen",
+            activeSession: "Sesión Activa Detectada",
+            sessionMessage: "Ya tiene una sesión activa en otro navegador. ¿Qué desea hacer?",
 
             // Profile
             profile: "Perfil",
@@ -280,13 +320,12 @@ function translatePage(lang) {
             // Buttons & Actions
             cancel: "Cancelar",
             create: "Crear",
-            createCourse: "Crear Curso",
-            createAssignment: "Crear Tarea",
-            createExam: "Crear Examen",
             update: "Actualizar",
             delete: "Eliminar",
             save: "Guardar",
-            close: "Cerrar"
+            close: "Cerrar",
+            verify: "Verificar Cuenta",
+            newPassword: "Nueva Contraseña"
         }
     };
 
@@ -301,6 +340,19 @@ function translatePage(lang) {
             } else {
                 element.textContent = translations[lang][key];
             }
+        }
+    });
+
+    // Update placeholders for specific elements
+    const myInput = document.getElementById('my_input');
+    if (myInput) {
+        myInput.placeholder = translations[lang]['typeMessage'];
+    }
+
+    // Update all file input labels
+    document.querySelectorAll('.custom-file-label').forEach(label => {
+        if (label.textContent === 'Choose file' || label.textContent === 'Elegir archivo') {
+            label.textContent = translations[lang]['chooseFile'];
         }
     });
 

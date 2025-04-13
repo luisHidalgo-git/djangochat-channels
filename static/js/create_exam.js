@@ -76,37 +76,37 @@ function autoSubmitExam() {
 
 function showExamInstructions(examId) {
     const modalHtml = `
-        <div class="modal fade" id="examInstructionsModal" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Instrucciones del Examen</h5>
-                        <button type="button" class="close" data-dismiss="modal">
-                            <span>&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="alert alert-warning">
-                            <h6><i class="fas fa-exclamation-triangle"></i> Importante:</h6>
-                            <ul>
-                                <li>Una vez que inicies el examen, tendrás exactamente 1 hora para completarlo.</li>
-                                <li>El examen se enviará automáticamente cuando el tiempo termine.</li>
-                                <li>No podrás pausar el temporizador una vez iniciado.</li>
-                                <li>Asegúrate de tener una conexión estable a internet.</li>
-                            </ul>
-                        </div>
-                        <p>¿Estás listo para comenzar el examen?</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn btn-primary" onclick="startExam(${examId})">
-                            Comenzar Examen
-                        </button>
-                    </div>
-                </div>
+    <div class="modal fade" id="examInstructionsModal" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" data-translate="examInstructions">Instrucciones del Examen</h5>
+            <button type="button" class="close" data-dismiss="modal">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="alert alert-warning">
+              <h6><i class="fas fa-exclamation-triangle"></i> <span data-translate="important">Importante:</span></h6>
+              <ul>
+                <li data-translate="examTimeLimit">Una vez que inicies el examen, tendrás exactamente 1 hora para completarlo.</li>
+                <li data-translate="examAutoSubmit">El examen se enviará automáticamente cuando el tiempo termine.</li>
+                <li data-translate="examNoTimer">No podrás pausar el temporizador una vez iniciado.</li>
+                <li data-translate="examInternet">Asegúrate de tener una conexión estable a internet.</li>
+              </ul>
             </div>
+            <p data-translate="examReadyStart">¿Estás listo para comenzar el examen?</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal" data-translate="cancel">Cancelar</button>
+            <button type="button" class="btn btn-primary" onclick="startExam(${examId})" data-translate="startExam">
+              Comenzar Examen
+            </button>
+          </div>
         </div>
-    `;
+      </div>
+    </div>
+  `;
 
     // Remover modal anterior si existe
     const existingModal = document.getElementById('examInstructionsModal');
@@ -116,7 +116,7 @@ function showExamInstructions(examId) {
 
     // Agregar nuevo modal al DOM
     document.body.insertAdjacentHTML('beforeend', modalHtml);
-    
+
     // Mostrar el modal
     $('#examInstructionsModal').modal('show');
 }
@@ -137,7 +137,7 @@ function createExam() {
     for (let i = 1; i <= questionCount; i++) {
         const questionType = document.getElementById(`questionType${i}`).value;
         const questionText = document.getElementById(`questionText${i}`).value;
-        
+
         let choices = [];
         if (questionType === 'true_false') {
             choices = [
@@ -190,10 +190,10 @@ function addChoice(questionNum) {
     const choiceCount = choicesContainer.children.length;
     const newChoice = document.createElement('div');
     newChoice.className = 'input-group mb-2';
-    
+
     const questionType = document.getElementById(`questionType${questionNum}`).value;
     const inputType = questionType === 'single' ? 'radio' : 'checkbox';
-    
+
     newChoice.innerHTML = `
         <div class="input-group-prepend">
             <div class="input-group-text">
@@ -207,17 +207,17 @@ function addChoice(questionNum) {
             </button>
         </div>
     `;
-    
+
     choicesContainer.appendChild(newChoice);
 }
 
 function removeChoice(button) {
     const choiceElement = button.closest('.input-group');
     const choicesContainer = choiceElement.parentElement;
-    
+
     if (choicesContainer.children.length > 2) {
         choiceElement.remove();
-        
+
         const choices = choicesContainer.children;
         Array.from(choices).forEach((choice, index) => {
             const input = choice.querySelector('input[type="radio"], input[type="checkbox"]');
@@ -293,7 +293,7 @@ function updateQuestionForm() {
 function updateChoiceInputs(questionNum) {
     const type = document.getElementById(`questionType${questionNum}`).value;
     const container = document.getElementById(`questionChoices${questionNum}`);
-    
+
     if (type === 'true_false') {
         container.innerHTML = `
             <div class="form-group">
@@ -528,8 +528,8 @@ function displayExamDetails(examId, startTimer = false) {
                         </div>
                         <h5 class="mt-4">Revisión de tus Respuestas:</h5>
                         ${exam.questions.map((question, index) => {
-                            const userAnswer = exam.submission.answers.find(a => a.question_id === question.id);
-                            return `
+        const userAnswer = exam.submission.answers.find(a => a.question_id === question.id);
+        return `
                                 <div class="question mb-4" data-question-id="${question.id}">
                                     <h6>Pregunta ${index + 1}: ${question.text}</h6>
                                     <div class="choices">
@@ -549,7 +549,7 @@ function displayExamDetails(examId, startTimer = false) {
                                     </div>
                                 </div>
                             `;
-                        }).join('')}
+    }).join('')}
                     </div>
                 ` : `
                     <form class="exam-form">
@@ -608,8 +608,8 @@ function showSubmissionDetails(examId, studentName) {
                         </div>
                         
                         ${exam.questions.map((question, index) => {
-                            const answer = submission.answers.find(a => a.question_id === question.id);
-                            return `
+        const answer = submission.answers.find(a => a.question_id === question.id);
+        return `
                                 <div class="question-review mb-4">
                                     <h6>Pregunta ${index + 1}: ${question.text}</h6>
                                     <div class="choices">
@@ -629,7 +629,7 @@ function showSubmissionDetails(examId, studentName) {
                                     </div>
                                 </div>
                             `;
-                        }).join('')}
+    }).join('')}
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
@@ -647,7 +647,7 @@ function showSubmissionDetails(examId, studentName) {
 
     // Agregar nuevo modal al DOM
     document.body.insertAdjacentHTML('beforeend', modalHtml);
-    
+
     // Mostrar el modal
     $('#submissionDetailsModal').modal('show');
 }
@@ -681,7 +681,7 @@ function displayExams() {
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h5 class="mb-0">${exam.title}</h5>
                             ${exam.creator.name === currentUser ?
-                                '<span class="badge badge-primary">Creador</span>' : ''}
+            '<span class="badge badge-primary">Creador</span>' : ''}
                         </div>
                         <div class="card-body">
                             <p class="card-text">${exam.description}</p>
@@ -731,8 +731,8 @@ if (window.location.pathname === '/chat/Sala/') {
     examSocket = initializeExamSocket();
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    document.querySelector('#assignmentSupportFile').addEventListener('change', function(e) {
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelector('#assignmentSupportFile').addEventListener('change', function (e) {
         const fileName = e.target.files[0]?.name || 'Elegir archivo';
         e.target.nextElementSibling.textContent = fileName;
     });

@@ -109,7 +109,7 @@ function displayCourses() {
   }
 
   if (sharedCourses.length === 0) {
-    coursesList.innerHTML = '<p class="text-center">No hay cursos disponibles.</p>';
+    coursesList.innerHTML = '<p class="text-center" data-translate="noAssignments">No hay cursos disponibles.</p>';
     return;
   }
 
@@ -130,27 +130,29 @@ function displayCourses() {
               <div class="d-flex justify-content-between align-items-start">
                 <div>
                   <h5 class="card-title">${course.name}</h5>
-                  <h6 class="card-subtitle mb-2 text-muted">
+                  <h6 class="card-subtitle mb-2 text-muted" data-translate="${course.subject}">
                     ${course.subject === 'programming' ? 'Programación' :
                       course.subject === 'math' ? 'Matemáticas' : 'Inglés'}
                   </h6>
                 </div>
                 ${course.creator.name === currentUser ? 
-                  '<span class="badge badge-primary">Creador</span>' : ''}
+                  '<span class="badge badge-primary" data-translate="creator">Creador</span>' : ''}
               </div>
               <p class="card-text">${course.description}</p>
               <p class="card-text">
-                <small class="text-muted">Sala: ${course.room}</small>
+                <small class="text-muted" data-translate="room">Sala:</small> ${course.room}
               </p>
               <div class="d-flex justify-content-between align-items-center">
                 <p class="card-text mb-0">
                   <small class="text-muted">
-                    Tareas: ${course.assignments ? course.assignments.length : 0}
+                    <span data-translate="assignments">Tareas:</span> ${course.assignments ? course.assignments.length : 0}
                   </small>
                 </p>
                 ${course.creator.name !== currentUser && pendingCount > 0 ? `
                   <span class="badge badge-warning">
-                    ${pendingCount} tarea${pendingCount !== 1 ? 's' : ''} pendiente${pendingCount !== 1 ? 's' : ''}
+                    ${pendingCount} <span data-translate="${pendingCount === 1 ? 'pending' : 'pending'}">
+                      tarea${pendingCount !== 1 ? 's' : ''} pendiente${pendingCount !== 1 ? 's' : ''}
+                    </span>
                   </span>
                 ` : ''}
               </div>
@@ -158,16 +160,17 @@ function displayCourses() {
             <div class="card-footer bg-transparent">
               <div class="d-flex justify-content-between align-items-center">
                 <div class="d-flex align-items-center">
-                  <img src="/media/profile_photos/${course.creator.name}.jpg" 
-                       onerror="this.onerror=null; this.src='${course.creator.avatar}'"
+                  <img src="${course.creator.avatar}" 
                        alt="${course.creator.name}" 
                        class="rounded-circle mr-2" 
-                       style="width: 24px; height: 24px; object-fit: cover;">
+                       style="width: 24px; height: 24px;">
                   <small class="text-muted">
                     ${course.creator.name}
                   </small>
                 </div>
-                <small class="text-muted">${course.created_at}</small>
+                <small class="text-muted">
+                  <span data-translate="createdAt">Creado el</span> ${course.created_at}
+                </small>
               </div>
             </div>
           </div>
