@@ -3,32 +3,38 @@
     <div class="header-content">
         <a href="{% url 'index' %}"><h1>Módulo Escolar</h1></a>
         <div class="breadcrumbs">
-            <a href="{% url 'index' %}">Inicio</a>
+            <a href="{% url 'index' %}" data-translate="home">Inicio</a>
             {% if request.path != '/' %}
                 {% if 'login' in request.path %}
                     <span class="separator">/</span>
-                    <a href="{% url 'login' %}">Login</a>
+                    <a href="{% url 'login' %}" data-translate="login">Login</a>
                 {% elif 'signup' in request.path %}
                     <span class="separator">/</span>
-                    <a href="{% url 'signup' %}">Signup</a>
+                    <a href="{% url 'signup' %}" data-translate="signup">Signup</a>
                 {% endif %}
             {% endif %}
         </div>
     </div>
     <ul class="header-icons">
         <li>
+            <a href="#" class="language-toggle" onclick="toggleLanguage()">
+                <i class="fas fa-language"></i>
+                <span class="lang-text">EN</span>
+            </a>
+        </li>
+        <li>
             <a href="#" class="theme-toggle" onclick="toggleTheme()">
-                <i class="fas fa-moon"></i> <!-- Ícono de contraste -->
+                <i class="fas fa-moon"></i>
             </a>
         </li>
         <li>
             <a href="{% url 'login' %}" class="icon-link">
-                <i class="fas fa-sign-in-alt"></i> <!-- Ícono de Login -->
+                <i class="fas fa-sign-in-alt"></i>
             </a>
         </li>
         <li>
             <a href="{% url 'signup' %}" class="icon-link">
-                <i class="fas fa-user-plus"></i> <!-- Ícono de Signup -->
+                <i class="fas fa-user-plus"></i>
             </a>
         </li>
     </ul>

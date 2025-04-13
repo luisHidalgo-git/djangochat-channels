@@ -32,6 +32,10 @@
             <!-- Mobile Header Controls -->
             <div class="mobile-header-controls d-md-none">
                 <div class="d-flex justify-content-end align-items-center">
+                    <a href="#" class="language-toggle mr-3" onclick="toggleLanguage()">
+                        <i class="fas fa-language"></i>
+                        <span class="lang-text">EN</span>
+                    </a>
                     <a href="#" class="theme-toggle mr-3" onclick="toggleTheme()">
                         <i class="fas fa-moon"></i>
                     </a>
@@ -44,10 +48,16 @@
             <!-- Cursos Section -->
             <div class="courses-section mb-4">
                 <div class="d-flex justify-content-between align-items-center">
-                    <h5 class="text-white">Cursos</h5>
-                    <a href="#" class="theme-toggle d-none d-md-inline-flex" onclick="toggleTheme()">
-                        <i class="fas fa-moon"></i>
-                    </a>
+                    <h5 class="text-white" data-translate="courses">Cursos</h5>
+                    <div class="d-none d-md-flex align-items-center">
+                        <a href="#" class="language-toggle mr-2" onclick="toggleLanguage()">
+                            <i class="fas fa-language"></i>
+                            <span class="lang-text">EN</span>
+                        </a>
+                        <a href="#" class="theme-toggle" onclick="toggleTheme()">
+                            <i class="fas fa-moon"></i>
+                        </a>
+                    </div>
                 </div>
                 <a href="/chat/Sala/?view=courses" onclick="showCourses(event)"
                     class="list-group-item list-group-item-action {% if request.GET.view == 'courses' or not request.GET.view %}active{% endif %}">

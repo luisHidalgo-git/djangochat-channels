@@ -72,6 +72,33 @@ body {
     color: var(--text-primary);
 }
 
+.language-toggle {
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    transition: background-color 0.3s;
+    color: var(--header-text);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.language-toggle:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--header-text);
+    text-decoration: none;
+}
+
+.language-toggle i {
+    font-size: 1.2rem;
+}
+
+.language-toggle .lang-text {
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
 nav {
     background-color: var(--header-bg);
     color: var(--header-text);
@@ -298,4 +325,11 @@ label {
 
 .theme-dark .close {
     color: var(--text-primary);
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+    .mobile-header-controls .language-toggle {
+        padding: 4px 8px;
+    }
 }
