@@ -139,6 +139,7 @@ function translatePage(lang) {
             examCompleted: "Exam Completed",
             yourGrade: "Your Grade",
             submittedOn: "Submitted on",
+            examTimeLimit: "Exam Time Limit",
 
             // Messages & Alerts
             urgentMessage: "Urgent Message",
@@ -290,6 +291,7 @@ function translatePage(lang) {
             examCompleted: "Examen Completado",
             yourGrade: "Tu Calificación",
             submittedOn: "Enviado el",
+            examTimeLimit: "Límite de Tiempo del Examen",
 
             // Messages & Alerts
             urgentMessage: "Mensaje Urgente",

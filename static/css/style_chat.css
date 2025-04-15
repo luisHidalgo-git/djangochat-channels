@@ -54,6 +54,12 @@
     padding: 10px;
 }
 
+/* Estilo para el contenedor de cursos y exámenes */
+#coursesList, #examsList {
+    overflow-y: auto;
+    height: calc(100vh - 180px);
+}
+
 .chat-message {
     border-radius: 8px;
     padding: 10px;
