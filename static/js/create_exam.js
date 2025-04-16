@@ -253,22 +253,22 @@ function updateQuestionForm() {
     for (let i = 1; i <= count; i++) {
         container.innerHTML += `
             <div class="question-section mb-4">
-                <h5>Pregunta ${i}</h5>
+                <h5 data-translate="question">Pregunta ${i}</h5>
                 <div class="form-group">
-                    <label>Tipo de Pregunta</label>
+                    <label data-translate="questionType">Tipo de Pregunta</label>
                     <select class="form-control" id="questionType${i}" onchange="updateChoiceInputs(${i})">
-                        <option value="single" data-translate="singleAnswere">Respuesta Única</option>
+                        <option value="single" data-translate="singleAnswer">Respuesta Única</option>
                         <option value="multiple" data-translate="multipleAnswer">Respuesta Múltiple</option>
                         <option value="true_false" data-translate="trueOrFalse">Verdadero/Falso</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Texto de la Pregunta</label>
+                    <label data-translate="questionText">Texto de la Pregunta</label>
                     <input type="text" class="form-control" id="questionText${i}" required>
                 </div>
                 <div id="questionChoices${i}">
                     <div class="form-group">
-                        <label>Opciones</label>
+                        <label data-translate="options">Opciones</label>
                         <div class="choice-inputs">
                             <div class="input-group mb-2">
                                 <div class="input-group-prepend">
@@ -276,9 +276,9 @@ function updateQuestionForm() {
                                         <input type="radio" name="correct${i}" value="0">
                                     </div>
                                 </div>
-                                <input type="text" class="form-control" placeholder="Opción 1" required>
+                                <input type="text" class="form-control" data-translate="option" placeholder="Opción 1" required>
                                 <div class="input-group-append">
-                                    <button class="btn btn-danger" type="button" onclick="removeChoice(this)">
+                                    <button class="btn btn-danger" type="button" onclick="removeChoice(this)" data-translate="removeOption">
                                         <i class="fas fa-minus"></i>
                                     </button>
                                 </div>
@@ -289,15 +289,15 @@ function updateQuestionForm() {
                                         <input type="radio" name="correct${i}" value="1">
                                     </div>
                                 </div>
-                                <input type="text" class="form-control" placeholder="Opción 2" required>
+                                <input type="text" class="form-control" data-translate="option" placeholder="Opción 2" required>
                                 <div class="input-group-append">
-                                    <button class="btn btn-danger" type="button" onclick="removeChoice(this)">
+                                    <button class="btn btn-danger" type="button" onclick="removeChoice(this)" data-translate="removeOption">
                                         <i class="fas fa-minus"></i>
                                     </button>
                                 </div>
                             </div>
                         </div>
-                        <button type="button" class="btn btn-success btn-sm mt-2" onclick="addChoice(${i})">
+                        <button type="button" class="btn btn-success btn-sm mt-2" onclick="addChoice(${i})" data-translate="addNewOption">
                             <i class="fas fa-plus"></i> Añadir Opción
                         </button>
                     </div>
@@ -314,21 +314,21 @@ function updateChoiceInputs(questionNum) {
     if (type === 'true_false') {
         container.innerHTML = `
             <div class="form-group">
-                <label>Seleccione la respuesta correcta:</label>
+                <label data-translate="selectCorrectAnswer">Seleccione la respuesta correcta:</label>
                 <div class="custom-control custom-radio mb-2">
                     <input type="radio" id="true${questionNum}" name="correct${questionNum}" value="true" class="custom-control-input" required>
-                    <label class="custom-control-label" for="true${questionNum}">Verdadero</label>
+                    <label class="custom-control-label" for="true${questionNum}" data-translate="true">Verdadero</label>
                 </div>
                 <div class="custom-control custom-radio">
                     <input type="radio" id="false${questionNum}" name="correct${questionNum}" value="false" class="custom-control-input" required>
-                    <label class="custom-control-label" for="false${questionNum}">Falso</label>
+                    <label class="custom-control-label" for="false${questionNum}" data-translate="false">Falso</label>
                 </div>
             </div>
         `;
     } else {
         container.innerHTML = `
             <div class="form-group">
-                <label>Opciones</label>
+                <label data-translate="options">Opciones</label>
                 <div class="choice-inputs">
                     <div class="input-group mb-2">
                         <div class="input-group-prepend">
@@ -336,9 +336,9 @@ function updateChoiceInputs(questionNum) {
                                 <input type="${type === 'single' ? 'radio' : 'checkbox'}" name="correct${questionNum}" value="0">
                             </div>
                         </div>
-                        <input type="text" class="form-control" placeholder="Opción 1" required>
+                        <input type="text" class="form-control" data-translate="option" placeholder="Opción 1" required>
                         <div class="input-group-append">
-                            <button class="btn btn-danger" type="button" onclick="removeChoice(this)">
+                            <button class="btn btn-danger" type="button" onclick="removeChoice(this)" data-translate="removeOption">
                                 <i class="fas fa-minus"></i>
                             </button>
                         </div>
@@ -349,15 +349,15 @@ function updateChoiceInputs(questionNum) {
                                 <input type="${type === 'single' ? 'radio' : 'checkbox'}" name="correct${questionNum}" value="1">
                             </div>
                         </div>
-                        <input type="text" class="form-control" placeholder="Opción 2" required>
+                        <input type="text" class="form-control" data-translate="option" placeholder="Opción 2" required>
                         <div class="input-group-append">
-                            <button class="btn btn-danger" type="button" onclick="removeChoice(this)">
+                            <button class="btn btn-danger" type="button" onclick="removeChoice(this)" data-translate="removeOption">
                                 <i class="fas fa-minus"></i>
                             </button>
                         </div>
                     </div>
                 </div>
-                <button type="button" class="btn btn-success btn-sm mt-2" onclick="addChoice(${questionNum})">
+                <button type="button" class="btn btn-success btn-sm mt-2" onclick="addChoice(${questionNum})" data-translate="addNewOption">
                     <i class="fas fa-plus"></i> Añadir Opción
                 </button>
             </div>
