@@ -43,26 +43,24 @@ function initializeExamSocket() {
 }
 
 function startExamTimer() {
-    const timerDisplay = document.getElementById('examTimer');
-    if (!timerDisplay) {
-        console.error('Timer display element not found');
-        return;
-    }
-
-    examEndTime = new Date().getTime() + (60 * 60 * 1000); // 1 hora en milisegundos
-
     // Clear any existing timer
     if (examTimer) {
         clearInterval(examTimer);
     }
 
+    // Set end time to 1 hour from now
+    examEndTime = new Date().getTime() + (60 * 60 * 1000);
+
     function updateTimer() {
+        const timerDisplay = document.getElementById('examTimer');
+        if (!timerDisplay) return; // Exit if element not found
+
         const now = new Date().getTime();
         const distance = examEndTime - now;
 
         if (distance <= 0) {
             clearInterval(examTimer);
-            timerDisplay.innerHTML = "TIEMPO TERMINADO";
+            timerDisplay.innerHTML = '<div class="alert alert-danger">TIEMPO TERMINADO</div>';
             autoSubmitExam();
             return;
         }
@@ -70,7 +68,12 @@ function startExamTimer() {
         const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-        timerDisplay.innerHTML = `Tiempo restante: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        timerDisplay.innerHTML = `
+            <div class="alert alert-info">
+                <i class="fas fa-clock mr-2"></i>
+                Tiempo restante: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}
+            </div>
+        `;
     }
 
     // Update immediately and then start interval
@@ -138,11 +141,7 @@ function showExamInstructions(examId) {
 function startExam(examId) {
     $('#examInstructionsModal').modal('hide');
     displayExamDetails(examId, true);
-    
-    // Add a small delay to ensure the DOM is updated
-    setTimeout(() => {
-        startExamTimer();
-    }, 100);
+    startExamTimer();
 }
 
 function createExam() {
