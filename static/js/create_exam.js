@@ -257,9 +257,9 @@ function updateQuestionForm() {
                 <div class="form-group">
                     <label>Tipo de Pregunta</label>
                     <select class="form-control" id="questionType${i}" onchange="updateChoiceInputs(${i})">
-                        <option value="single">Respuesta Única</option>
-                        <option value="multiple">Respuesta Múltiple</option>
-                        <option value="true_false">Verdadero/Falso</option>
+                        <option value="single" data-translate="singleAnswere">Respuesta Única</option>
+                        <option value="multiple" data-translate="multipleAnswer">Respuesta Múltiple</option>
+                        <option value="true_false" data-translate="trueOrFalse">Verdadero/Falso</option>
                     </select>
                 </div>
                 <div class="form-group">
