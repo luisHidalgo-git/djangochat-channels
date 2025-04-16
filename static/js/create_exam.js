@@ -44,9 +44,19 @@ function initializeExamSocket() {
 
 function startExamTimer() {
     const timerDisplay = document.getElementById('examTimer');
+    if (!timerDisplay) {
+        console.error('Timer display element not found');
+        return;
+    }
+
     examEndTime = new Date().getTime() + (60 * 60 * 1000); // 1 hora en milisegundos
 
-    examTimer = setInterval(() => {
+    // Clear any existing timer
+    if (examTimer) {
+        clearInterval(examTimer);
+    }
+
+    function updateTimer() {
         const now = new Date().getTime();
         const distance = examEndTime - now;
 
@@ -61,7 +71,11 @@ function startExamTimer() {
         const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
         timerDisplay.innerHTML = `Tiempo restante: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-    }, 1000);
+    }
+
+    // Update immediately and then start interval
+    updateTimer();
+    examTimer = setInterval(updateTimer, 1000);
 }
 
 function autoSubmitExam() {
@@ -124,7 +138,11 @@ function showExamInstructions(examId) {
 function startExam(examId) {
     $('#examInstructionsModal').modal('hide');
     displayExamDetails(examId, true);
-    startExamTimer();
+    
+    // Add a small delay to ensure the DOM is updated
+    setTimeout(() => {
+        startExamTimer();
+    }, 100);
 }
 
 function createExam() {
@@ -386,6 +404,163 @@ function submitExam(examId) {
     }));
 }
 
+function updateSubmissionInUI(examId, submission) {
+    const exam = sharedExams.find(e => e.id === examId);
+    if (!exam) return;
+
+    if (!exam.submissions) {
+        exam.submissions = [];
+    }
+
+    const existingSubmissionIndex = exam.submissions.findIndex(s => s.id === submission.id);
+    if (existingSubmissionIndex !== -1) {
+        exam.submissions[existingSubmissionIndex] = submission;
+    } else {
+        exam.submissions.push(submission);
+    }
+
+    displayExamDetails(examId);
+}
+
+function showSubmissionDetails(examId, studentName) {
+    const exam = sharedExams.find(e => e.id === examId);
+    const submission = exam.submissions.find(s => s.student.name === studentName);
+
+    const modalHtml = `
+        <div class="modal fade" id="submissionDetailsModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Respuestas de ${studentName}</h5>
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert ${submission.score >= 60 ? 'alert-success' : 'alert-danger'}">
+                            <h4>Calificación Final: ${submission.score}%</h4>
+                            <p>Fecha de entrega: ${submission.submitted_at}</p>
+                        </div>
+                        
+                        ${exam.questions.map((question, index) => {
+                            const answer = submission.answers.find(a => a.question_id === question.id);
+                            return `
+                                <div class="question-review mb-4">
+                                    <h6>Pregunta ${index + 1}: ${question.text}</h6>
+                                    <div class="choices">
+                                        ${question.choices.map(choice => `
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="${question.question_type === 'single' ? 'radio' : 'checkbox'}"
+                                                       ${answer.selected_choices.includes(choice.id) ? 'checked' : ''} disabled>
+                                                <label class="form-check-label ${choice.is_correct ? 'text-success font-weight-bold' : ''}">
+                                                    ${choice.text}
+                                                    ${choice.is_correct ? '<i class="fas fa-check text-success ml-2"></i>' : ''}
+                                                </label>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                    <div class="alert ${answer.is_correct ? 'alert-success' : 'alert-danger'} mt-2">
+                                        ${answer.is_correct ? '¡Respuesta Correcta!' : 'Respuesta Incorrecta'}
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Remover modal anterior si existe
+    const existingModal = document.getElementById('submissionDetailsModal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+
+    // Agregar nuevo modal al DOM
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+    // Mostrar el modal
+    $('#submissionDetailsModal').modal('show');
+}
+
+function displayExams() {
+    const examsList = document.getElementById('examsList');
+    const currentUser = document.getElementById('user_username').textContent.replace(/"/g, '');
+    const currentView = document.getElementById('currentView');
+
+    if (currentView) {
+        currentView.textContent = 'Exámenes Disponibles';
+    }
+
+    if (!examsList) return;
+
+    if (sharedExams.length === 0) {
+        examsList.innerHTML = '<p class="text-center">No hay exámenes disponibles.</p>';
+        return;
+    }
+
+    // Sort exams by creation date (newest first)
+    const sortedExams = [...sharedExams].sort((a, b) => {
+        return new Date(b.created_at) - new Date(a.created_at);
+    });
+
+    examsList.innerHTML = `
+        <div class="row">
+            ${sortedExams.map(exam => `
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100" style="cursor: pointer;" onclick="${exam.creator.name !== currentUser && !exam.submission ? `showExamInstructions(${exam.id})` : `displayExamDetails(${exam.id})`}">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">${exam.title}</h5>
+                            ${exam.creator.name === currentUser ?
+                                '<span class="badge badge-primary">Creador</span>' : ''}
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">${exam.description}</p>
+                            <p><small class="text-muted">Puntos totales: ${exam.total_points}</small></p>
+                            ${exam.creator.name === currentUser ? `
+                                <p><small class="text-muted">Entregas: ${exam.submissions ? exam.submissions.length : 0}</small></p>
+                                ${exam.submissions && exam.submissions.length > 0 ? `
+                                    <div class="mt-2">
+                                        <small class="text-muted">
+                                            Aprobados: ${exam.submissions.filter(s => s.score >= 60).length} |
+                                            Reprobados: ${exam.submissions.filter(s => s.score < 60).length}
+                                        </small>
+                                    </div>
+                                ` : ''}
+                            ` : exam.submission ? `
+                                <div class="alert ${exam.submission.score >= 60 ? 'alert-success' : 'alert-danger'} mb-0">
+                                    <strong>Tu Calificación: ${exam.submission.score}%</strong>
+                                </div>
+                            ` : `
+                                <div class="alert alert-warning mb-0">
+                                    <strong>Examen pendiente por realizar</strong>
+                                </div>
+                            `}
+                        </div>
+                        <div class="card-footer">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <img src="/media/profile_photos/${exam.creator.name}.jpg" 
+                                         onerror="this.onerror=null; this.src='${exam.creator.avatar}'"
+                                         alt="${exam.creator.name}" 
+                                         class="rounded-circle mr-2" 
+                                         style="width: 24px; height: 24px; object-fit: cover;">
+                                    <small class="text-muted">${exam.creator.name}</small>
+                                </div>
+                                <small class="text-muted">${exam.created_at}</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
+
 function displayExamDetails(examId, startTimer = false) {
     const exam = sharedExams.find(e => e.id === examId);
     const examsList = document.getElementById('examsList');
@@ -467,7 +642,7 @@ function displayExamDetails(examId, startTimer = false) {
                                                 style="width: ${(exam.submissions.filter(s => s.score >= 60).length / exam.submissions.length) * 100}%">
                                                 Aprobados
                                             </div>
-                                            <div class="progress-bar bg-danger" role="progressbar " 
+                                            <div class="progress-bar bg-danger" role="progressbar" 
                                                 style="width: ${(exam.submissions.filter(s => s.score < 60).length / exam.submissions.length) * 100}%">
                                                 Reprobados
                                             </div>
@@ -528,8 +703,8 @@ function displayExamDetails(examId, startTimer = false) {
                         </div>
                         <h5 class="mt-4">Revisión de tus Respuestas:</h5>
                         ${exam.questions.map((question, index) => {
-        const userAnswer = exam.submission.answers.find(a => a.question_id === question.id);
-        return `
+                            const userAnswer = exam.submission.answers.find(a => a.question_id === question.id);
+                            return `
                                 <div class="question mb-4" data-question-id="${question.id}">
                                     <h6>Pregunta ${index + 1}: ${question.text}</h6>
                                     <div class="choices">
@@ -549,7 +724,7 @@ function displayExamDetails(examId, startTimer = false) {
                                     </div>
                                 </div>
                             `;
-    }).join('')}
+                        }).join('')}
                     </div>
                 ` : `
                     <form class="exam-form">
@@ -583,145 +758,6 @@ function displayExamDetails(examId, startTimer = false) {
                     <small class="text-muted">${exam.created_at}</small>
                 </div>
             </div>
-        </div>
-    `;
-}
-
-function showSubmissionDetails(examId, studentName) {
-    const exam = sharedExams.find(e => e.id === examId);
-    const submission = exam.submissions.find(s => s.student.name === studentName);
-
-    const modalHtml = `
-        <div class="modal fade" id="submissionDetailsModal" tabindex="-1" role="dialog">
-            <div class="modal-dialog modal-lg" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Respuestas de ${studentName}</h5>
-                        <button type="button" class="close" data-dismiss="modal">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="alert ${submission.score >= 60 ? 'alert-success' : 'alert-danger'}">
-                            <h4>Calificación Final: ${submission.score}%</h4>
-                            <p>Fecha de entrega: ${submission.submitted_at}</p>
-                        </div>
-                        
-                        ${exam.questions.map((question, index) => {
-        const answer = submission.answers.find(a => a.question_id === question.id);
-        return `
-                                <div class="question-review mb-4">
-                                    <h6>Pregunta ${index + 1}: ${question.text}</h6>
-                                    <div class="choices">
-                                        ${question.choices.map(choice => `
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="${question.question_type === 'single' ? 'radio' : 'checkbox'}"
-                                                       ${answer.selected_choices.includes(choice.id) ? 'checked' : ''} disabled>
-                                                <label class="form-check-label ${choice.is_correct ? 'text-success font-weight-bold' : ''}">
-                                                    ${choice.text}
-                                                    ${choice.is_correct ? '<i class="fas fa-check text-success ml-2"></i>' : ''}
-                                                </label>
-                                            </div>
-                                        `).join('')}
-                                    </div>
-                                    <div class="alert ${answer.is_correct ? 'alert-success' : 'alert-danger'} mt-2">
-                                        ${answer.is_correct ? '¡Respuesta Correcta!' : 'Respuesta Incorrecta'}
-                                    </div>
-                                </div>
-                            `;
-    }).join('')}
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-
-    // Remover modal anterior si existe
-    const existingModal = document.getElementById('submissionDetailsModal');
-    if (existingModal) {
-        existingModal.remove();
-    }
-
-    // Agregar nuevo modal al DOM
-    document.body.insertAdjacentHTML('beforeend', modalHtml);
-
-    // Mostrar el modal
-    $('#submissionDetailsModal').modal('show');
-}
-
-function displayExams() {
-    const examsList = document.getElementById('examsList');
-    const currentUser = document.getElementById('user_username').textContent.replace(/"/g, '');
-    const currentView = document.getElementById('currentView');
-
-    if (currentView) {
-        currentView.textContent = 'Exámenes Disponibles';
-    }
-
-    if (!examsList) return;
-
-    if (sharedExams.length === 0) {
-        examsList.innerHTML = '<p class="text-center">No hay exámenes disponibles.</p>';
-        return;
-    }
-
-    // Sort exams by creation date (newest first)
-    const sortedExams = [...sharedExams].sort((a, b) => {
-        return new Date(b.created_at) - new Date(a.created_at);
-    });
-
-    examsList.innerHTML = `
-        <div class="row">
-            ${sortedExams.map(exam => `
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100" style="cursor: pointer;" onclick="${exam.creator.name !== currentUser && !exam.submission ? `showExamInstructions(${exam.id})` : `displayExamDetails(${exam.id})`}">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0">${exam.title}</h5>
-                            ${exam.creator.name === currentUser ?
-            '<span class="badge badge-primary">Creador</span>' : ''}
-                        </div>
-                        <div class="card-body">
-                            <p class="card-text">${exam.description}</p>
-                            <p><small class="text-muted">Puntos totales: ${exam.total_points}</small></p>
-                            ${exam.creator.name === currentUser ? `
-                                <p><small class="text-muted">Entregas: ${exam.submissions ? exam.submissions.length : 0}</small></p>
-                                ${exam.submissions && exam.submissions.length > 0 ? `
-                                    <div class="mt-2">
-                                        <small class="text-muted">
-                                            Aprobados: ${exam.submissions.filter(s => s.score >= 60).length} |
-                                            Reprobados: ${exam.submissions.filter(s => s.score < 60).length}
-                                        </small>
-                                    </div>
-                                ` : ''}
-                            ` : exam.submission ? `
-                                <div class="alert ${exam.submission.score >= 60 ? 'alert-success' : 'alert-danger'} mb-0">
-                                    <strong>Tu Calificación: ${exam.submission.score}%</strong>
-                                </div>
-                            ` : `
-                                <div class="alert alert-warning mb-0">
-                                    <strong>Examen pendiente por realizar</strong>
-                                </div>
-                            `}
-                        </div>
-                        <div class="card-footer">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="d-flex align-items-center">
-                                    <img src="/media/profile_photos/${exam.creator.name}.jpg" 
-                                         onerror="this.onerror=null; this.src='${exam.creator.avatar}'"
-                                         alt="${exam.creator.name}" 
-                                         class="rounded-circle mr-2" 
-                                         style="width: 24px; height: 24px; object-fit: cover;">
-                                    <small class="text-muted">${exam.creator.name}</small>
-                                </div>
-                                <small class="text-muted">${exam.created_at}</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `).join('')}
         </div>
     `;
 }
