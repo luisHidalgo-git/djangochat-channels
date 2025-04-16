@@ -73,6 +73,7 @@ function translatePage(lang) {
             exams: "Available Exams",
             chats: "Chats",
             searchUsers: "Search users...",
+            createAssignment: "Create Assignment",
             createCourse: "Create Course",
             createExam: "Create Exam",
             noMessages: "No Messages",
@@ -82,6 +83,7 @@ function translatePage(lang) {
             backToExams: "Back to Exams",
 
             // Course Management
+            assignmentTitle: "Assignment Title",
             courseName: "Course Name",
             subject: "Subject",
             description: "Description",
@@ -93,7 +95,6 @@ function translatePage(lang) {
             createdAt: "Created at",
             assignments: "Assignments",
             noAssignments: "No assignments yet",
-            createAssignment: "Create Assignment",
             dueDate: "Due Date",
             points: "Points",
             status: "Status",
@@ -105,6 +106,10 @@ function translatePage(lang) {
             download: "Download",
             chooseFile: "Choose file",
             acceptedFormats: "Accepted formats: Word, Excel, PowerPoint, PDF and images",
+            creatorOfCourse: "Course Creator",
+            sendHomework: "Send Homework",
+            acceptedFiles: "Accepted file formats: Word, Excel, PowerPoint, PDF and images",
+            feedback: "Feedback:",
 
             // Exam System
             examTitle: "Exam Title",
@@ -118,7 +123,7 @@ function translatePage(lang) {
             addOption: "Add Option",
             correctAnswer: "Correct Answer",
             examSubmissions: "Student Submissions",
-            score: "Score",
+            score: "Score:",
             passed: "Passed",
             failed: "Failed",
             averageScore: "Average Score",
@@ -225,6 +230,7 @@ function translatePage(lang) {
             exams: "Exámenes Disponibles",
             chats: "Chats",
             searchUsers: "Buscar usuarios...",
+            createAssignment: "Crear Tarea",
             createCourse: "Crear Curso",
             createExam: "Crear Examen",
             noMessages: "Sin Mensajes",
@@ -234,6 +240,7 @@ function translatePage(lang) {
             backToExams: "Volver a Exámenes",
 
             // Course Management
+            assignmentTitle: "Título de la Tarea",
             courseName: "Nombre del Curso",
             subject: "Materia",
             description: "Descripción",
@@ -245,7 +252,6 @@ function translatePage(lang) {
             createdAt: "Creado el",
             assignments: "Tareas",
             noAssignments: "No hay tareas asignadas",
-            createAssignment: "Crear Tarea",
             dueDate: "Fecha de Entrega",
             points: "Puntos",
             status: "Estado",
@@ -257,6 +263,10 @@ function translatePage(lang) {
             download: "Descargar",
             chooseFile: "Elegir archivo",
             acceptedFormats: "Formatos aceptados: Word, Excel, PowerPoint, PDF e imágenes",
+            creatorOfCourse: "Creador del Curso",
+            sendHomework: "Enviar Tarea",
+            acceptedFiles: "Formatos de archivo aceptados: Word, Excel, PowerPoint, PDF e imágenes",
+            feedback: "Retroalimentacion:",
 
             // Exam System
             examTitle: "Título del Examen",
@@ -270,7 +280,7 @@ function translatePage(lang) {
             addOption: "Añadir Opción",
             correctAnswer: "Respuesta Correcta",
             examSubmissions: "Entregas de Alumnos",
-            score: "Calificación",
+            score: "Calificación:",
             passed: "Aprobado",
             failed: "No Aprobado",
             averageScore: "Promedio General",

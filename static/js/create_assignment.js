@@ -214,11 +214,11 @@ function displayCourseDetails(courseId) {
   coursesList.innerHTML = `
     <div class="course-detail">
       <div class="mb-4">
-        <button class="btn btn-secondary mb-3" onclick="displayCourses()">
+        <button class="btn btn-secondary mb-3" data-translate="backToCourses" onclick="displayCourses()">
           <i class="fas fa-arrow-left"></i> Volver a Cursos
         </button>
         ${isCreator ? `
-          <button class="btn btn-primary mb-3 ml-2" data-toggle="modal" data-target="#createAssignmentModal" 
+          <button class="btn btn-primary mb-3 ml-2" data-translate="createAssignment" data-toggle="modal" data-target="#createAssignmentModal" 
                   onclick="prepareAssignmentModal(${courseId})">
             <i class="fas fa-plus"></i> Crear Tarea
           </button>
@@ -229,29 +229,38 @@ function displayCourseDetails(courseId) {
         <div class="d-flex justify-content-between align-items-start">
           <div>
             <h3>${course.name}</h3>
-            <p class="text-muted">
+            <p class="text-muted"
+              data-translate="${course.subject}">
               ${course.subject === 'programming' ? 'Programación' :
-                course.subject === 'math' ? 'Matemáticas' : 'Inglés'}
+                course.subject === 'mathematics' ? 'Matemáticas' : 'Inglés'}
             </p>
           </div>
-          ${isCreator ? '<span class="badge badge-primary">Creador del Curso</span>' : ''}
+          ${isCreator ? '<span class="badge badge-primary" data-translate="creatorOfCourse">Creador del Curso</span>' : ''}
         </div>
         <p>${course.description}</p>
-        <p><small class="text-muted">Sala: ${course.room}</small></p>
+        <p>
+          <small class="text-muted">
+          <span data-translate="room">Sala: </span>
+          <span>${course.room}</span>
+          </small>
+        </p>
         <div class="creator-info mt-3">
           <div class="d-flex align-items-center">
             <img src="${course.creator.avatar}" alt="${course.creator.name}" 
                  class="rounded-circle mr-2" style="width: 32px; height: 32px;">
             <div>
-              <p class="mb-0"><strong>Creador:</strong> ${course.creator.name}</p>
-              <small class="text-muted">Creado el ${course.created_at}</small>
+              <p class="mb-0"><strong data-translate="creator">Creador:</strong> ${course.creator.name}</p>
+              <small class="text-muted">
+                <span data-translate="createdAt">Creado el </span>
+                <span>${course.created_at}</span>
+              </small>
             </div>
           </div>
         </div>
       </div>
 
       <div class="assignments-section">
-        <h4>Tareas (${sortedAssignments.length})</h4>
+        <h4 data-translate="assignments">Tareas (${sortedAssignments.length})</h4>
         ${sortedAssignments.length > 0 ? `
           <div class="row">
             ${sortedAssignments.map(assignment => {
@@ -271,18 +280,20 @@ function displayCourseDetails(courseId) {
                     </div>
                     <p class="card-text">${assignment.description}</p>
                     <div class="assignment-details">
-                      <p><strong>Puntos:</strong> ${assignment.points}</p>
-                      <p><strong>Fecha de entrega:</strong> ${assignment.dueDate}</p>
-                      <p><strong>Estado:</strong> 
-                        <span class="badge badge-${assignment.status === 'active' ? 'warning' : 
-                                                 assignment.status === 'submitted' ? 'success' : 'danger'}">
-                          ${assignment.status === 'active' ? 'Pendiente' :
-                            assignment.status === 'submitted' ? 'Entregado' : 'Atrasado'}
-                        </span>
+                      <p><strong data-translate="points">Puntos:</strong> ${assignment.points}</p>
+                      <p><strong data-translate="dueDate">Fecha de entrega:</strong> ${assignment.dueDate}</p>
+                      <p><strong data-translate="status">Estado:</strong> 
+                        <span 
+                              class="badge badge-${assignment.status === 'active' ? 'warning' : 
+                                                  assignment.status === 'submitted' ? 'success' : 'danger'}"
+                              data-translate="${assignment.status}">
+                              ${assignment.status === 'active' ? 'Pendiente' :
+                                assignment.status === 'submitted' ? 'Entregado' : 'Atrasado'}
+                            </span>
                       </p>
                       ${assignment.has_support_file ? `
                         <p>
-                          <strong>Material de apoyo:</strong>
+                          <strong data-translate="supportMaterial">Material de apoyo:</strong>
                           <a href="/download/support/${assignment.id}/" 
                              class="btn btn-sm btn-outline-info ml-2" download>
                             <i class="fas fa-download"></i> ${assignment.support_file_name}
@@ -293,20 +304,20 @@ function displayCourseDetails(courseId) {
 
                     ${!isCreator && !userSubmission ? `
                       <div class="submission-section mt-3">
-                        <h6>Enviar Tarea</h6>
+                        <h6 data-translate="sendHomework">Enviar Tarea</h6>
                         <div class="custom-file mb-2">
                           <input type="file" class="custom-file-input" id="submission-${assignment.id}"
                                  accept=".doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf,.jpg,.jpeg,.png"
                                  onchange="handleFileSelection(${assignment.id}, this)">
                           <label class="custom-file-label" for="submission-${assignment.id}">Elegir archivo</label>
                         </div>
-                        <button id="submit-assignment-${assignment.id}" 
+                        <button data-translate="sendHomework" id="submit-assignment-${assignment.id}" 
                                 class="btn btn-primary btn-sm" 
                                 style="display: none;"
                                 onclick="submitAssignment(${assignment.id})">
                           Enviar Tarea
                         </button>
-                        <small class="form-text text-muted">
+                        <small class="form-text text-muted" data-translate="acceptedFiles">
                           Formatos aceptados: Word, Excel, PowerPoint, PDF e imágenes
                         </small>
                       </div>
@@ -314,7 +325,7 @@ function displayCourseDetails(courseId) {
 
                     ${assignment.submissions && assignment.submissions.length > 0 ? `
                       <div class="submissions-list mt-3">
-                        <h6>Entregas (${assignment.submissions.length})</h6>
+                        <h6 data-translate="totalSubmissions">Entregas (${assignment.submissions.length})</h6>
                         ${assignment.submissions.map(submission => `
                           <div class="submission-item p-2 border rounded mb-2 ${submission.is_passing ? 'passing' : 'not-passing'}"
                                data-submission-id="${submission.id}">
@@ -324,7 +335,8 @@ function displayCourseDetails(courseId) {
                               <div>
                                 <strong>${submission.student.name}</strong>
                                 <small class="text-muted d-block">
-                                  Enviado: ${submission.submitted_at}
+                                  <span data-translate="submittedOn">Enviado:</span> 
+                                  <span>${submission.submitted_at}</span>
                                 </small>
                               </div>
                             </div>
@@ -334,25 +346,31 @@ function displayCourseDetails(courseId) {
                                 <a href="/download/${submission.id}/" 
                                   class="btn btn-sm btn-outline-primary ml-2" download>
                                   <i class="fas fa-download"></i>
-                                  Descargar
+                                  <span data-translate="download">Descargar</span>
                                 </a>
                               </p>
                               ${submission.grade !== null ? `
-                                <p class="mb-1 grade">Calificación: ${submission.grade}/100 
-                                  <span class="badge badge-${submission.is_passing ? 'success' : 'danger'}">
+                                <p class="mb-1 grade">
+                                  <span data-translate="score">Calificación:</span> 
+                                  <span>${submission.grade}/100</span> 
+                                  <span 
+                                    class="badge badge-${submission.is_passing ? 'success' : 'danger'}"
+                                    data-translate="${submission.is_passing ? 'passed' : 'failed'}">
                                     ${submission.is_passing ? 'Aprobado' : 'No Aprobado'}
                                   </span>
                                 </p>
-                                <p class="mb-1 feedback">Retroalimentación: ${submission.feedback || 'Sin comentarios'}</p>
+                                <p class="mb-1 feedback">
+                                <span data-translate="feedback">Retroalimentación:</span> 
+                                <span>${submission.feedback || 'Sin comentarios'}</span></p>
                               ` : ''}
                               ${isCreator && submission.grade === null ? `
                                 <div class="grading-section mt-2">
                                   <div class="form-group">
-                                    <input type="number" class="form-control form-control-sm grade-input"
+                                    <input type="number" data-translate="score" class="form-control form-control-sm grade-input"
                                            placeholder="Calificación (0-100)" min="0" max="100">
                                   </div>
                                   <div class="form-group">
-                                    <textarea class="form-control form-control-sm feedback-input"
+                                    <textarea data-translate="feedback" class="form-control form-control-sm feedback-input"
                                               placeholder="Retroalimentación"></textarea>
                                   </div>
                                   <button class="btn btn-sm btn-primary" onclick="submitGrade(${submission.id}, this)">
