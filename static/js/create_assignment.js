@@ -328,7 +328,7 @@ function displayCourseDetails(courseId) {
                         <h6 data-translate="totalSubmissions">Entregas (${assignment.submissions.length})</h6>
                         ${assignment.submissions.map(submission => `
                           <div class="submission-item p-2 border rounded mb-2 ${submission.is_passing ? 'passing' : 'not-passing'}"
-                               data-submission-id="${submission.id}">
+                              data-submission-id="${submission.id}">
                             <div class="d-flex align-items-center">
                               <img src="${submission.student.avatar}" alt="${submission.student.name}"
                                    class="rounded-circle mr-2" style="width: 24px; height: 24px;">
