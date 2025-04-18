@@ -162,7 +162,7 @@
             </div>
         </div>
 
-        <!-- Profile Photo Modal -->
+        <!-- Updated Profile Photo Modal -->
         <div class="modal fade" id="profilePhotoModal" tabindex="-1" role="dialog">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content border-0 shadow">
@@ -171,17 +171,25 @@
                         <h4 class="text-muted mb-5" data-translate="profileInfo">Tu información de perfil</h4>
                         
                         <div class="position-relative d-inline-block mb-5">
-                            {% if request.user.userprofile.profile_photo %}
-                                <img src="{{ request.user.userprofile.profile_photo.url }}" 
-                                     alt="Profile Photo" 
-                                     class="rounded-circle"
-                                     style="width: 200px; height: 200px; object-fit: cover;">
-                            {% else %}
-                                <img src="https://ui-avatars.com/api/?name={{ request.user.username|urlencode }}&size=200&background=random"
-                                     alt="Profile Photo" 
-                                     class="rounded-circle"
-                                     style="width: 200px; height: 200px; object-fit: cover;">
-                            {% endif %}
+                            <div id="currentPhoto">
+                                {% if request.user.userprofile.profile_photo %}
+                                    <img src="{{ request.user.userprofile.profile_photo.url }}" 
+                                        alt="Profile Photo" 
+                                        class="rounded-circle"
+                                        style="width: 200px; height: 200px; object-fit: cover;">
+                                {% else %}
+                                    <img src="https://ui-avatars.com/api/?name={{ request.user.username|urlencode }}&size=200&background=random"
+                                        alt="Profile Photo" 
+                                        class="rounded-circle"
+                                        style="width: 200px; height: 200px; object-fit: cover;">
+                                {% endif %}
+                            </div>
+                            
+                            <div id="previewContainer" style="display: none;">
+                                <div class="img-container">
+                                    <img id="previewImage" src="" alt="Preview">
+                                </div>
+                            </div>
                             
                             <label for="profilePhoto" class="position-absolute" style="bottom: 10px; right: 10px; cursor: pointer; background: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                                 <i class="fas fa-camera"></i>
@@ -190,10 +198,16 @@
                         
                         <p class="text-muted mb-4" data-translate="updatePhoto">Click the camera icon to update your photo</p>
                         
-                        <form action="{% url 'update_profile_photo' %}" method="POST" enctype="multipart/form-data" class="d-none">
+                        <form id="profilePhotoForm" action="{% url 'update_profile_photo' %}" method="POST" enctype="multipart/form-data" class="d-none">
                             {% csrf_token %}
-                            <input type="file" id="profilePhoto" name="profile_photo" accept="image/*" onchange="this.form.submit()">
+                            <input type="file" id="profilePhoto" name="profile_photo" accept="image/*">
+                            <input type="hidden" name="cropped_data" id="croppedData">
                         </form>
+
+                        <div id="cropControls" style="display: none;">
+                            <button type="button" class="btn btn-secondary mr-2" onclick="cancelCrop()">Cancel</button>
+                            <button type="button" class="btn btn-primary" onclick="saveCrop()">Save</button>
+                        </div>
                     </div>
                 </div>
             </div>

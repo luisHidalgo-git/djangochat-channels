@@ -1,0 +1,27 @@
+.img-container {
+    max-width: 100%;
+    max-height: 400px;
+    margin: 0 auto;
+}
+
+.img-container img {
+    max-width: 100%;
+    max-height: 400px;
+}
+
+.cropper-view-box,
+.cropper-face {
+    border-radius: 50%;
+}
+
+#previewContainer {
+    margin-bottom: 20px;
+}
+
+#cropControls {
+    margin-top: 20px;
+}
+
+.cropper-container {
+    margin: 0 auto;
+}
