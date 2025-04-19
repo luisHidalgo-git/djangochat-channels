@@ -367,7 +367,7 @@ function displayCourseDetails(courseId) {
                                 <div class="grading-section mt-2">
                                   <div class="form-group">
                                     <input type="number" data-translate="score" class="form-control form-control-sm grade-input"
-                                           placeholder="Calificación (0-100)" min="0" max="100">
+                                          placeholder="Calificación (0-100)" min="0" max="100">
                                   </div>
                                   <div class="form-group">
                                     <textarea data-translate="feedback" class="form-control form-control-sm feedback-input"
