@@ -131,7 +131,7 @@ document.addEventListener("DOMContentLoaded", function () {
             replyQuote.innerHTML = `
                 <div class="reply-header">
                     <i class="fas fa-reply"></i> 
-                    ${data.reply_to.sender}
+                    <strong>${data.reply_to.sender}</strong>
                 </div>
                 <div class="reply-content">${data.reply_to.content}</div>
             `;
@@ -226,13 +226,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function showReplyPreview(content, sender) {
         const previewHtml = `
-            <div id="replyPreview">
-                <div class="reply-info">
+            <div id="replyPreview" class="mb-3">
+                <div class="reply-info bg-light p-2 rounded">
                     <div class="reply-header">
                         <i class="fas fa-reply"></i> 
-                        Respondiendo a ${sender}
+                        <strong>Respondiendo a ${sender}</strong>
                     </div>
-                    <div class="reply-content">${content}</div>
+                    <div class="reply-content text-muted">${content}</div>
                 </div>
                 <div class="reply-close" onclick="cancelReply()">
                     <i class="fas fa-times"></i>
@@ -248,7 +248,7 @@ document.addEventListener("DOMContentLoaded", function () {
         chatInput.insertAdjacentHTML('afterbegin', previewHtml);
     }
 
-    function cancelReply() {
+    window.cancelReply = function() {
         replyingTo = null;
         const replyPreview = document.getElementById('replyPreview');
         if (replyPreview) {
@@ -394,7 +394,8 @@ document.addEventListener("DOMContentLoaded", function () {
         if (data.type === 'status') {
             const userItems = document.querySelectorAll('.list-group-item');
             userItems.forEach(item => {
-                if (item.querySelector('strong').textContent === data.user) {
+                const userNameElement = item.querySelector('strong');
+                if (userNameElement && userNameElement.textContent === data.user) {
                     const statusIndicator = item.querySelector('.status-indicator');
                     statusIndicator.style.backgroundColor = data.status === 'online' ? '#28a745' : '#dc3545';
                     
@@ -465,16 +466,18 @@ document.addEventListener("DOMContentLoaded", function () {
                 const chats = document.querySelectorAll(".list-group-item");
                 const chatsArray = Array.from(chats);
                 const chatsSorted = chatsArray.sort((a, b) => {
-                    const aTime = a.querySelector("small").innerHTML;
-                    const bTime = b.querySelector("small").innerHTML;
+                    const aTime = a.querySelector("small")?.innerHTML || "";
+                    const bTime = b.querySelector("small")?.innerHTML || "";
                     return aTime < bTime ? 1 : -1;
                 });
 
                 const contacts = document.querySelector(".contacts");
-                contacts.innerHTML = "";
-                chatsSorted.forEach((chat) => {
-                    contacts.appendChild(chat);
-                });
+                if (contacts) {
+                    contacts.innerHTML = "";
+                    chatsSorted.forEach((chat) => {
+                        contacts.appendChild(chat);
+                    });
+                }
             }
         }
     };

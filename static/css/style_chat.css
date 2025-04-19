@@ -343,7 +343,6 @@
 
 /* Reply styles */
 .reply-quote {
-    background-color: rgba(67, 95, 122, 0.1);
     border-left: 3px solid #435f7a;
     padding: 8px;
     margin-bottom: 8px;
