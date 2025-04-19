@@ -52,12 +52,17 @@ class ChatConsumer(AsyncWebsocketConsumer):
             message_type = text_data_json.get('message_type', 'normal')
             subject = text_data_json.get('subject', 'none')
             image_data = text_data_json.get('image')
+            reply_to_id = text_data_json.get('reply_to')
             sender = self.scope['user']
             receiver = await self.get_receiver_user()
 
-            saved_message = await self.save_message(sender, receiver, message, message_type, subject, image_data)
+            saved_message = await self.save_message(sender, receiver, message, message_type, subject, image_data, reply_to_id)
             message_status = await self.get_message_status(saved_message)
             unread_count = await self.get_unread_count(receiver, sender)
+
+            reply_info = None
+            if reply_to_id:
+                reply_info = await self.get_reply_message_info(reply_to_id)
 
             await self.channel_layer.group_send(
                 self.room_group_name,
@@ -72,7 +77,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     'timestamp': saved_message.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
                     'message_id': str(saved_message.id),
                     'unread_count': unread_count,
-                    'image_url': saved_message.image.url if saved_message.image else None
+                    'image_url': saved_message.image.url if saved_message.image else None,
+                    'reply_to': reply_info
                 }
             )
         
@@ -124,7 +130,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         }))
 
     @sync_to_async
-    def save_message(self, sender, receiver, message, message_type='normal', subject='none', image_data=None):
+    def save_message(self, sender, receiver, message, message_type='normal', subject='none', image_data=None, reply_to_id=None):
         msg = Message(
             sender=sender,
             receiver=receiver,
@@ -133,6 +139,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
             message_type=message_type,
             subject=subject
         )
+
+        if reply_to_id:
+            try:
+                reply_to_message = Message.objects.get(id=reply_to_id)
+                msg.reply_to = reply_to_message
+            except Message.DoesNotExist:
+                pass
 
         if image_data:
             format, imgstr = image_data.split(';base64,')
@@ -143,6 +156,18 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         msg.save()
         return msg
+
+    @sync_to_async
+    def get_reply_message_info(self, message_id):
+        try:
+            message = Message.objects.get(id=message_id)
+            return {
+                'id': message.id,
+                'content': message.content[:50] + '...' if len(message.content) > 50 else message.content,
+                'sender': message.sender.username
+            }
+        except Message.DoesNotExist:
+            return None
 
     @sync_to_async
     def get_unread_count(self, receiver, sender):

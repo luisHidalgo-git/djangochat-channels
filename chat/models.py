@@ -34,6 +34,7 @@ class Message(models.Model):
     message_type = models.CharField(max_length=10, choices=MESSAGE_TYPES, default='normal')
     subject = models.CharField(max_length=20, choices=SUBJECTS, default='none')
     image = models.ImageField(upload_to='chat_images/', null=True, blank=True)
+    reply_to = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, related_name='replies')
 
     def __str__(self):
         return self.content

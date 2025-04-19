@@ -454,9 +454,9 @@
         padding: 0;
         position: fixed;
         top: 15px;
-        left: 70px; /* Aligned to the right of hamburger menu */
+        left: 70px;
         z-index: 999;
-        width: calc(100% - 85px); /* Full width minus hamburger menu width and spacing */
+        width: calc(100% - 85px);
     }
 
     .mobile-search-container .input-group {
@@ -478,13 +478,12 @@
         justify-content: center;
     }
 
-    /* Chat header adjustments */
     .chat .d-flex.align-items-center.p-1 {
         padding: 15px !important;
         display: flex !important;
         align-items: center !important;
         min-height: 70px;
-        padding-top: 70px !important; /* Added space for the search container */
+        padding-top: 70px !important;
     }
 
     .chat .d-flex.align-items-center.p-1 .position-relative {
@@ -496,7 +495,6 @@
         flex: 1;
     }
 
-    /* Updated mobile header controls styles */
     .mobile-header-controls {
         margin-bottom: 20px;
         padding-top: 15px;
@@ -535,8 +533,41 @@
         background-color: rgba(255, 255, 255, 0.1);
     }
 
-    /* Hide desktop theme toggle in mobile */
     .courses-section .theme-toggle {
         display: none !important;
     }
+}
+
+.reply-quote {
+    background-color: rgba(0, 0, 0, 0.05);
+    border-left: 3px solid #435f7a !important;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.reply-quote:hover {
+    background-color: rgba(0, 0, 0, 0.08);
+}
+
+.quoted-message {
+    font-size: 0.9em;
+    color: #666;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+}
+
+#replyPreview {
+    border-left: 3px solid #435f7a;
+    background-color: rgba(67, 95, 122, 0.1) !important;
+}
+
+.message-highlight {
+    animation: highlight 2s ease-out;
+}
+
+@keyframes highlight {
+    0% { background-color: #fff3cd; }
+    100% { background-color: transparent; }
 }
