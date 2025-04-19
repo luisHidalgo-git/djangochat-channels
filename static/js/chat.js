@@ -122,9 +122,27 @@ document.addEventListener("DOMContentLoaded", function () {
         messageContainer.dataset.messageId = data.message_id;
 
         const messageContent = document.createElement("div");
-        messageContent.className = "d-flex align-items-center position-relative";
+        messageContent.className = "d-flex flex-column";
 
-        // Add reply options for both sent and received messages
+        // Add reply quote if this message is a reply
+        if (data.reply_to) {
+            const replyQuote = document.createElement("div");
+            replyQuote.className = "reply-quote";
+            replyQuote.innerHTML = `
+                <div class="reply-header">
+                    <i class="fas fa-reply"></i> 
+                    ${data.reply_to.sender}
+                </div>
+                <div class="reply-content">${data.reply_to.content}</div>
+            `;
+            replyQuote.onclick = () => scrollToMessage(data.reply_to.id);
+            messageContent.appendChild(replyQuote);
+        }
+
+        const messageMainContent = document.createElement("div");
+        messageMainContent.className = "d-flex align-items-center position-relative";
+
+        // Add dropdown menu for both sent and received messages
         const dropdownHtml = `
             <div class="dropdown message-options">
                 <button class="btn btn-link text-muted dropdown-toggle" type="button" data-toggle="dropdown">
@@ -140,18 +158,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 </div>
             </div>
         `;
-        messageContent.innerHTML = dropdownHtml;
-
-        // Add reply quote if this message is a reply
-        if (data.reply_to) {
-            const replyQuote = document.createElement("div");
-            replyQuote.className = "reply-quote mb-2 p-2 border-left";
-            replyQuote.innerHTML = `
-                <small class="text-muted">Respondiendo a ${data.reply_to.sender}</small>
-                <div class="quoted-message" onclick="scrollToMessage(${data.reply_to.id})">${data.reply_to.content}</div>
-            `;
-            messageContainer.appendChild(replyQuote);
-        }
+        messageMainContent.innerHTML = dropdownHtml;
 
         if (data.message_type === 'image') {
             const imageContainer = document.createElement("div");
@@ -166,24 +173,25 @@ document.addEventListener("DOMContentLoaded", function () {
                 showImageModal(this.src);
             };
             imageContainer.appendChild(image);
-            messageContent.appendChild(imageContainer);
+            messageMainContent.appendChild(imageContainer);
 
             if (data.message && data.message.trim() !== '') {
                 const caption = document.createElement("p");
                 caption.className = "mt-2 mb-0";
                 caption.textContent = data.message;
-                messageContainer.appendChild(caption);
+                messageContent.appendChild(caption);
             }
         } else {
             const messageText = document.createElement("span");
             messageText.textContent = data.message;
-            messageContent.appendChild(messageText);
+            messageMainContent.appendChild(messageText);
         }
 
         if (data.sender === userUsername) {
-            messageContent.appendChild(createStatusIndicator(data.status));
+            messageMainContent.appendChild(createStatusIndicator(data.status));
         }
 
+        messageContent.appendChild(messageMainContent);
         messageContainer.appendChild(messageContent);
 
         if (data.message_type === 'urgent') {
@@ -204,6 +212,71 @@ document.addEventListener("DOMContentLoaded", function () {
 
         return messageContainer;
     }
+
+    function scrollToMessage(messageId) {
+        const message = document.querySelector(`.chat-message[data-message-id="${messageId}"]`);
+        if (message) {
+            message.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            message.classList.add('message-highlight');
+            setTimeout(() => {
+                message.classList.remove('message-highlight');
+            }, 2000);
+        }
+    }
+
+    function showReplyPreview(content, sender) {
+        const previewHtml = `
+            <div id="replyPreview">
+                <div class="reply-info">
+                    <div class="reply-header">
+                        <i class="fas fa-reply"></i> 
+                        Respondiendo a ${sender}
+                    </div>
+                    <div class="reply-content">${content}</div>
+                </div>
+                <div class="reply-close" onclick="cancelReply()">
+                    <i class="fas fa-times"></i>
+                </div>
+            </div>
+        `;
+        
+        const chatInput = document.querySelector('.chat-input');
+        const existingPreview = document.getElementById('replyPreview');
+        if (existingPreview) {
+            existingPreview.remove();
+        }
+        chatInput.insertAdjacentHTML('afterbegin', previewHtml);
+    }
+
+    function cancelReply() {
+        replyingTo = null;
+        const replyPreview = document.getElementById('replyPreview');
+        if (replyPreview) {
+            replyPreview.remove();
+        }
+    }
+
+    // Add event listener for reply buttons
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.reply-message')) {
+            e.preventDefault();
+            const messageContainer = e.target.closest('.chat-message');
+            const messageId = messageContainer.dataset.messageId;
+            const messageContent = messageContainer.querySelector('span').textContent;
+            const sender = messageContainer.classList.contains('sender') ? 
+                document.getElementById('user_username').textContent.replace(/"/g, '') : 
+                document.getElementById('room_name').textContent.replace(/"/g, '');
+            
+            replyingTo = {
+                id: messageId,
+                content: messageContent,
+                sender: sender
+            };
+            
+            showReplyPreview(messageContent, sender);
+            document.querySelector('#my_input').focus();
+        }
+    });
 
     scrollToBottom();
 
@@ -281,62 +354,6 @@ document.addEventListener("DOMContentLoaded", function () {
         
         $('#messageDetailsModal').modal('show');
     });
-
-    $(document).on('click', '.reply-message', function(e) {
-        e.preventDefault();
-        const messageContainer = $(this).closest('.chat-message');
-        const messageId = messageContainer.data('messageId');
-        const messageContent = messageContainer.find('span').text();
-        const sender = messageContainer.hasClass('sender') ? userUsername : roomName;
-        
-        replyingTo = {
-            id: messageId,
-            content: messageContent,
-            sender: sender
-        };
-        
-        showReplyPreview(messageContent, sender);
-    });
-
-    function showReplyPreview(content, sender) {
-        let previewHtml = `
-            <div id="replyPreview" class="bg-light p-2 mb-2 rounded">
-                <div class="d-flex justify-content-between align-items-center">
-                    <small class="text-muted">Respondiendo a ${sender}</small>
-                    <button type="button" class="close" onclick="cancelReply()">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="text-truncate">${content}</div>
-            </div>
-        `;
-        
-        const chatInput = document.querySelector('.chat-input');
-        const existingPreview = document.getElementById('replyPreview');
-        if (existingPreview) {
-            existingPreview.remove();
-        }
-        chatInput.insertAdjacentHTML('afterbegin', previewHtml);
-    }
-
-    function cancelReply() {
-        replyingTo = null;
-        const replyPreview = document.getElementById('replyPreview');
-        if (replyPreview) {
-            replyPreview.remove();
-        }
-    }
-
-    function scrollToMessage(messageId) {
-        const message = document.querySelector(`.chat-message[data-message-id="${messageId}"]`);
-        if (message) {
-            message.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            message.style.backgroundColor = '#fff3cd';
-            setTimeout(() => {
-                message.style.backgroundColor = '';
-            }, 2000);
-        }
-    }
 
     document.querySelector("#submit_button").onclick = function (e) {
         const messageInput = document.querySelector("#my_input").value;

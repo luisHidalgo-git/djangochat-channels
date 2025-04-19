@@ -26,7 +26,7 @@
         <!-- Rest of the existing chat area code remains unchanged -->
         {{ room_name|json_script:"room_name" }}
         {{ request.user.username|json_script:"user_username" }}
-        
+
         <!-- User List Sidebar -->
         <div class="col-md-3 sidebar p-3 chats">
             <!-- Mobile Header Controls -->
@@ -83,7 +83,8 @@
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h5 class="text-white mb-0">Chats</h5>
                 <div class="flex-grow-1 ml-2">
-                    <input type="text" id="userSearch" class="form-control form-control-sm" data-translate="searchUsers" placeholder="Buscar usuarios...">
+                    <input type="text" id="userSearch" class="form-control form-control-sm" data-translate="searchUsers"
+                        placeholder="Buscar usuarios...">
                 </div>
             </div>
             <div class="contacts">
@@ -94,13 +95,13 @@
                     <div class="d-flex align-items-center">
                         <div class="position-relative">
                             {% if item.user.userprofile.profile_photo %}
-                                <img src="{{ item.user.userprofile.profile_photo.url }}"
-                                    alt="{{ item.user.username }}'s Profile Image" class="profile-icon rounded-circle mr-3"
-                                    style="width: 1.8rem; height: 1.8rem; object-fit: cover" />
+                            <img src="{{ item.user.userprofile.profile_photo.url }}"
+                                alt="{{ item.user.username }}'s Profile Image" class="profile-icon rounded-circle mr-3"
+                                style="width: 1.8rem; height: 1.8rem; object-fit: cover" />
                             {% else %}
-                                <img src="https://ui-avatars.com/api/?name={{ item.user.username|urlencode }}&size=64&background=random"
-                                    alt="{{ item.user.username }}'s Profile Image" class="profile-icon rounded-circle mr-3"
-                                    style="width: 1.8rem; height: 1.8rem; object-fit: cover" />
+                            <img src="https://ui-avatars.com/api/?name={{ item.user.username|urlencode }}&size=64&background=random"
+                                alt="{{ item.user.username }}'s Profile Image" class="profile-icon rounded-circle mr-3"
+                                style="width: 1.8rem; height: 1.8rem; object-fit: cover" />
                             {% endif %}
                             <span class="status-indicator {{ item.status }}" style="position: absolute; bottom: 0; right: 0; width: 10px; height: 10px; border-radius: 50%; 
                             background-color: {% if item.status == 'online' %}#28a745{% else %}#dc3545{% endif %};">
@@ -125,7 +126,7 @@
                                 {% else %}
                                 <small class="">No messages yet</small>
                                 {% endif %}
-                                
+
                                 {% if item.unread_count > 0 and item.user.username != room_name %}
                                 <span class="badge badge-success unread-count">{{ item.unread_count }}</span>
                                 {% endif %}
@@ -138,18 +139,16 @@
 
             <div class="logout">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <div class="user-profile-section" style="cursor: pointer;" data-toggle="modal" data-target="#profilePhotoModal">
+                    <div class="user-profile-section" style="cursor: pointer;" data-toggle="modal"
+                        data-target="#profilePhotoModal">
                         <div class="d-flex align-items-center">
                             {% if request.user.userprofile.profile_photo %}
-                                <img src="{{ request.user.userprofile.profile_photo.url }}" 
-                                     alt="Profile Photo" 
-                                     class="rounded-circle mr-2"
-                                     style="width: 40px; height: 40px; object-fit: cover;">
+                            <img src="{{ request.user.userprofile.profile_photo.url }}" alt="Profile Photo"
+                                class="rounded-circle mr-2" style="width: 40px; height: 40px; object-fit: cover;">
                             {% else %}
-                                <img src="https://ui-avatars.com/api/?name={{ request.user.username|urlencode }}&size=64&background=random"
-                                     alt="Profile Photo" 
-                                     class="rounded-circle mr-2"
-                                     style="width: 40px; height: 40px; object-fit: cover;">
+                            <img src="https://ui-avatars.com/api/?name={{ request.user.username|urlencode }}&size=64&background=random"
+                                alt="Profile Photo" class="rounded-circle mr-2"
+                                style="width: 40px; height: 40px; object-fit: cover;">
                             {% endif %}
                             <h5 class="text-white mb-0">{{ request.user.username|title }}</h5>
                         </div>
@@ -169,36 +168,36 @@
                     <div class="modal-body text-center p-5">
                         <h1 class="display-4 mb-4" data-translate="profile">Perfil</h1>
                         <h4 class="text-muted mb-5" data-translate="profileInfo">Tu información de perfil</h4>
-                        
+
                         <div class="position-relative d-inline-block mb-5">
                             <div id="currentPhoto">
                                 {% if request.user.userprofile.profile_photo %}
-                                    <img src="{{ request.user.userprofile.profile_photo.url }}" 
-                                        alt="Profile Photo" 
-                                        class="rounded-circle"
-                                        style="width: 200px; height: 200px; object-fit: cover;">
+                                <img src="{{ request.user.userprofile.profile_photo.url }}" alt="Profile Photo"
+                                    class="rounded-circle" style="width: 200px; height: 200px; object-fit: cover;">
                                 {% else %}
-                                    <img src="https://ui-avatars.com/api/?name={{ request.user.username|urlencode }}&size=200&background=random"
-                                        alt="Profile Photo" 
-                                        class="rounded-circle"
-                                        style="width: 200px; height: 200px; object-fit: cover;">
+                                <img src="https://ui-avatars.com/api/?name={{ request.user.username|urlencode }}&size=200&background=random"
+                                    alt="Profile Photo" class="rounded-circle"
+                                    style="width: 200px; height: 200px; object-fit: cover;">
                                 {% endif %}
                             </div>
-                            
+
                             <div id="previewContainer" style="display: none;">
                                 <div class="img-container">
                                     <img id="previewImage" src="" alt="Preview">
                                 </div>
                             </div>
-                            
-                            <label for="profilePhoto" class="position-absolute" style="bottom: 10px; right: 10px; cursor: pointer; background: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+
+                            <label for="profilePhoto" class="position-absolute"
+                                style="bottom: 10px; right: 10px; cursor: pointer; background: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                                 <i class="fas fa-camera"></i>
                             </label>
                         </div>
-                        
-                        <p class="text-muted mb-4" data-translate="updatePhoto">Click the camera icon to update your photo</p>
-                        
-                        <form id="profilePhotoForm" action="{% url 'update_profile_photo' %}" method="POST" enctype="multipart/form-data" class="d-none">
+
+                        <p class="text-muted mb-4" data-translate="updatePhoto">Click the camera icon to update your
+                            photo</p>
+
+                        <form id="profilePhotoForm" action="{% url 'update_profile_photo' %}" method="POST"
+                            enctype="multipart/form-data" class="d-none">
                             {% csrf_token %}
                             <input type="file" id="profilePhoto" name="profile_photo" accept="image/*">
                             <input type="hidden" name="cropped_data" id="croppedData">
@@ -221,17 +220,19 @@
                 <div class="d-flex justify-content-between align-items-center p-3 mobile-header">
                     <h3 id="currentView" class="text-center flex-grow-1">
                         {% if request.GET.view == 'exams' %}
-                            Exámenes Disponibles
+                        Exámenes Disponibles
                         {% else %}
-                            Todos los Cursos
+                        Todos los Cursos
                         {% endif %}
                     </h3>
                     <div id="actionButtons">
-                        <button class="btn btn-primary {% if request.GET.view == 'exams' %}d-none{% endif %}" data-toggle="modal" data-target="#createCourseModal" id="createCourseBtn">
+                        <button class="btn btn-primary {% if request.GET.view == 'exams' %}d-none{% endif %}"
+                            data-toggle="modal" data-target="#createCourseModal" id="createCourseBtn">
                             <i class="fas fa-plus d-md-none"></i>
                             <span class="d-none d-md-inline" data-translate="createCourse">Crear Curso</span>
                         </button>
-                        <button class="btn btn-primary {% if request.GET.view != 'exams' %}d-none{% endif %}" data-toggle="modal" data-target="#createExamModal" id="createExamBtn">
+                        <button class="btn btn-primary {% if request.GET.view != 'exams' %}d-none{% endif %}"
+                            data-toggle="modal" data-target="#createExamModal" id="createExamBtn">
                             <i class="fas fa-plus d-md-none"></i>
                             <span class="d-none d-md-inline" data-translate="createExam">Crear Examen</span>
                         </button>
@@ -249,18 +250,19 @@
             <div class="d-flex align-items-center p-1">
                 <div class="position-relative">
                     {% for item in user_last_messages %}
-                        {% if item.user.username == room_name %}
-                            {% if item.user.userprofile.profile_photo %}
-                                <img src="{{ item.user.userprofile.profile_photo.url }}"
-                                    style="border-radius: 50%; height: 45px; width: 45px; object-fit: cover;" />
-                            {% else %}
-                                <img src="https://ui-avatars.com/api/?name={{ room_name|urlencode }}&size=64&background=random"
-                                    style="border-radius: 50%; height: 45px; width: 45px;" />
-                            {% endif %}
-                            <span class="status-indicator {{ item.status }}" style="position: absolute; bottom: 0; right: 0; width: 12px; height: 12px; border-radius: 50%;
+                    {% if item.user.username == room_name %}
+                    {% if item.user.userprofile.profile_photo %}
+                    <img src="{{ item.user.userprofile.profile_photo.url }}"
+                        style="border-radius: 50%; height: 45px; width: 45px; object-fit: cover;" />
+                    {% else %}
+                    <img src="https://ui-avatars.com/api/?name={{ room_name|urlencode }}&size=64&background=random"
+                        style="border-radius: 50%; height: 45px; width: 45px;" />
+                    {% endif %}
+                    <span class="status-indicator {{ item.status }}"
+                        style="position: absolute; bottom: 0; right: 0; width: 12px; height: 12px; border-radius: 50%;
                                     background-color: {% if item.status == 'online' %}#28a745{% else %}#dc3545{% endif %};">
-                            </span>
-                        {% endif %}
+                    </span>
+                    {% endif %}
                     {% endfor %}
                 </div>
                 <div class="ml-3">
@@ -275,73 +277,83 @@
                 <!-- Enhanced Search Form with Dropdown -->
                 <form method="GET" action="" class="mobile-search-container ml-auto">
                     <div class="input-group">
-                        <input type="text" data-translate="searchMessages" name="search" class="form-control" 
-                            placeholder="Buscar mensajes..." value="{{ search_query }}" 
+                        <input type="text" data-translate="searchMessages" name="search" class="form-control"
+                            placeholder="Buscar mensajes..." value="{{ search_query }}"
                             oninput="toggleFilter(this, 'search', this.value)">
                         <div class="input-group-append">
-                            <button type="button" class="btn btn-outline-secondary dropdown-toggle" 
-                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <button type="button" class="btn btn-outline-secondary dropdown-toggle"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fas fa-filter"></i>
                             </button>
                             <div class="dropdown-menu dropdown-menu-right filter-dropdown">
                                 <h6 class="dropdown-header" data-translate="messageType">Tipo de Mensaje</h6>
-                                <button type="button" data-translate="normal" class="dropdown-item {% if message_type == 'normal' %}active{% endif %}" 
-                                        data-filter-type="messageType" data-value="normal" 
-                                        onclick="toggleFilter(this, 'messageType', 'normal')">
+                                <button type="button" data-translate="normal"
+                                    class="dropdown-item {% if message_type == 'normal' %}active{% endif %}"
+                                    data-filter-type="messageType" data-value="normal"
+                                    onclick="toggleFilter(this, 'messageType', 'normal')">
                                     <i class="fas fa-comment"></i> Normal
                                 </button>
-                                <button type="button" data-translate="urgent" class="dropdown-item {% if message_type == 'urgent' %}active{% endif %}" 
-                                        data-filter-type="messageType" data-value="urgent" 
-                                        onclick="toggleFilter(this, 'messageType', 'urgent')">
+                                <button type="button" data-translate="urgent"
+                                    class="dropdown-item {% if message_type == 'urgent' %}active{% endif %}"
+                                    data-filter-type="messageType" data-value="urgent"
+                                    onclick="toggleFilter(this, 'messageType', 'urgent')">
                                     <i class="fas fa-exclamation-circle"></i> Urgente
                                 </button>
-                                
+
                                 <div class="dropdown-divider"></div>
                                 <h6 class="dropdown-header" data-translate="subject">Materia</h6>
-                                <button type="button" data-translate="programming" class="dropdown-item {% if subject == 'programming' %}active{% endif %}" 
-                                        data-filter-type="subject" data-value="programming" 
-                                        onclick="toggleFilter(this, 'subject', 'programming')">
+                                <button type="button" data-translate="programming"
+                                    class="dropdown-item {% if subject == 'programming' %}active{% endif %}"
+                                    data-filter-type="subject" data-value="programming"
+                                    onclick="toggleFilter(this, 'subject', 'programming')">
                                     <i class="fas fa-code"></i> Programación
                                 </button>
-                                <button type="button" data-translate="mathematics" class="dropdown-item {% if subject == 'math' %}active{% endif %}" 
-                                        data-filter-type="subject" data-value="math" 
-                                        onclick="toggleFilter(this, 'subject', 'math')">
+                                <button type="button" data-translate="mathematics"
+                                    class="dropdown-item {% if subject == 'math' %}active{% endif %}"
+                                    data-filter-type="subject" data-value="math"
+                                    onclick="toggleFilter(this, 'subject', 'math')">
                                     <i class="fas fa-square-root-alt"></i> Matemáticas
                                 </button>
-                                <button type="button" data-translate="english" class="dropdown-item {% if subject == 'english' %}active{% endif %}" 
-                                        data-filter-type="subject" data-value="english" 
-                                        onclick="toggleFilter(this, 'subject', 'english')">
+                                <button type="button" data-translate="english"
+                                    class="dropdown-item {% if subject == 'english' %}active{% endif %}"
+                                    data-filter-type="subject" data-value="english"
+                                    onclick="toggleFilter(this, 'subject', 'english')">
                                     <i class="fas fa-language"></i> Inglés
                                 </button>
-                                
+
                                 <div class="dropdown-divider"></div>
                                 <h6 class="dropdown-header" data-translate="status">Estado</h6>
-                                <button type="button" data-translate="sent" class="dropdown-item {% if status == 'sent' %}active{% endif %}" 
-                                        data-filter-type="status" data-value="sent" 
-                                        onclick="toggleFilter(this, 'status', 'sent')">
+                                <button type="button" data-translate="sent"
+                                    class="dropdown-item {% if status == 'sent' %}active{% endif %}"
+                                    data-filter-type="status" data-value="sent"
+                                    onclick="toggleFilter(this, 'status', 'sent')">
                                     <i class="fas fa-check"></i> Enviados
                                 </button>
-                                <button type="button" data-translate="submitted" class="dropdown-item {% if status == 'delivered' %}active{% endif %}" 
-                                        data-filter-type="status" data-value="delivered" 
-                                        onclick="toggleFilter(this, 'status', 'delivered')">
+                                <button type="button" data-translate="submitted"
+                                    class="dropdown-item {% if status == 'delivered' %}active{% endif %}"
+                                    data-filter-type="status" data-value="delivered"
+                                    onclick="toggleFilter(this, 'status', 'delivered')">
                                     <i class="fas fa-check-double"></i> Entregados
                                 </button>
-                                <button type="button" data-translate="read" class="dropdown-item {% if status == 'read' %}active{% endif %}" 
-                                        data-filter-type="status" data-value="read" 
-                                        onclick="toggleFilter(this, 'status', 'read')">
+                                <button type="button" data-translate="read"
+                                    class="dropdown-item {% if status == 'read' %}active{% endif %}"
+                                    data-filter-type="status" data-value="read"
+                                    onclick="toggleFilter(this, 'status', 'read')">
                                     <i class="fas fa-eye"></i> Leídos
                                 </button>
-                                
+
                                 <div class="dropdown-divider"></div>
                                 <h6 class="dropdown-header" data-translate="address">Dirección</h6>
-                                <button type="button" data-translate="sent" class="dropdown-item {% if direction == 'sent' %}active{% endif %}" 
-                                        data-filter-type="direction" data-value="sent" 
-                                        onclick="toggleFilter(this, 'direction', 'sent')">
+                                <button type="button" data-translate="sent"
+                                    class="dropdown-item {% if direction == 'sent' %}active{% endif %}"
+                                    data-filter-type="direction" data-value="sent"
+                                    onclick="toggleFilter(this, 'direction', 'sent')">
                                     <i class="fas fa-paper-plane"></i> Enviados
                                 </button>
-                                <button type="button" data-translate="received" class="dropdown-item {% if direction == 'received' %}active{% endif %}" 
-                                        data-filter-type="direction" data-value="received" 
-                                        onclick="toggleFilter(this, 'direction', 'received')">
+                                <button type="button" data-translate="received"
+                                    class="dropdown-item {% if direction == 'received' %}active{% endif %}"
+                                    data-filter-type="direction" data-value="received"
+                                    onclick="toggleFilter(this, 'direction', 'received')">
                                     <i class="fas fa-inbox"></i> Recibidos
                                 </button>
                             </div>
@@ -373,18 +385,32 @@
                                 <i class="fas fa-ellipsis-v"></i>
                             </button>
                             <div class="dropdown-menu">
-                                <a class="dropdown-item set-urgent" data-translate="urgentMessage" href="#">Mensaje Urgente</a>
+                                <a class="dropdown-item set-urgent" data-translate="urgentMessage" href="#">Mensaje
+                                    Urgente</a>
                                 <a class="dropdown-item set-subject" data-translate="subject" href="#">Materia</a>
-                                <a class="dropdown-item show-details" data-translate="messageDetails" href="#">Más detalles</a>
+                                <a class="dropdown-item show-details" data-translate="messageDetails" href="#">Más
+                                    detalles</a>
+                                <a class="dropdown-item reply-message" href="#"
+                                    data-translate="replyMessage">Responder</a>
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="dropdown message-options">
+                            <button class="btn btn-link text-muted dropdown-toggle" type="button"
+                                data-toggle="dropdown">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item reply-message" href="#"
+                                    data-translate="replyMessage">Responder</a>
                             </div>
                         </div>
                         {% endif %}
-
                         {% if message.message_type == 'image' %}
                         <div class="message-image-container">
                             <img src="{{ message.image.url }}" alt="Shared image"
-                                 style="max-width: 200px; max-height: 200px; border-radius: 8px; cursor: pointer;"
-                                 onclick="showImageModal('{{ message.image.url }}')" />
+                                style="max-width: 200px; max-height: 200px; border-radius: 8px; cursor: pointer;"
+                                onclick="showImageModal('{{ message.image.url }}')" />
                             {% if message.content %}
                             <p class="mt-2 mb-0">{{ message.content }}</p>
                             {% endif %}
@@ -428,7 +454,8 @@
                 <div id="imagePreview" class="mb-3" style="display: none;">
                     <div class="d-flex align-items-center">
                         <img id="selectedImage" style="max-height: 100px; max-width: 200px; object-fit: contain;">
-                        <button class="btn btn-sm btn-danger ml-2" onclick="if(typeof window.removeSelectedImage === 'function') window.removeSelectedImage()">
+                        <button class="btn btn-sm btn-danger ml-2"
+                            onclick="if(typeof window.removeSelectedImage === 'function') window.removeSelectedImage()">
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
@@ -439,8 +466,8 @@
                     <div class="input-group-append">
                         <label for="imageInput" class="btn btn-outline-secondary mb-0" style="cursor: pointer;">
                             <i class="fas fa-image"></i>
-                            <input type="file" id="imageInput" accept="image/*" style="display: none;" 
-                                   onchange="if(typeof window.handleImageSelect === 'function') window.handleImageSelect(this);">
+                            <input type="file" id="imageInput" accept="image/*" style="display: none;"
+                                onchange="if(typeof window.handleImageSelect === 'function') window.handleImageSelect(this);">
                         </label>
                         <button id="submit_button" class="btn btn-primary" data-translate="send" type="button">
                             Send

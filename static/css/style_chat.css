@@ -341,6 +341,69 @@
     margin: 0.5rem 0;
 }
 
+/* Reply styles */
+.reply-quote {
+    background-color: rgba(67, 95, 122, 0.1);
+    border-left: 3px solid #435f7a;
+    padding: 8px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    cursor: pointer;
+}
+
+.reply-quote:hover {
+    background-color: rgba(67, 95, 122, 0.15);
+}
+
+.reply-header {
+    color: #435f7a;
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.reply-content {
+    color: #666;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+}
+
+#replyPreview {
+    background-color: rgba(67, 95, 122, 0.1);
+    border-left: 3px solid #435f7a;
+    padding: 8px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+}
+
+.reply-info {
+    flex-grow: 1;
+}
+
+.reply-close {
+    cursor: pointer;
+    padding: 4px;
+    margin-left: 8px;
+}
+
+.reply-close:hover {
+    color: #dc3545;
+}
+
+.message-highlight {
+    animation: highlight 2s ease-out;
+}
+
+@keyframes highlight {
+    0% { background-color: rgba(67, 95, 122, 0.3); }
+    100% { background-color: transparent; }
+}
+
 /* Mobile Styles */
 @media (max-width: 768px) {
     .sidebar {
@@ -536,38 +599,4 @@
     .courses-section .theme-toggle {
         display: none !important;
     }
-}
-
-.reply-quote {
-    background-color: rgba(0, 0, 0, 0.05);
-    border-left: 3px solid #435f7a !important;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-.reply-quote:hover {
-    background-color: rgba(0, 0, 0, 0.08);
-}
-
-.quoted-message {
-    font-size: 0.9em;
-    color: #666;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 200px;
-}
-
-#replyPreview {
-    border-left: 3px solid #435f7a;
-    background-color: rgba(67, 95, 122, 0.1) !important;
-}
-
-.message-highlight {
-    animation: highlight 2s ease-out;
-}
-
-@keyframes highlight {
-    0% { background-color: #fff3cd; }
-    100% { background-color: transparent; }
 }
