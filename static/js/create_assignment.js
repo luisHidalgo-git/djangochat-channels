@@ -388,7 +388,7 @@ function displayCourseDetails(courseId) {
                     <div class="d-flex justify-content-between align-items-center">
                       <div class="d-flex align-items-center">
                         <img src="${assignment.creator.avatar}" alt="${assignment.creator.name}" 
-                             class="rounded-circle mr-2" style="width: 24px; height: 24px;">
+                            class="rounded-circle mr-2" style="width: 24px; height: 24px;">
                         <small class="text-muted">
                           ${assignment.creator.name}
                         </small>
