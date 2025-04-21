@@ -23,6 +23,11 @@ function updateLanguageIcon() {
     });
 }
 
+function setLanguage(lang) {
+    localStorage.setItem('selectedLanguage', lang); // Guardar idioma en localStorage
+    translatePage(lang); // Aplicar traducción
+}
+
 function translatePage(lang) {
     const translations = {
         en: {
@@ -462,7 +467,7 @@ function translatePage(lang) {
 
 // Initialize language on page load
 document.addEventListener('DOMContentLoaded', () => {
-    const savedLang = localStorage.getItem('language') || 'en';
+    const savedLanguage = localStorage.getItem('selectedLanguage') || 'es';
     translatePage(savedLang);
     updateLanguageIcon();
 });

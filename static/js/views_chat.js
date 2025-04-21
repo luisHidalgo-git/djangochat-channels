@@ -1,6 +1,8 @@
 function showExams(e) {
     e.preventDefault();
     localStorage.setItem('currentView', 'exams'); // Guarda el estado
+    const savedLanguage = localStorage.getItem('selectedLanguage') || 'es';
+    translatePage(savedLanguage); // Aplicar idioma al cambiar de sección
     window.location.href = '/chat/Sala/?view=exams';
     
     // Update active states
@@ -12,6 +14,8 @@ function showExams(e) {
 function showCourses(e) {
     e.preventDefault();
     localStorage.setItem('currentView', 'courses'); // Guarda el estado
+    const savedLanguage = localStorage.getItem('selectedLanguage') || 'es';
+    translatePage(savedLanguage); // Aplicar idioma al cambiar de sección
     window.location.href = '/chat/Sala/?view=courses';
     
     // Update active states
