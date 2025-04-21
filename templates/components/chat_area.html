@@ -157,7 +157,7 @@
                 </div>
                 <h5 style="cursor: pointer; font-size: 1rem;">
                     <i class="fas fa-sign-out-alt" style="color: red"></i>
-                    <a href="{% url 'logout' %}" class="text-white" data-translate="logout">Logout</a>
+                    <a href="#" class="text-white" data-toggle="modal" data-target="#logoutConfirmationModal" data-translate="logout">Logout</a>
                 </h5>
             </div>
         </div>
@@ -208,6 +208,27 @@
                             <button type="button" class="btn btn-secondary mr-2" onclick="cancelCrop()">Cancel</button>
                             <button type="button" class="btn btn-primary" onclick="saveCrop()">Save</button>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de Confirmación para Cerrar Sesión -->
+        <div class="modal fade" id="logoutConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="logoutConfirmationModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="logoutConfirmationModalLabel">Confirmar Cierre de Sesión</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        ¿Estás seguro de que deseas cerrar sesión?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        <a href="{% url 'logout' %}" class="btn btn-danger">Cerrar Sesión</a>
                     </div>
                 </div>
             </div>
