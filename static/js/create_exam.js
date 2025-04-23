@@ -148,7 +148,13 @@ function createExam() {
     const title = document.getElementById('examTitle').value;
     const description = document.getElementById('examDescription').value;
     const questionCount = parseInt(document.getElementById('questionCount').value);
+    const questionsToAnswer = parseInt(document.getElementById('questionsToAnswer').value);
     const currentUser = document.getElementById('user_username').textContent.replace(/"/g, '');
+
+    if (questionsToAnswer > questionCount) {
+        alert('The number of questions to answer cannot be greater than the total number of questions.');
+        return;
+    }
 
     const questions = [];
     for (let i = 1; i <= questionCount; i++) {
@@ -190,7 +196,8 @@ function createExam() {
             avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser)}&size=64&background=random`
         },
         questions: questions,
-        total_points: 100
+        total_points: 100,
+        questions_to_answer: questionsToAnswer
     };
 
     examSocket.send(JSON.stringify({

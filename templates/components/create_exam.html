@@ -18,10 +18,19 @@
                         <label for="examDescription" data-translate="description">Descripción</label>
                         <textarea class="form-control" id="examDescription" rows="3" required></textarea>
                     </div>
-                    <div class="form-group">
-                        <label for="questionCount" data-translate="questionCount">Número de Preguntas</label>
-                        <input type="number" class="form-control" id="questionCount" min="1" max="10" value="1"
-                               onchange="updateQuestionForm()" required>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="questionCount" data-translate="questionCount">Número Total de Preguntas</label>
+                            <input type="number" class="form-control" id="questionCount" min="1" max="10" value="1"
+                                   onchange="updateQuestionForm()" required>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="questionsToAnswer" data-translate="questionsToAnswer">Preguntas a Responder</label>
+                            <input type="number" class="form-control" id="questionsToAnswer" min="1" max="10" value="1" required>
+                            <small class="form-text text-muted" data-translate="questionsToAnswerHelp">
+                                Número de preguntas que los estudiantes deberán responder
+                            </small>
+                        </div>
                     </div>
                     <div id="questionsContainer">
                         <!-- Questions will be dynamically added here -->

@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+import random
 
 class Exam(models.Model):
     title = models.CharField(max_length=200)
@@ -8,6 +9,13 @@ class Exam(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     total_points = models.IntegerField(default=100)
     is_active = models.BooleanField(default=True)
+    questions_to_answer = models.IntegerField(default=0)  # Number of questions students should answer
+
+    def get_random_questions(self):
+        """Get a random subset of questions for a student."""
+        all_questions = list(self.questions.all())
+        num_questions = min(self.questions_to_answer, len(all_questions))
+        return random.sample(all_questions, num_questions)
 
     def __str__(self):
         return self.title
@@ -40,7 +48,8 @@ class ExamSubmission(models.Model):
     student = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     submitted_at = models.DateTimeField(auto_now_add=True)
     score = models.IntegerField(null=True, blank=True)
-    completed = models.BooleanField(default=False)  # Added this field
+    completed = models.BooleanField(default=False)
+    assigned_questions = models.ManyToManyField(Question, related_name='assigned_to')
 
     class Meta:
         unique_together = ['exam', 'student']
