@@ -278,7 +278,7 @@ function updateQuestionForm() {
                                 </div>
                                 <input type="text" class="form-control" data-translate="option" placeholder="Opción 1" required>
                                 <div class="input-group-append">
-                                    <button class="btn btn-danger" type="button" onclick="removeChoice(this)" data-translate="removeOption">
+                                    <button class="btn btn-danger" type="button" onclick="removeChoice(this)">
                                         <i class="fas fa-minus"></i>
                                     </button>
                                 </div>
@@ -291,7 +291,7 @@ function updateQuestionForm() {
                                 </div>
                                 <input type="text" class="form-control" data-translate="option" placeholder="Opción 2" required>
                                 <div class="input-group-append">
-                                    <button class="btn btn-danger" type="button" onclick="removeChoice(this)" data-translate="removeOption">
+                                    <button class="btn btn-danger" type="button" onclick="removeChoice(this)">
                                         <i class="fas fa-minus"></i>
                                     </button>
                                 </div>
@@ -515,13 +515,19 @@ function displayExams() {
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h5 class="mb-0">${exam.title}</h5>
                             ${exam.creator.name === currentUser ?
-                                '<span class="badge badge-primary">Creador</span>' : ''}
+                                '<span class="badge badge-primary" data-translate="creator">Creador</span>' : ''}
                         </div>
                         <div class="card-body">
                             <p class="card-text">${exam.description}</p>
-                            <p><small class="text-muted">Puntos totales: ${exam.total_points}</small></p>
+                            <p><small class="text-muted">
+                                <span data-translate="totalScore">Puntos totales:</span> 
+                                <span>${exam.total_points}</span>
+                            </small></p>
                             ${exam.creator.name === currentUser ? `
-                                <p><small class="text-muted">Entregas: ${exam.submissions ? exam.submissions.length : 0}</small></p>
+                                <p><small class="text-muted">
+                                    <span data-translate="examSubmissions">Entregas:</span>
+                                    <span>${exam.submissions ? exam.submissions.length : 0}</span>
+                                </small></p>
                                 ${exam.submissions && exam.submissions.length > 0 ? `
                                     <div class="mt-2">
                                         <small class="text-muted">
@@ -589,15 +595,19 @@ function displayExamDetails(examId, startTimer = false) {
         <div class="card" data-exam-id="${exam.id}">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">${exam.title}</h5>
-                ${isCreator ? '<span class="badge badge-primary">Creador</span>' : ''}
+                ${isCreator ? '<span class="badge badge-primary" data-translate="creator">Creador</span>' : ''}
             </div>
             <div class="card-body">
                 <p class="card-text">${exam.description}</p>
-                <p><small class="text-muted">Puntos totales: ${exam.total_points}</small></p>
+                <p><small class="text-muted">
+                    <span data-translate="totalScore">Puntos totales:</span> 
+                    <span>${exam.total_points}</span>
+                </small>
+                </p>
                 
                 ${isCreator ? `
                     <div class="submissions-list mt-4">
-                        <h5>Entregas de Alumnos</h5>
+                        <h5 data-translate="examSubmissions">Entregas de Alumnos</h5>
                         ${exam.submissions && exam.submissions.length > 0 ? `
                             <div class="exam-stats mb-4">
                                 <div class="card">
@@ -692,7 +702,7 @@ function displayExamDetails(examId, startTimer = false) {
                                     </tbody>
                                 </table>
                             </div>
-                        ` : '<div class="alert alert-info">Aún no hay entregas para este examen.</div>'}
+                        ` : '<div class="alert alert-info" data-translate="noExams">Aún no hay entregas para este examen.</div>'}
                     </div>
                 ` : exam.submission ? `
                     <div class="submission-section">
