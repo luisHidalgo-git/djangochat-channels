@@ -22,9 +22,9 @@ from rest_framework.documentation import include_docs_urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('academic.api.urls')),  # API URLs
-    path('api-auth/', include('rest_framework.urls')),  # DRF authentication URLs
-    path('api-docs/', include_docs_urls(title='Academic API')),  # API Documentation
+    path('api/', include('academic.api.urls')),
+    path('api-auth/', include('rest_framework.urls')),
+    path('api-docs/', include_docs_urls(title='Academic API')),
     path('api/users/', include('users.api.urls')),
     path('api/chat/', include('chat.api.urls')),
     path('api/exams/', include('exams.api.urls')),
