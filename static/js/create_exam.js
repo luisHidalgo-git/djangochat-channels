@@ -769,7 +769,7 @@ function displayExamDetails(examId, startTimer = false) {
                                     ${question.choices.map(choice => `
                                         <div class="form-check">
                                             <input class="form-check-input" type="${question.question_type === 'single' ? 'radio' : 'checkbox'}"
-                                                   name="question_${question.id}" value="${choice.id}">
+                                                name="question_${question.id}" value="${choice.id}">
                                             <label class="form-check-label">${choice.text}</label>
                                         </div>
                                     `).join('')}
