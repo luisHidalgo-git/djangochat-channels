@@ -249,7 +249,6 @@ function updateQuestionForm() {
     const container = document.getElementById('questionsContainer');
     const questionsToAnswerInput = document.getElementById('questionsToAnswer');
     
-    // Actualizar el máximo de preguntas a responder
     questionsToAnswerInput.max = count;
     if (parseInt(questionsToAnswerInput.value) > count) {
         questionsToAnswerInput.value = count;
@@ -589,15 +588,21 @@ function displayExamDetails(examId, startTimer = false) {
     // Si el usuario no es el creador y no ha enviado el examen, obtener preguntas aleatorias
     let questionsToShow = exam.questions;
     if (!isCreator && !exam.submission) {
-        const allQuestions = [...exam.questions];
-        questionsToShow = [];
-        const numQuestions = exam.questions_to_answer;
-        
-        // Seleccionar preguntas aleatorias
-        for (let i = 0; i < numQuestions; i++) {
-            const randomIndex = Math.floor(Math.random() * allQuestions.length);
-            questionsToShow.push(allQuestions[randomIndex]);
-            allQuestions.splice(randomIndex, 1);
+        // Si hay una submission existente, usar las preguntas asignadas
+        if (exam.submission) {
+            questionsToShow = exam.submission.assigned_questions;
+        } else {
+            // Si no hay submission, seleccionar preguntas aleatorias
+            const allQuestions = [...exam.questions];
+            questionsToShow = [];
+            const numQuestions = exam.questions_to_answer;
+            
+            // Seleccionar preguntas aleatorias
+            while (questionsToShow.length < numQuestions && allQuestions.length > 0) {
+                const randomIndex = Math.floor(Math.random() * allQuestions.length);
+                questionsToShow.push(allQuestions[randomIndex]);
+                allQuestions.splice(randomIndex, 1);
+            }
         }
     }
 
@@ -617,19 +622,15 @@ function displayExamDetails(examId, startTimer = false) {
         <div class="card" data-exam-id="${exam.id}">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">${exam.title}</h5>
-                ${isCreator ? '<span class="badge badge-primary" data-translate="creator">Creador</span>' : ''}
+                ${isCreator ? '<span class="badge badge-primary">Creador</span>' : ''}
             </div>
             <div class="card-body">
                 <p class="card-text">${exam.description}</p>
-                <p><small class="text-muted">
-                    <span data-translate="totalScore">Puntos totales:</span> 
-                    <span>${exam.total_points}</span>
-                </small>
-                </p>
+                <p><small class="text-muted">Puntos totales: ${exam.total_points}</small></p>
                 
                 ${isCreator ? `
                     <div class="submissions-list mt-4">
-                        <h5 data-translate="examSubmissions">Entregas de Alumnos</h5>
+                        <h5>Entregas de Alumnos</h5>
                         ${exam.submissions && exam.submissions.length > 0 ? `
                             <div class="exam-stats mb-4">
                                 <div class="card">
@@ -680,52 +681,52 @@ function displayExamDetails(examId, startTimer = false) {
                                         </div>
                                     </div>
                                 </div>
-                            
-                            </div>
-                            <div class="table-responsive">
-                                <table class="table table-hover">
-                                    <thead class="thead-light">
-                                        <tr>
-                                            <th>Alumno</th>
-                                            <th>Fecha de Entrega</th>
-                                            <th>Calificación</th>
-                                            <th>Estado</th>
-                                            <th>Detalles</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        ${exam.submissions.map(submission => `
+                                <div class="table-responsive mt-4">
+                                    <table class="table table-hover">
+                                        <thead class="thead-light">
                                             <tr>
-                                                <td>
-                                                    <div class="d-flex align-items-center">
-                                                        <img src="${submission.student.avatar}" alt="${submission.student.name}"
-                                                             class="rounded-circle mr-2" style="width: 32px; height: 32px;">
-                                                        <span>${submission.student.name}</span>
-                                                    </div>
-                                                </td>
-                                                <td>${submission.submitted_at}</td>
-                                                <td>
-                                                    <span class="badge badge-${submission.score >= 60 ? 'success' : 'danger'} p-2">
-                                                        ${submission.score}%
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    <span class="badge badge-${submission.score >= 60 ? 'success' : 'danger'}">
-                                                        ${submission.score >= 60 ? 'Aprobado' : 'No Aprobado'}
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    <button class="btn btn-sm btn-info" onclick="showSubmissionDetails(${exam.id}, '${submission.student.name}')">
-                                                        <i class="fas fa-eye mr-1"></i>
-                                                        Ver Respuestas
-                                                    </button>
-                                                </td>
+                                                <th>Alumno</th>
+                                                <th>Fecha de Entrega</th>
+                                                
+                                                <th>Calificación</th>
+                                                <th>Estado</th>
+                                                <th>Detalles</th>
                                             </tr>
-                                        `).join('')}
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody>
+                                            ${exam.submissions.map(submission => `
+                                                <tr>
+                                                    <td>
+                                                        <div class="d-flex align-items-center">
+                                                            <img src="${submission.student.avatar}" alt="${submission.student.name}"
+                                                                 class="rounded-circle mr-2" style="width: 32px; height: 32px;">
+                                                            <span>${submission.student.name}</span>
+                                                        </div>
+                                                    </td>
+                                                    <td>${submission.submitted_at}</td>
+                                                    <td>
+                                                        <span class="badge badge-${submission.score >= 60 ? 'success' : 'danger'} p-2">
+                                                            ${submission.score}%
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <span class="badge badge-${submission.score >= 60 ? 'success' : 'danger'}">
+                                                            ${submission.score >= 60 ? 'Aprobado' : 'No Aprobado'}
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <button class="btn btn-sm btn-info" onclick="showSubmissionDetails(${exam.id}, '${submission.student.name}')">
+                                                            <i class="fas fa-eye mr-1"></i>
+                                                            Ver Respuestas
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            `).join('')}
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
-                        ` : '<div class="alert alert-info" data-translate="noExams">Aún no hay entregas para este examen.</div>'}
+                        ` : '<div class="alert alert-info">Aún no hay entregas para este examen.</div>'}
                     </div>
                 ` : exam.submission ? `
                     <div class="submission-section">
@@ -784,8 +785,11 @@ function displayExamDetails(examId, startTimer = false) {
             <div class="card-footer">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="d-flex align-items-center">
-                        <img src="${exam.creator.avatar}" alt="${exam.creator.name}" 
-                             class="rounded-circle mr-2" style="width: 24px; height: 24px;">
+                        <img src="/media/profile_photos/${exam.creator.name}.jpg" 
+                             onerror="this.onerror=null; this.src='${exam.creator.avatar}'"
+                             alt="${exam.creator.name}" 
+                             class="rounded-circle mr-2" 
+                             style="width: 24px; height: 24px; object-fit: cover;">
                         <small class="text-muted">${exam.creator.name}</small>
                     </div>
                     <small class="text-muted">${exam.created_at}</small>
@@ -793,6 +797,10 @@ function displayExamDetails(examId, startTimer = false) {
             </div>
         </div>
     `;
+
+    if (startTimer) {
+        startExamTimer();
+    }
 }
 
 // Initialize WebSocket connection when on the exams page
