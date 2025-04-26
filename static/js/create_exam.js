@@ -43,17 +43,15 @@ function initializeExamSocket() {
 }
 
 function startExamTimer() {
-    // Clear any existing timer
     if (examTimer) {
         clearInterval(examTimer);
     }
 
-    // Set end time to 1 hour from now
     examEndTime = new Date().getTime() + (60 * 60 * 1000);
 
     function updateTimer() {
         const timerDisplay = document.getElementById('examTimer');
-        if (!timerDisplay) return; // Exit if element not found
+        if (!timerDisplay) return;
 
         const now = new Date().getTime();
         const distance = examEndTime - now;
@@ -76,7 +74,6 @@ function startExamTimer() {
         `;
     }
 
-    // Update immediately and then start interval
     updateTimer();
     examTimer = setInterval(updateTimer, 1000);
 }
@@ -125,16 +122,12 @@ function showExamInstructions(examId) {
     </div>
   `;
 
-    // Remover modal anterior si existe
     const existingModal = document.getElementById('examInstructionsModal');
     if (existingModal) {
         existingModal.remove();
     }
 
-    // Agregar nuevo modal al DOM
     document.body.insertAdjacentHTML('beforeend', modalHtml);
-
-    // Mostrar el modal
     $('#examInstructionsModal').modal('show');
 }
 
@@ -152,7 +145,7 @@ function createExam() {
     const currentUser = document.getElementById('user_username').textContent.replace(/"/g, '');
 
     if (questionsToAnswer > questionCount) {
-        alert('The number of questions to answer cannot be greater than the total number of questions.');
+        alert('El número de preguntas a responder no puede ser mayor que el total de preguntas.');
         return;
     }
 
@@ -254,6 +247,13 @@ function removeChoice(button) {
 function updateQuestionForm() {
     const count = parseInt(document.getElementById('questionCount').value);
     const container = document.getElementById('questionsContainer');
+    const questionsToAnswerInput = document.getElementById('questionsToAnswer');
+    
+    // Actualizar el máximo de preguntas a responder
+    questionsToAnswerInput.max = count;
+    if (parseInt(questionsToAnswerInput.value) > count) {
+        questionsToAnswerInput.value = count;
+    }
 
     container.innerHTML = '';
 
@@ -450,6 +450,7 @@ function showSubmissionDetails(examId, studentName) {
                         
                         ${exam.questions.map((question, index) => {
                             const answer = submission.answers.find(a => a.question_id === question.id);
+                            if (!answer) return ''; // Skip questions that weren't assigned to this student
                             return `
                                 <div class="question-review mb-4">
                                     <h6>Pregunta ${index + 1}: ${question.text}</h6>
@@ -480,16 +481,12 @@ function showSubmissionDetails(examId, studentName) {
         </div>
     `;
 
-    // Remover modal anterior si existe
     const existingModal = document.getElementById('submissionDetailsModal');
     if (existingModal) {
         existingModal.remove();
     }
 
-    // Agregar nuevo modal al DOM
     document.body.insertAdjacentHTML('beforeend', modalHtml);
-
-    // Mostrar el modal
     $('#submissionDetailsModal').modal('show');
 }
 
@@ -505,11 +502,10 @@ function displayExams() {
     if (!examsList) return;
 
     if (sharedExams.length === 0) {
-        examsList.innerHTML = '<p class="text-center">No hay exámenes disponibles.</p>';
+        examsList.innerHTML = '<p class="text-center empty-message">No hay exámenes disponibles.</p>';
         return;
     }
 
-    // Sort exams by creation date (newest first)
     const sortedExams = [...sharedExams].sort((a, b) => {
         return new Date(b.created_at) - new Date(a.created_at);
     });
@@ -529,6 +525,10 @@ function displayExams() {
                             <p><small class="text-muted">
                                 <span data-translate="totalScore">Puntos totales:</span> 
                                 <span>${exam.total_points}</span>
+                            </small></p>
+                            <p><small class="text-muted">
+                                <span data-translate="questionsToAnswer">Preguntas a responder:</span> 
+                                <span>${exam.questions_to_answer} de ${exam.questions.length}</span>
                             </small></p>
                             ${exam.creator.name === currentUser ? `
                                 <p><small class="text-muted">
@@ -584,6 +584,21 @@ function displayExamDetails(examId, startTimer = false) {
 
     if (currentView) {
         currentView.textContent = exam.title;
+    }
+
+    // Si el usuario no es el creador y no ha enviado el examen, obtener preguntas aleatorias
+    let questionsToShow = exam.questions;
+    if (!isCreator && !exam.submission) {
+        const allQuestions = [...exam.questions];
+        questionsToShow = [];
+        const numQuestions = exam.questions_to_answer;
+        
+        // Seleccionar preguntas aleatorias
+        for (let i = 0; i < numQuestions; i++) {
+            const randomIndex = Math.floor(Math.random() * allQuestions.length);
+            questionsToShow.push(allQuestions[randomIndex]);
+            allQuestions.splice(randomIndex, 1);
+        }
     }
 
     examsList.innerHTML = `
@@ -665,6 +680,7 @@ function displayExamDetails(examId, startTimer = false) {
                                         </div>
                                     </div>
                                 </div>
+                            
                             </div>
                             <div class="table-responsive">
                                 <table class="table table-hover">
@@ -718,8 +734,9 @@ function displayExamDetails(examId, startTimer = false) {
                             <p>Enviado: ${exam.submission.submitted_at}</p>
                         </div>
                         <h5 class="mt-4">Revisión de tus Respuestas:</h5>
-                        ${exam.questions.map((question, index) => {
+                        ${questionsToShow.map((question, index) => {
                             const userAnswer = exam.submission.answers.find(a => a.question_id === question.id);
+                            if (!userAnswer) return ''; // Skip questions that weren't assigned to this student
                             return `
                                 <div class="question mb-4" data-question-id="${question.id}">
                                     <h6>Pregunta ${index + 1}: ${question.text}</h6>
@@ -744,7 +761,7 @@ function displayExamDetails(examId, startTimer = false) {
                     </div>
                 ` : `
                     <form class="exam-form">
-                        ${exam.questions.map((question, index) => `
+                        ${questionsToShow.map((question, index) => `
                             <div class="question mb-4" data-question-id="${question.id}">
                                 <h6>Pregunta ${index + 1}: ${question.text}</h6>
                                 <div class="choices">

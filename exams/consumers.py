@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from .models import Exam, Question, Choice, ExamSubmission, Answer
 from asgiref.sync import sync_to_async
 from users.models import UserProfile
+import random
 
 class ExamConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -41,7 +42,22 @@ class ExamConsumer(AsyncWebsocketConsumer):
                 pass
 
             questions = []
-            for question in exam.questions.all().prefetch_related('choices'):
+            submission = None
+            
+            # Obtener la entrega existente si existe
+            if current_user != exam.creator:
+                submission = ExamSubmission.objects.filter(
+                    exam=exam,
+                    student=current_user
+                ).first()
+
+            # Si hay una entrega, usar las preguntas asignadas
+            if submission:
+                assigned_questions = submission.assigned_questions.all()
+            else:
+                assigned_questions = exam.questions.all()
+
+            for question in assigned_questions:
                 choices = []
                 for choice in question.choices.all():
                     choices.append({
@@ -138,6 +154,7 @@ class ExamConsumer(AsyncWebsocketConsumer):
                 'total_points': exam.total_points,
                 'is_active': exam.is_active,
                 'questions': questions,
+                'questions_to_answer': exam.questions_to_answer,
                 'submissions': submissions,
                 'submission': next((sub for sub in submissions if sub['student']['name'] == current_user.username), None)
             })
@@ -169,7 +186,8 @@ class ExamConsumer(AsyncWebsocketConsumer):
             description=data['description'],
             creator=user,
             total_points=100,
-            is_active=True
+            is_active=True,
+            questions_to_answer=data['questions_to_answer']
         )
 
         points_per_question = 100 // len(data['questions'])
@@ -216,6 +234,7 @@ class ExamConsumer(AsyncWebsocketConsumer):
                     'is_correct': c.is_correct
                 } for c in q.choices.all()]
             } for q in exam.questions.all()],
+            'questions_to_answer': exam.questions_to_answer,
             'submissions': []
         }
 
@@ -232,7 +251,8 @@ class ExamConsumer(AsyncWebsocketConsumer):
                 student_photo = student_profile.profile_photo.url
         except UserProfile.DoesNotExist:
             pass
-        
+
+        # Obtener o crear la entrega
         submission, created = ExamSubmission.objects.get_or_create(
             exam=exam,
             student=student,
@@ -241,16 +261,26 @@ class ExamConsumer(AsyncWebsocketConsumer):
             }
         )
 
+        # Si es una nueva entrega, asignar preguntas aleatorias
+        if created:
+            all_questions = list(exam.questions.all())
+            random_questions = random.sample(all_questions, exam.questions_to_answer)
+            submission.assigned_questions.set(random_questions)
+        
         if not created:
             submission.answers.all().delete()
             submission.completed = True
             submission.save()
 
         total_correct = 0
-        total_questions = exam.questions.count()
+        total_questions = submission.assigned_questions.count()
 
         for answer_data in data['answers']:
             question = Question.objects.get(id=answer_data['questionId'])
+            # Verificar que la pregunta está asignada al estudiante
+            if question not in submission.assigned_questions.all():
+                continue
+
             answer = Answer.objects.create(
                 submission=submission,
                 question=question
@@ -308,7 +338,7 @@ class ExamConsumer(AsyncWebsocketConsumer):
                     'exam': exam
                 }
             )
-            await self.send_all_exams()  # Add this line to update all clients
+            await self.send_all_exams()
         
         elif action == 'submit_exam':
             submission = await self.submit_exam(data)

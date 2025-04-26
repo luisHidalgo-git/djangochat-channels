@@ -30,6 +30,9 @@
     --table-header-text: #000000;
     --table-cell-text: #000000;
     --table-border: #dee2e6;
+    --empty-bg: #ffffff;
+    --empty-text: #000000;
+    --empty-border: #cccccc;
 }
 
 /* Tema Oscuro */
@@ -64,12 +67,30 @@
     --table-header-text: #ffffff;
     --table-cell-text: #ffffff;
     --table-border: #404040;
+    --empty-bg: #1a1a1a;
+    --empty-text: #ffffff;
+    --empty-border: #1a1a1a;
 }
 
 /* Aplicar variables */
 body {
     background-color: var(--bg-primary);
     color: var(--text-primary);
+}
+
+.empty-message {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80vh; /* Ajusta según el diseño */
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    background-color: var(--empty-bg); /* Variable para el fondo */
+    color: var(--empty-text); /* Variable para el texto */
+    border: 2px dashed var(--empty-border); /* Variable para el borde */
+    border-radius: 10px;
+    padding: 20px;
 }
 
 .language-toggle {

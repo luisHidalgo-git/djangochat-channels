@@ -109,7 +109,7 @@ function displayCourses() {
   }
 
   if (sharedCourses.length === 0) {
-    coursesList.innerHTML = '<p class="text-center" data-translate="noAssignments">No hay cursos disponibles.</p>';
+    coursesList.innerHTML = '<p class="text-center empty-message" data-translate="noAssignments" >No hay cursos disponibles.</p>';
     return;
   }
 
