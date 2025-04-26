@@ -115,7 +115,8 @@ def login_page(request):
                         return render(request, 'login.html', {
                             'show_session_modal': True,
                             'email': email,
-                            'password': password
+                            'password': password,
+                            'recaptcha_public_key': settings.RECAPTCHA_PUBLIC_KEY  # Agregar clave pública
                         })
                     
                     # Si no hay sesión activa, proceder con el login normal
@@ -132,7 +133,10 @@ def login_page(request):
 
     if request.user.is_authenticated:
         return redirect('/chat/Sala/')
-    return render(request, 'login.html', {'breadcrumb': 'Login'})
+    return render(request, 'login.html', {
+        'breadcrumb': 'Login',
+        'recaptcha_public_key': settings.RECAPTCHA_PUBLIC_KEY  # Agregar clave pública
+    })
 
 @login_required
 def logout_page(request):

@@ -23,6 +23,8 @@ $('#forceLogin').click(function () {
         .then(data => {
             if (data.success) {
                 window.location.href = data.redirect_url;
+            } else {
+                alert('Failed to force login. Please try again.');
             }
         });
 });
