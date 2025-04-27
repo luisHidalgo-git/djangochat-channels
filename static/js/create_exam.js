@@ -627,6 +627,7 @@ function displayExamDetails(examId, startTimer = false) {
             <div class="card-body">
                 <p class="card-text">${exam.description}</p>
                 <p><small class="text-muted">Puntos totales: ${exam.total_points}</small></p>
+                <p><small class="text-muted">Preguntas a responder: ${exam.questions_to_answer} de ${exam.questions.length}</small></p>
                 
                 ${isCreator ? `
                     <div class="submissions-list mt-4">
@@ -687,7 +688,6 @@ function displayExamDetails(examId, startTimer = false) {
                                             <tr>
                                                 <th>Alumno</th>
                                                 <th>Fecha de Entrega</th>
-                                                
                                                 <th>Calificación</th>
                                                 <th>Estado</th>
                                                 <th>Detalles</th>
@@ -733,11 +733,12 @@ function displayExamDetails(examId, startTimer = false) {
                         <div class="alert ${exam.submission.score >= 60 ? 'alert-success' : 'alert-danger'}">
                             <h4>Tu Calificación: ${exam.submission.score}%</h4>
                             <p>Enviado: ${exam.submission.submitted_at}</p>
+                            <p>Preguntas respondidas: ${exam.submission.answers.length} de ${exam.questions_to_answer}</p>
                         </div>
                         <h5 class="mt-4">Revisión de tus Respuestas:</h5>
-                        ${questionsToShow.map((question, index) => {
-                            const userAnswer = exam.submission.answers.find(a => a.question_id === question.id);
-                            if (!userAnswer) return ''; // Skip questions that weren't assigned to this student
+                        ${exam.submission.answers.map((answer, index) => {
+                            const question = exam.questions.find(q => q.id === answer.question_id);
+                            if (!question) return '';
                             return `
                                 <div class="question mb-4" data-question-id="${question.id}">
                                     <h6>Pregunta ${index + 1}: ${question.text}</h6>
@@ -745,7 +746,7 @@ function displayExamDetails(examId, startTimer = false) {
                                         ${question.choices.map(choice => `
                                             <div class="form-check">
                                                 <input class="form-check-input" type="${question.question_type === 'single' ? 'radio' : 'checkbox'}"
-                                                       ${userAnswer?.selected_choices.includes(choice.id) ? 'checked' : ''} disabled>
+                                                       ${answer.selected_choices.includes(choice.id) ? 'checked' : ''} disabled>
                                                 <label class="form-check-label">
                                                     ${choice.text}
                                                     ${choice.is_correct ? '<i class="fas fa-check text-success ml-2"></i>' : ''}
@@ -753,8 +754,8 @@ function displayExamDetails(examId, startTimer = false) {
                                             </div>
                                         `).join('')}
                                     </div>
-                                    <div class="alert ${userAnswer?.is_correct ? 'alert-success' : 'alert-danger'} mt-2">
-                                        ${userAnswer?.is_correct ? '¡Correcto!' : 'Incorrecto'}
+                                    <div class="alert ${answer.is_correct ? 'alert-success' : 'alert-danger'} mt-2">
+                                        ${answer.is_correct ? '¡Correcto!' : 'Incorrecto'}
                                     </div>
                                 </div>
                             `;
@@ -764,7 +765,7 @@ function displayExamDetails(examId, startTimer = false) {
                     <form class="exam-form">
                         ${questionsToShow.map((question, index) => `
                             <div class="question mb-4" data-question-id="${question.id}">
-                                <h6>Pregunta ${index + 1}: ${question.text}</h6>
+                                <h6>Pregunta ${index + 1} de ${exam.questions_to_answer}: ${question.text}</h6>
                                 <div class="choices">
                                     ${question.choices.map(choice => `
                                         <div class="form-check">
